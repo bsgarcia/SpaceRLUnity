@@ -11,10 +11,15 @@ public class GameController : MonoBehaviour
 {
     // public members
     public string serverURL;
+
+    public bool online;
+    public bool skipTuto;
+
     public GameObject hazard;
     public Vector3 spawnValues;
     public float startWait;
     public float waveWait;
+
 
     public Text scoreText;
 
@@ -202,7 +207,7 @@ public class GameController : MonoBehaviour
 
         KeyPhaseShootDone = false;
         KeyPhaseMoveDone = false;
-
+        tutorialDone = false;
 
         UpdateScore();
 
@@ -214,6 +219,7 @@ public class GameController : MonoBehaviour
         {
             subID = "Unity";
         }
+
         //StartCoroutine(SpawnWaves()); 
         dataController = GameObject.FindWithTag("DataController").GetComponent<DataController>();
         playerController = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
@@ -224,6 +230,7 @@ public class GameController : MonoBehaviour
     public void RunWrapper() {
         StartCoroutine(Run());
     }
+
     public IEnumerator Run()
     {
         playButton.gameObject.SetActive(false);
@@ -249,6 +256,16 @@ public class GameController : MonoBehaviour
     {
         if (playButton.gameObject.active) {
             return;
+        }
+        if (skipTuto)
+        {
+            KeyPhaseMoveDone = true;
+            KeyPhaseShootDone = true;
+            tutorialDone = true;
+            moveImage.gameObject.SetActive(false);
+            spaceImage.gameObject.SetActive(false);
+            return;
+
         }
         // Debug.Log(KeyPhaseMoveDone);
         if (!KeyPhaseMoveDone)
@@ -344,8 +361,8 @@ public class GameController : MonoBehaviour
 
         score += newScoreValue;
         Save("score", (int)score);
-        if (feedbackInfo == 0)
-        {
+        if (feedbackInfo == 0) { 
+
             scoreText.gameObject.SetActive(false);
             return;
         }
@@ -461,9 +478,41 @@ public class GameController : MonoBehaviour
     {
         symbol1 = (Texture)optionpath[(int)id[0]];
         symbol2 = (Texture)optionpath[(int)id[1]];
+        Material[] mat1 = option1.GetComponent<MeshRenderer>().materials;
+        Material[] mat2 = option2.GetComponent<MeshRenderer>().materials;
 
-        option1.GetComponent<MeshRenderer>().material.mainTexture = symbol1;
-        option2.GetComponent<MeshRenderer>().material.mainTexture = symbol2;
+        mat1[0].mainTexture = symbol1;
+        mat2[0].mainTexture = symbol2;
+
+        List<Color> colors = new List<Color>(){
+            new Color(0.29803922f, 0.29f, 0.8f, 1f        ),
+            new Color(0.41614764f, 0.4116263f , 0.59767782f, 1f        ),
+            new Color(0.53425606f, 0.37619377f, 0.50515955f, 1f        ),
+            new Color(0.65236448f, 0.34076125f, 0.41264129f, 1f        ),
+            new Color(0.76862745f, 0.30588235f, 0.32156863f, 1f        )
+       };
+
+        mat1[1] = option1.GetComponent<OptMaterials>().GetForceField(colors[0], 1);
+        mat2[1] = option1.GetComponent<OptMaterials>().GetForceField(colors[4], 2);
+
+        option1.GetComponent<MeshRenderer>().materials = mat1;
+        option2.GetComponent<MeshRenderer>().materials = mat2;
+
+        //option2.GetComponent<MeshRenderer>().material.mainTexture = symbol2;
+
+        //material[] mats = r.materials;  // copy of materials array.
+
+        //mats[n] = newMaterial; // set new material
+
+        //r.materials = mats; // assign updated array to materials array
+        //Material mat1 = option1.GetComponent<OptMaterials>().GetForceField(new Color(0, 0, 0), 1);
+        //option1.GetComponent<MeshRenderer>().material = mat1;
+        //Material mat2 = option2.GetComponent<OptMaterials>().GetForceField(new Color(255, 255, 255), 2);
+        //option2.GetComponent<MeshRenderer>().material = mat2;
+
+
+        //option1.GetComponent<MeshRenderer>().material[1].SetFloat("_Color", color);
+
 
     }
 

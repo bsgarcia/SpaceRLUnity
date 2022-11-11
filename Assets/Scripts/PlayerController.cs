@@ -125,11 +125,15 @@ public class PlayerController : MonoBehaviour
 		// move the ship
 		float moveHorizontal = Input.GetAxis("Horizontal");
 		float moveVertical   = Input.GetAxis("Vertical");
-      
+
+         //XY movments
         Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
 
-		// adapt the speed
-		GetComponent<Rigidbody>().velocity = movement * speed;
+        //X mov. and tilting(below)
+        //Vector3 movement = new Vector3(moveHorizontal, 0.0f, 0.0f);
+
+        // adapt the speed
+        GetComponent<Rigidbody>().velocity = movement * speed;
 
 		// constraint the ship inside the screen
 		GetComponent<Rigidbody>().position = new Vector3
@@ -139,7 +143,12 @@ public class PlayerController : MonoBehaviour
 			Mathf.Clamp(GetComponent<Rigidbody>().position.z, boundary.zMin, boundary.zMax)		// constraint the horizontal movement with the math function Clamp
 		);
 
-		// tilt the ship to its side when moving
-		GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, 0.0f, GetComponent<Rigidbody>().velocity.x * -tilt);
-	}
+        // tilt the ship to its side when moving
+        //GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, moveVertical * -tilt*10, GetComponent<Rigidbody>().velocity.x * -tilt);
+        GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, 0.0f, GetComponent<Rigidbody>().velocity.x * -tilt);
+
+        //tilt the ship 
+        //GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, , 0.0f);
+
+    }
 }

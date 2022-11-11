@@ -222,7 +222,7 @@ public class TaskParameters : MonoBehaviour
             }
             else
             {
-                rewardsTemp.Add(0);
+                rewardsTemp.Add(-5);
             }
 
         }

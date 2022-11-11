@@ -55,6 +55,14 @@ public class DataController : MonoBehaviour
 
     public IEnumerator SendToDB()
     {
+        if (!gameController.online)
+        {
+            Debug.Log("Online: off");
+            yield break;
+
+        }
+
+
         List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
         int error = 0;
         bool success = false;
