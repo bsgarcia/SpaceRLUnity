@@ -466,18 +466,23 @@ public class GameController : MonoBehaviour
 
     public void ChangeBackground()
     {
+        return;
         GameObject background = GameObject.FindWithTag("Background");
         background.GetComponent<MeshRenderer>().material.mainTexture =
-            (Texture)Resources.Load("backgrounds/red");
+            (Texture)Resources.Load("backgrounds/space");
         GameObject child = background.transform.GetChild(0).gameObject;
         child.GetComponent<MeshRenderer>().material.mainTexture =
-        (Texture)Resources.Load("backgrounds/red");
+        (Texture)Resources.Load("backgrounds/space");
     }
 
     public void SetSymbolsTexture(Vector2 id)
     {
-        symbol1 = (Texture)optionpath[(int)id[0]];
-        symbol2 = (Texture)optionpath[(int)id[1]];
+        //symbol1 = (Texture)optionpath[(int)id[0]];
+        //symbol2 = (Texture)optionpath[(int)id[1]];
+        symbol1 = (Texture)optionpath[5];
+        symbol2 = (Texture)optionpath[3];
+
+
         Material[] mat1 = option1.GetComponent<MeshRenderer>().materials;
         Material[] mat2 = option2.GetComponent<MeshRenderer>().materials;
 
@@ -531,7 +536,7 @@ public class GameController : MonoBehaviour
         {
             leftright = -spawnValues.x;
         }
-
+        leftright = Mathf.Abs(leftright);
         Vector3 spawnPosition1 = new Vector3(leftright, spawnValues.y, spawnValues.z);
         option1 = Instantiate(hazard, spawnPosition1, spawnRotation);
         option1.tag = "Opt1";
@@ -637,6 +642,7 @@ public class LearningTest : IState
 
     public IEnumerator Execute()
     {
+        gameController.ChangeBackground();
 
         int[] condTrial = new int[TaskParameters.nConds];
 

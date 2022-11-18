@@ -218,7 +218,7 @@ public class TaskParameters : MonoBehaviour
         {
             if (i < Math.Round(nTrialsPerCondition * option.y))
             {
-                rewardsTemp.Add(1 * (int)option.x * (int)option.z);
+                rewardsTemp.Add(5);//1 * (int)option.x * (int)option.z);
             }
             else
             {
