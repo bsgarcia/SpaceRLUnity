@@ -582,7 +582,7 @@ MonoBehaviour:
   serverURL: https://human-rl.scicog.fr/SpaceRLTesting/php/InsertLearning.php
   online: 0
   skipTuto: 1
-  hazard: {fileID: 6310960655516971385, guid: 1445b8694b3c86c40ac6340b436dc102, type: 3}
+  hazard: {fileID: 6310960655516971385, guid: 090f37d9e42999da0bdc3b84d8cdf25d, type: 3}
   spawnValues: {x: 4, y: 0, z: 16}
   startWait: 2
   waveWait: 1
