@@ -545,11 +545,13 @@ public class GameController : MonoBehaviour
         Vector3 spawnPosition1 = new Vector3(leftright, spawnValues.y, spawnValues.z);
 
         option1 = Instantiate(hazard, spawnPosition1, spawnRotation);
+        //option1.transform.position = spawnPosition1;
         option1.tag = "Opt1";
         //option1.transform.localScale = scaleChange;
 
         Vector3 spawnPosition2 = new Vector3(-leftright, spawnValues.y, spawnValues.z);
         option2 = Instantiate(hazard, spawnPosition2, spawnRotation);
+        ///option2.transform.position = spawnPosition2;
         //option2.transform.localScale = scaleChange;
         option2.tag = "Opt2";
 
