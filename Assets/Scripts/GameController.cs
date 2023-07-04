@@ -479,15 +479,16 @@ public class GameController : MonoBehaviour
     {
         //symbol1 = (Texture)optionpath[(int)id[0]];
         //symbol2 = (Texture)optionpath[(int)id[1]];
-        symbol1 = (Texture)optionpath[5];
-        symbol2 = (Texture)optionpath[3];
+        //symbol1 = (Texture)optionpath[5];
+        //symbol2 = (Texture)optionpath[3];
 
 
         Material[] mat1 = option1.GetComponent<MeshRenderer>().materials;
         Material[] mat2 = option2.GetComponent<MeshRenderer>().materials;
 
-        mat1[0].mainTexture = symbol1;
-        mat2[0].mainTexture = symbol2;
+        //mat1[0].mainTexture = symbol1;
+
+        //mat2[0].mainTexture = symbol2;
 
         List<Color> colors = new List<Color>(){
             new Color(0.29803922f, 0.29f, 0.8f, 1f        ),
@@ -536,13 +537,20 @@ public class GameController : MonoBehaviour
         {
             leftright = -spawnValues.x;
         }
+        // fixed 
         leftright = Mathf.Abs(leftright);
+        //
+        //Vector3 scaleChange = new Vector3(1f, 1f, 1f);
+
         Vector3 spawnPosition1 = new Vector3(leftright, spawnValues.y, spawnValues.z);
+
         option1 = Instantiate(hazard, spawnPosition1, spawnRotation);
         option1.tag = "Opt1";
+        //option1.transform.localScale = scaleChange;
 
         Vector3 spawnPosition2 = new Vector3(-leftright, spawnValues.y, spawnValues.z);
         option2 = Instantiate(hazard, spawnPosition2, spawnRotation);
+        //option2.transform.localScale = scaleChange;
         option2.tag = "Opt2";
 
     }
