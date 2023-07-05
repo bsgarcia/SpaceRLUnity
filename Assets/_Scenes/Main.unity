@@ -297,7 +297,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 192491477}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.75}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1953792137}
@@ -582,7 +582,7 @@ MonoBehaviour:
   serverURL: https://human-rl.scicog.fr/SpaceRLTesting/php/InsertLearning.php
   online: 0
   skipTuto: 1
-  hazard: {fileID: 6310960655516971385, guid: 090f37d9e42999da0bdc3b84d8cdf25d, type: 3}
+  hazard: {fileID: 5173755259565289548, guid: d5ed23ef93d27fc4d90eee58c0965907, type: 3}
   spawnValues: {x: 4, y: 0, z: 16}
   startWait: 2
   waveWait: 1
@@ -11965,7 +11965,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1948181871}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 3.1}
+  m_LocalPosition: {x: 0, y: 0, z: 1.69}
   m_LocalScale: {x: 15, y: 1, z: 20}
   m_Children: []
   m_Father: {fileID: 0}

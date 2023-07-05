@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
-using System.Diagnostics;
+using Stopwatch = System.Diagnostics.Stopwatch;
 
 
 public class OptionController : MonoBehaviour
@@ -17,6 +17,13 @@ public class OptionController : MonoBehaviour
     public int choice;
     public int choseLeft;
     public int corr;
+
+    // set probability of the forcefield option to be destroyed
+    public double pDestroy = 10;
+    public double otherPDestroy = 10;
+    
+    // the random p
+    private double randomP = 10;
 
     public bool shootable = false;
 
@@ -32,10 +39,17 @@ public class OptionController : MonoBehaviour
 
     }
 
+    public void SetProbability(double P_, double otherP_)
+    {
+        Debug.Log("SetProbability");
+
+        pDestroy = P_;
+        otherPDestroy = otherP_;
+        
+    }
 
     void OnTriggerEnter(Collider other)
     {   
-
         // make the option shootable if it crosses the upper boundary
         if (other.tag == "BoundaryShootable")
         {
@@ -52,29 +66,34 @@ public class OptionController : MonoBehaviour
             // record reaction time
             st.Stop();
 
-
-            // link this object to the gameController;
-            gameController.SetOptionController(this);
-
-
             // explosion of the asteroid
             Instantiate(explosion, transform.localPosition, transform.localRotation);
 
             GameObject otherOption;
 
+            // link this object to the gameController;
+            gameController.SetOptionController(this);
+            // if the forcefield option is chosen, it is destroyed with probability p1
+            // pick a random p between 0 and 1
+            randomP = ((double) Random.Range(0, 100))/100;
+            if (randomP > pDestroy)
+            {
+                // only destroy the bolt
+                Destroy(other.gameObject);
+                return;
+            }
 
             switch (tag)
             {
                 case "Opt1":
 
-
                     otherOption = GameObject.FindWithTag("Opt2");
                     scoreValue = gameController.outcomeOpt1;
                     counterscoreValue = gameController.outcomeOpt2;
+
                     corr = 1;
                     choice = 1;
-
-
+                    
                     break;
 
                 case "Opt2":
@@ -85,7 +104,7 @@ public class OptionController : MonoBehaviour
                     counterscoreValue = gameController.outcomeOpt1;
                     choice = 2;
                     corr = 0;
-                   
+
                     break;
 
                 default:

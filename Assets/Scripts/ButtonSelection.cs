@@ -11,13 +11,13 @@ public class ButtonSelection : MonoBehaviour, IPointerEnterHandler, IDeselectHan
 {
     public void OnPointerEnter(PointerEventData eventData)
     { 
-        GetComponent<Text>().color = Color.yellow;
+        this.GetComponent<Text>().color = Color.yellow;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
 
-        GetComponent<Text>().color = Color.white;
+        this.GetComponent<Text>().color = Color.white;
 
     }
 

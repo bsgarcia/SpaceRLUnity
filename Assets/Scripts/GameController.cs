@@ -227,7 +227,8 @@ public class GameController : MonoBehaviour
 
     }
 
-    public void RunWrapper() {
+    public void RunWrapper()
+    {
         StartCoroutine(Run());
     }
 
@@ -236,7 +237,8 @@ public class GameController : MonoBehaviour
         playButton.gameObject.SetActive(false);
         moveImage.gameObject.SetActive(true);
 
-        while (!tutorialDone) {
+        while (!tutorialDone)
+        {
             yield return new WaitForSeconds(2f);
         }
 
@@ -249,12 +251,13 @@ public class GameController : MonoBehaviour
         scoreText.gameObject.SetActive(true);
         counterText.gameObject.SetActive(true);
         missedTrialText.gameObject.SetActive(true);
-        
+
     }
 
     void ManageKeyPhase()
     {
-        if (playButton.gameObject.active) {
+        if (playButton.gameObject.active)
+        {
             return;
         }
         if (skipTuto)
@@ -351,7 +354,8 @@ public class GameController : MonoBehaviour
     }
 
 
-    IEnumerator SetBoolWithDelay(System.Action<bool> assigner, bool value,  float delay) {
+    IEnumerator SetBoolWithDelay(System.Action<bool> assigner, bool value, float delay)
+    {
         yield return new WaitForSeconds(delay);
         assigner.Invoke(value);
     }
@@ -361,7 +365,8 @@ public class GameController : MonoBehaviour
 
         score += newScoreValue;
         Save("score", (int)score);
-        if (feedbackInfo == 0) { 
+        if (feedbackInfo == 0)
+        {
 
             scoreText.gameObject.SetActive(false);
             return;
@@ -474,58 +479,58 @@ public class GameController : MonoBehaviour
         child.GetComponent<MeshRenderer>().material.mainTexture =
         (Texture)Resources.Load("backgrounds/space");
     }
-
-    public void SetSymbolsTexture(Vector2 id)
+    
+    public (Color color1, Color color2, int colorIdx1, int colorIdx2) GetColor()
     {
-        //symbol1 = (Texture)optionpath[(int)id[0]];
-        //symbol2 = (Texture)optionpath[(int)id[1]];
-        //symbol1 = (Texture)optionpath[5];
-        //symbol2 = (Texture)optionpath[3];
+        Color[] colors = new Color[]
+        {
+            new Color(0.12156863f, 0.46666667f, 0.70588235f, 1f),
+            new Color(0.20036909f, 0.43221838f, 0.64559785f, 1f),
+            new Color(0.27916955f, 0.39777009f, 0.58531334f, 1f),
+            new Color(0.36078431f, 0.3620915f, 0.52287582f, 1f),
+            new Color(0.43958478f, 0.32764321f, 0.46259131f, 1f),
+            new Color(0.52119954f, 0.29196463f, 0.40015379f, 1f),
+            new Color(0.6f, 0.25751634f, 0.33986928f, 1f),
+            new Color(0.68161476f, 0.22183775f, 0.27743176f, 1f),
+            new Color(0.76041522f, 0.18738947f, 0.21714725f, 1f),
+            new Color(0.83921569f, 0.15294118f, 0.15686275f, 1f)
+        };
+        // pick 2 colors from the list (randomly)
+        int colorIdx1 = Random.Range(0, colors.Length);
+        int colorIdx2 = Random.Range(0, colors.Length);
+        Color color1 = colors[colorIdx1];
+        Color color2 = colors[colorIdx2];
 
+        return (color1, color2, colorIdx1+1, colorIdx2+1);
+    }
+
+    public void SetForceFields()
+    {
 
         Material[] mat1 = option1.GetComponent<MeshRenderer>().materials;
         Material[] mat2 = option2.GetComponent<MeshRenderer>().materials;
 
-        //mat1[0].mainTexture = symbol1;
+        (Color color1, Color color2, int colorIdx1, int colorIdx2) = GetColor();
 
-        //mat2[0].mainTexture = symbol2;
+        OptionController optionController1 = option1.GetComponent<OptionController>();
+        OptionController optionController2 = option2.GetComponent<OptionController>();
 
-        List<Color> colors = new List<Color>(){
-            new Color(0.29803922f, 0.29f, 0.8f, 1f        ),
-            new Color(0.41614764f, 0.4116263f , 0.59767782f, 1f        ),
-            new Color(0.53425606f, 0.37619377f, 0.50515955f, 1f        ),
-            new Color(0.65236448f, 0.34076125f, 0.41264129f, 1f        ),
-            new Color(0.76862745f, 0.30588235f, 0.32156863f, 1f        )
-       };
+        optionController1.SetProbability(((double) colorIdx1)/10, ((double) colorIdx2)/10);
+        optionController2.SetProbability(((double) colorIdx2)/10, ((double) colorIdx1)/10);
 
-        mat1[1] = option1.GetComponent<OptMaterials>().GetForceField(colors[0], 1);
-        mat2[1] = option1.GetComponent<OptMaterials>().GetForceField(colors[4], 2);
+        mat1[1] = option1.GetComponent<OptMaterials>().GetForceField(color1, 1);
+        mat2[1] = option1.GetComponent<OptMaterials>().GetForceField(color2, 2);
 
         option1.GetComponent<MeshRenderer>().materials = mat1;
         option2.GetComponent<MeshRenderer>().materials = mat2;
-
-        //option2.GetComponent<MeshRenderer>().material.mainTexture = symbol2;
-
-        //material[] mats = r.materials;  // copy of materials array.
-
-        //mats[n] = newMaterial; // set new material
-
-        //r.materials = mats; // assign updated array to materials array
-        //Material mat1 = option1.GetComponent<OptMaterials>().GetForceField(new Color(0, 0, 0), 1);
-        //option1.GetComponent<MeshRenderer>().material = mat1;
-        //Material mat2 = option2.GetComponent<OptMaterials>().GetForceField(new Color(255, 255, 255), 2);
-        //option2.GetComponent<MeshRenderer>().material = mat2;
-
-
-        //option1.GetComponent<MeshRenderer>().material[1].SetFloat("_Color", color);
-
 
     }
 
 
     public void SpawnOptions()
     {
-        Quaternion spawnRotation = Quaternion.identity;
+        Quaternion spawnRotation = Quaternion.identity; //* Quaternion.Euler(45, 0, 0);
+
 
         float leftright;
 
@@ -671,7 +676,7 @@ public class LearningTest : IState
             gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
 
             gameController.SpawnOptions();
-            gameController.SetSymbolsTexture(TaskParameters.symbols[cond]);
+            gameController.SetForceFields();
 
 
             gameController.SetOutcomes(
@@ -786,7 +791,7 @@ public class TransferTest : IState
             gameController.feedbackInfo = (int)TaskParameters.conditionsTransfer[cond][2];
 
             gameController.SpawnOptions();
-            gameController.SetSymbolsTexture(TaskParameters.symbolsTransfer[cond]);
+            gameController.SetForceFields();
 
             gameController.SetOutcomes(
                 TaskParameters.rewardsTransfer[cond * 2][condTrial[cond]],
