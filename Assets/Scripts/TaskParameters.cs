@@ -13,10 +13,14 @@ public class TaskParameters : MonoBehaviour
     public int nTrialsPerCondition;
     public float fbTime;
     public bool interleaved;
+    public static bool online = false;
     // public int n_conditions;
     // public int feedback_info;
 
     public static int nTrials;
+    
+    public static int nTrialsTrainingPerception = 8;
+    public static int nTrialsTrainingRL = 8;
     public static int nConds;
     public static float feedbackTime;
 

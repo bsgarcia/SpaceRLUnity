@@ -160,9 +160,9 @@ MonoBehaviour:
   Option4: {x: 1, y: 0.75, z: -1}
   symMap: 0100000002000000030000000400000001000000020000000300000004000000
   Condition1: {x: 0, y: 1, z: 1}
-  Condition2: {x: 4, y: 5, z: 2}
+  Condition2: {x: 4, y: 5, z: 1}
   Condition3: {x: 2, y: 3, z: 1}
-  Condition4: {x: 6, y: 7, z: 2}
+  Condition4: {x: 6, y: 7, z: 1}
   ConditionTransfer1: {x: 0, y: 3, z: 0}
   ConditionTransfer2: {x: 4, y: 7, z: 0}
   ConditionTransfer3: {x: 1, y: 2, z: 0}
@@ -582,7 +582,14 @@ MonoBehaviour:
   serverURL: https://human-rl.scicog.fr/SpaceRLTesting/php/InsertLearning.php
   online: 0
   skipTuto: 1
-  hazard: {fileID: 5173755259565289548, guid: d5ed23ef93d27fc4d90eee58c0965907, type: 3}
+  perceptionHazard: {fileID: 5173755259565289548, guid: d5ed23ef93d27fc4d90eee58c0965907,
+    type: 3}
+  RLHazard:
+  - {fileID: 100002, guid: 406d75bfa419c1c659cc7f0eb81805ce, type: 3}
+  - {fileID: 100002, guid: afc18fc39ade3744397c0c993b57be53, type: 3}
+  fullHazard:
+  - {fileID: 6683749658206477735, guid: 234f4385f0f830548a4a0193411c9587, type: 3}
+  - {fileID: 6683749658206477735, guid: ca33b572cb450b9acae24c7e0f0ca30b, type: 3}
   spawnValues: {x: 4, y: 0, z: 16}
   startWait: 2
   waveWait: 1

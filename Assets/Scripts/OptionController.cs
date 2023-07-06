@@ -10,6 +10,7 @@ public class OptionController : MonoBehaviour
 {
 
 	public GameObject explosion;
+	public GameObject explosionFailed;
 	public int scoreValue;
 	public int counterscoreValue;
     public int outcomeOpt1;
@@ -19,17 +20,21 @@ public class OptionController : MonoBehaviour
     public int corr;
 
     // set probability of the forcefield option to be destroyed
-    public double pDestroy = 10;
-    public double otherPDestroy = 10;
+    public double pDestroy = 1;
+    public double otherPDestroy = 1;
     
     // the random p
-    private double randomP = 10;
+    private double randomP = 1;
 
     public bool shootable = false;
 
     public Stopwatch st = new Stopwatch();
 
 	private GameController gameController;
+
+    public bool showFeedback = true;
+    public bool addToScore = true;
+    
 
 	void Awake()
 	{
@@ -41,7 +46,7 @@ public class OptionController : MonoBehaviour
 
     public void SetProbability(double P_, double otherP_)
     {
-        Debug.Log("SetProbability");
+        //Debug.Log("SetProbability");
 
         pDestroy = P_;
         otherPDestroy = otherP_;
@@ -66,9 +71,6 @@ public class OptionController : MonoBehaviour
             // record reaction time
             st.Stop();
 
-            // explosion of the asteroid
-            Instantiate(explosion, transform.localPosition, transform.localRotation);
-
             GameObject otherOption;
 
             // link this object to the gameController;
@@ -78,10 +80,37 @@ public class OptionController : MonoBehaviour
             randomP = ((double) Random.Range(0, 100))/100;
             if (randomP > pDestroy)
             {
-                // only destroy the bolt
-                Destroy(other.gameObject);
+                
+                Vector3 collisionNormal = transform.position - other.transform.position;
+
+                float direction;
+                // Determine if the collision is on the left or right side
+                if (collisionNormal.x > 0)
+                {
+                    direction = Random.Range(-9, -1);
+                }
+                else
+                {
+                    direction = Random.Range(1, 9);
+                } 
+
+                Debug.Log("direction: " + direction); 
+
+                other.GetComponent<Rigidbody>().velocity = new Vector3(
+                    direction, 0, 1) * other.GetComponent<Mover>().speed;
+                
+                // get that direction and apply to bold rotation (to make it look like it's going in that direction)
+                other.transform.rotation = Quaternion.LookRotation(other.GetComponent<Rigidbody>().velocity);
+
+                other.GetComponent<Collider>().enabled = false;
+                StartCoroutine(gameController.DestroyWithDelay(other.gameObject, 3f));
+                Instantiate(explosionFailed, transform.localPosition, transform.localRotation);
                 return;
             }
+
+            // explosion of the option
+            Instantiate(explosion, transform.localPosition, transform.localRotation);
+
 
             switch (tag)
             {
@@ -122,10 +151,13 @@ public class OptionController : MonoBehaviour
             //else
                // Destroy(otherOption);
            
-            gameController.PrintFeedback(
-                scoreValue, counterscoreValue, transform.position);
+            
+            if (showFeedback)
+                gameController.PrintFeedback(
+                    scoreValue, counterscoreValue, transform.position);
 
-            gameController.AddScore(scoreValue);
+            if (addToScore)
+                gameController.AddScore(scoreValue);
 
             gameController.AllowSendData(true);
 
