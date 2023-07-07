@@ -34,6 +34,7 @@ public class PlayerController : MonoBehaviour
 
     private GameController gameController;
 	private KeyCode? lastKeyPressed;
+	private bool shotAllowed = false;
 
 	private static readonly KeyCode[] keyCodes = System.Enum.GetValues(typeof(KeyCode))
 												 .Cast<KeyCode>()
@@ -76,6 +77,10 @@ public class PlayerController : MonoBehaviour
         fireCount = 0;
     }
 
+	public void AllowShot(bool value)
+	{
+		shotAllowed = value;	
+	}
 
 	void Update()
 	{
@@ -87,8 +92,9 @@ public class PlayerController : MonoBehaviour
         }
 
 
-		if ((Input.GetButton("Fire1") || Input.GetKey("space")) && Time.time > nextFire)
+		if ((Input.GetButton("Fire1") || Input.GetKey("space")) && Time.time > nextFire && shotAllowed)
         {
+			shotAllowed = false;
             nextFire = Time.time + fireRate;
             Instantiate(shot, shotSpawn.position, shotSpawn.rotation); 
             GetComponent<AudioSource>().Play(); // fire sound
@@ -127,27 +133,44 @@ public class PlayerController : MonoBehaviour
 		float moveVertical   = Input.GetAxis("Vertical");
 
          //XY movments
-        Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
+        //Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
 
-        //X mov. and tilting(below)
+        // free X mov. and tilting(below)
         //Vector3 movement = new Vector3(moveHorizontal, 0.0f, 0.0f);
+		
+
+		// constrained X mov. and tilting(below)
+		// get option position from game controller
+		// then move the ship to the option position
+		if (gameController.option1 == null || gameController.option2 == null)
+			return;
+		if (gameController.waveAllowed == true)
+			return;
+		GameObject option = moveHorizontal > 0 ? gameController.option1 : gameController.option2;
+
+		// only move on position x	
+		if (moveHorizontal != 0) {
+			Vector3 newPos = new Vector3(option.transform.position.x, transform.position.y, transform.position.z);
+
+			transform.position = Vector3.MoveTowards(transform.position, newPos, 1f);
 
         // adapt the speed
-        GetComponent<Rigidbody>().velocity = movement * speed;
+        //GetComponent<Rigidbody>().velocity = movement * speed;
 
-		// constraint the ship inside the screen
-		GetComponent<Rigidbody>().position = new Vector3
-		(
-			Mathf.Clamp(GetComponent<Rigidbody>().position.x, boundary.xMin, boundary.xMax),	// constraint the vertical movement with the math function Clamp
-			0.0f,																				// the ship does not move in depth
-			Mathf.Clamp(GetComponent<Rigidbody>().position.z, boundary.zMin, boundary.zMax)		// constraint the horizontal movement with the math function Clamp
-		);
+			// constraint the ship inside the screen
+//			GetComponent<Rigidbody>().position = new Vector3
+//			(
+//				Mathf.Clamp(GetComponent<Rigidbody>().position.x, boundary.xMin, boundary.xMax),	// constraint the vertical movement with the math function Clamp
+//				0.0f,																				// the ship does not move in depth
+//				Mathf.Clamp(GetComponent<Rigidbody>().position.z, boundary.zMin, boundary.zMax)		// constraint the horizontal movement with the math function Clamp
+//			);
+//
+			// tilt the ship to its side when moving
+			//GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, moveVertical * -tilt*10, GetComponent<Rigidbody>().velocity.x * -tilt);
+			GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, 0.0f, GetComponent<Rigidbody>().velocity.x * -tilt);
+		}
 
-        // tilt the ship to its side when moving
-        //GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, moveVertical * -tilt*10, GetComponent<Rigidbody>().velocity.x * -tilt);
-        GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, 0.0f, GetComponent<Rigidbody>().velocity.x * -tilt);
-
-        //tilt the ship 
+			//tilt the ship 
         //GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, , 0.0f);
 
     }
