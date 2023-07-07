@@ -16,6 +16,7 @@ public class BoundaryController : MonoBehaviour
 
 	void OnTriggerExit(Collider other)
     {
+        // Debug.Log("BoundaryController: " + tag);
         if (tag == "BoundaryMissed")
         {  
             gameController.MissedTrial();
@@ -27,8 +28,17 @@ public class BoundaryController : MonoBehaviour
         {
             gameController.FadeAndDestroyOption(other.gameObject, 1f);
 
+        }   
+    }
+        
+    void OnTriggerEnter(Collider other)
+    {
+        if ((tag == "BoundaryShootable") &&  (other.tag == "Opt1" || other.tag == "Opt2"))
+        {
+            // Debug.Log("BoundaryController: " + other.tag);
+            gameController.GetPlayerController().AllowShot(true);
+
         }
 
-    }   
-        
+    }
 }

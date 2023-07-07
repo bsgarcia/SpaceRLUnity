@@ -716,7 +716,7 @@ public class TrainingTestPerception : IState
 
             gameController.DisplayFeedback(false);
             
-            gameController.GetPlayerController().AllowShot(true);
+            // gameController.GetPlayerController().AllowShot(true);
             
             condTrial[cond]++;
 
@@ -832,7 +832,7 @@ public class TrainingTestRL : IState
             gameController.SetForceFields(false);
             //gameController.SetForceFields();
 
-            gameController.GetPlayerController().AllowShot(true);
+            // gameController.GetPlayerController().AllowShot(true);
             gameController.SetOutcomes(
                 TaskParameters.rewards[cond * 2][condTrial[cond]],
                 TaskParameters.rewards[cond * 2 + 1][condTrial[cond]]);
@@ -947,7 +947,7 @@ public class TrainingTestFull : IState
             gameController.SetForceFields(true);
             //gameController.SetForceFields();
 
-            gameController.GetPlayerController().AllowShot(true);
+            // gameController.GetPlayerController().AllowShot(true);
 
 
             gameController.SetOutcomes(
