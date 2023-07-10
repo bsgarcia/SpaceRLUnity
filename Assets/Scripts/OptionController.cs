@@ -105,6 +105,38 @@ public class OptionController : MonoBehaviour
                 other.GetComponent<Collider>().enabled = false;
                 StartCoroutine(gameController.DestroyWithDelay(other.gameObject, 3f));
                 Instantiate(explosionFailed, transform.localPosition, transform.localRotation);
+                
+                // end position is down the screen on the left
+                Vector3 startPos = transform.position;
+                startPos.x = direction;
+                startPos.y = 0;
+                startPos.z = 1;
+                
+
+                // Still firing
+                Vector3 pos = new Vector3 ( 
+                        startPos.x, 
+                        startPos.y + Mathf.Sin( Mathf.PI * 2 * counter / 360),
+                        startPos.z + Mathf.Sin( Mathf.PI * 2 * counter / 360)
+                 );
+
+                // Move the transform
+                transform.position = Vector3.lerp(transform.position, pos, 1f);
+                //transform.position = Vector3.MoveTowards(, new Vector3(direction, 0, 1), 1f);
+
+                // gameController.
+                // make the option not shootable
+                shootable = false;
+                // // make the option smoothly (with rotation toward the direction) go on the left is the option is positioned on left, and vice versa
+                // if (transform.position.x < 0)
+                // {
+                //     StartCoroutine(gameController.MoveOption(transform, new Vector3(-4, 0, 0), 1f));
+                // }
+                // else
+                // {
+                    // StartCoroutine(gameController.MoveOption(transform, new Vector3(4, 0, 0), 1f));
+                // }
+
                 return;
             }
 
@@ -152,12 +184,14 @@ public class OptionController : MonoBehaviour
                // Destroy(otherOption);
            
             
-            if (showFeedback)
+            if (showFeedback) {
                 gameController.PrintFeedback(
                     scoreValue, counterscoreValue, transform.position);
+            }
 
-            if (addToScore)
+            if (addToScore) {
                 gameController.AddScore(scoreValue);
+            }
 
             gameController.AllowSendData(true);
 
