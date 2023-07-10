@@ -39,6 +39,12 @@ public class BoundaryController : MonoBehaviour
             gameController.GetPlayerController().AllowShot(true);
 
         }
+        if (tag == "BoundaryMissed")
+        {  
+            gameController.MissedTrial();
+            gameController.AllowWave(true);
+            Destroy(other.gameObject);
+        }
 
     }
 }

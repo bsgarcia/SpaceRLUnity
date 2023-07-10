@@ -107,27 +107,28 @@ public class OptionController : MonoBehaviour
                 StartCoroutine(gameController.DestroyWithDelay(other.gameObject, 3f));
                 Instantiate(explosionFailed, transform.localPosition, transform.localRotation);
                 
+                shootable = false;
+                
                 // end position is down the screen on the left
                 // find object by name
                 Transform targetLeft = GameObject.FindWithTag("LeaveScreenTargetLeft").transform;
                 Transform targetRight = GameObject.FindWithTag("LeaveScreenTargetRight").transform;
                 Transform myTarget = transform.position.x < 0 ? targetLeft : targetRight;
                 GameObject otherOpt = tag == "Opt1" ? GameObject.FindWithTag("Opt2") : GameObject.FindWithTag("Opt1");
+                
+                otherOpt.GetComponent<OptionController>().shootable = false;
 
-                // disable colliders
-                otherOpt.GetComponent<Collider>().enabled = false;
-                GetComponent<Collider>().enabled = false;
 
                 Transform otherTarget = otherOpt.transform.position.x < 0 ? targetLeft : targetRight;
                 Vector3 endPos = myTarget.position;
                 Vector3 startPos = transform.position;
 
-                float speed = .3f; //How fast the object should move
+                float speed = 2f; //How fast the object should move
                 float height = 5.0f; //The height of the arc                
                 
                 StartCoroutine(MoveInArc(transform, startPos, endPos, speed, height));
                 StartCoroutine(MoveInArc(otherOpt.transform, otherOpt.transform.position, otherTarget.position, speed, height));
-
+                
                 return;
             }
 
@@ -211,7 +212,6 @@ public class OptionController : MonoBehaviour
             
             yield return null;
         }
-        Destroy(transform_.gameObject);
     }
 
 
