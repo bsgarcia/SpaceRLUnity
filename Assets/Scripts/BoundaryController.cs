@@ -21,7 +21,7 @@ public class BoundaryController : MonoBehaviour
         {  
             gameController.MissedTrial();
             gameController.AllowWave(true);
-           Destroy(other.gameObject);
+            Destroy(other.gameObject);
         }
 
         if ((tag == "BoundaryShootable") &&  (other.tag == "Bolt"))

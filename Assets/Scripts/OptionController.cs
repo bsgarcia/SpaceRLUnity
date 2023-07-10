@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿//using System.Threading.Tasks.Dataflow;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -107,35 +108,25 @@ public class OptionController : MonoBehaviour
                 Instantiate(explosionFailed, transform.localPosition, transform.localRotation);
                 
                 // end position is down the screen on the left
+                // find object by name
+                Transform targetLeft = GameObject.FindWithTag("LeaveScreenTargetLeft").transform;
+                Transform targetRight = GameObject.FindWithTag("LeaveScreenTargetRight").transform;
+                Transform myTarget = transform.position.x < 0 ? targetLeft : targetRight;
+                GameObject otherOpt = tag == "Opt1" ? GameObject.FindWithTag("Opt2") : GameObject.FindWithTag("Opt1");
+
+                // disable colliders
+                otherOpt.GetComponent<Collider>().enabled = false;
+                GetComponent<Collider>().enabled = false;
+
+                Transform otherTarget = otherOpt.transform.position.x < 0 ? targetLeft : targetRight;
+                Vector3 endPos = myTarget.position;
                 Vector3 startPos = transform.position;
-                startPos.x = direction;
-                startPos.y = 0;
-                startPos.z = 1;
+
+                float speed = .3f; //How fast the object should move
+                float height = 5.0f; //The height of the arc                
                 
-
-                // Still firing
-                Vector3 pos = new Vector3 ( 
-                        startPos.x, 
-                        startPos.y + Mathf.Sin( Mathf.PI * 2 * counter / 360),
-                        startPos.z + Mathf.Sin( Mathf.PI * 2 * counter / 360)
-                 );
-
-                // Move the transform
-                transform.position = Vector3.lerp(transform.position, pos, 1f);
-                //transform.position = Vector3.MoveTowards(, new Vector3(direction, 0, 1), 1f);
-
-                // gameController.
-                // make the option not shootable
-                shootable = false;
-                // // make the option smoothly (with rotation toward the direction) go on the left is the option is positioned on left, and vice versa
-                // if (transform.position.x < 0)
-                // {
-                //     StartCoroutine(gameController.MoveOption(transform, new Vector3(-4, 0, 0), 1f));
-                // }
-                // else
-                // {
-                    // StartCoroutine(gameController.MoveOption(transform, new Vector3(4, 0, 0), 1f));
-                // }
+                StartCoroutine(MoveInArc(transform, startPos, endPos, speed, height));
+                StartCoroutine(MoveInArc(otherOpt.transform, otherOpt.transform.position, otherTarget.position, speed, height));
 
                 return;
             }
@@ -202,6 +193,25 @@ public class OptionController : MonoBehaviour
          
         }
 
+    }
+
+    IEnumerator MoveInArc(Transform transform_, Vector3 startPos, Vector3 endPos, float speed, float height) 
+    {
+        float i = 0.0f;
+        float rate = 1.0f/speed;
+        while (i < 1.0f) 
+        {
+            i += Time.deltaTime * rate;
+            float arc = Mathf.Sin(i * Mathf.PI) * height;
+            
+            Vector3 newPos = Vector3.Lerp(startPos, endPos, i);
+            newPos.z -= arc;
+            
+            transform_.position = newPos;
+            
+            yield return null;
+        }
+        Destroy(transform_.gameObject);
     }
 
 

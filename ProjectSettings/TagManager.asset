@@ -18,6 +18,8 @@ TagManager:
   - BoundaryShootable
   - DataController
   - PauseController
+  - LeaveScreenTargetLeft
+  - LeaveScreenTargetRight
   layers:
   - Default
   - TransparentFX
