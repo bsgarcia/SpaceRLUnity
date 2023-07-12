@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: -6709827699363450674}
   - component: {fileID: -7912359966482973561}
   - component: {fileID: 7893192213444371417}
+  - component: {fileID: 5489715925363364265}
+  - component: {fileID: 4122361137086340665}
   m_Layer: 0
   m_Name: ShiForcefield2
   m_TagString: Untagged
@@ -151,11 +153,15 @@ MonoBehaviour:
   choice: 0
   choseLeft: 0
   corr: 0
-  pDestroy: 1
-  otherPDestroy: 1
+  option1PDestroy: 1
+  option2PDestroy: 1
   shootable: 1
+  missed: 1
+  forcefield: 0
   showFeedback: 1
   addToScore: 1
+  option1: {fileID: 0}
+  option2: {fileID: 0}
 --- !u!54 &-7912359966482973561
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -185,6 +191,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: -3
+--- !u!114 &5489715925363364265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6683749658206477735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 286004a50d8662c689f51b26d3855e8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  opt1: {fileID: 2100000, guid: 92d51f4ed96d8bb96915117f17337b7c, type: 2}
+  opt2: {fileID: 2100000, guid: 045e494d25f95ee6db062062fb343818, type: 2}
+--- !u!114 &4122361137086340665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6683749658206477735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b7d70cd1be9b834aa47de8ea806230b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shootable: 0
 --- !u!1001 &8591527014566807900
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -266,6 +299,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3029228928067412463, guid: 611a3c365c2f07ae18e2d0ddaeb851e7,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: f36c72c738c55f741afcd674a0b1245f, type: 2}
     - target: {fileID: 5735895645138317241, guid: 611a3c365c2f07ae18e2d0ddaeb851e7,
         type: 3}
       propertyPath: m_Enabled

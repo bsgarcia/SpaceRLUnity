@@ -4713,8 +4713,8 @@ GameObject:
   - component: {fileID: 13500000}
   - component: {fileID: 8200000}
   - component: {fileID: 1525329313689555159}
-  - component: {fileID: 3709020832948221695}
   - component: {fileID: 6493823007755435079}
+  - component: {fileID: -5573138927667896177}
   m_Layer: 0
   m_Name: Enemy Ship
   m_TagString: Untagged
@@ -4763,10 +4763,10 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 100002}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 1.2
+  m_Radius: 1.5
   m_Center: {x: 0, y: 0, z: -0.3}
 --- !u!82 &8200000
 AudioSource:
@@ -4877,32 +4877,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: -3
---- !u!114 &3709020832948221695
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100002}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41632a77e4274f2459e85acbf2f180c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  explosion: {fileID: 100012, guid: 160925a6fe2664f2a978566b819f0af0, type: 3}
-  explosionFailed: {fileID: 0}
-  scoreValue: 0
-  counterscoreValue: 0
-  outcomeOpt1: 0
-  outcomeOpt2: 0
-  choice: 0
-  choseLeft: 0
-  corr: 0
-  pDestroy: 10
-  otherPDestroy: 10
-  shootable: 0
-  showFeedback: 1
-  addToScore: 1
 --- !u!111 &6493823007755435079
 Animation:
   m_ObjectHideFlags: 0
@@ -4919,6 +4893,19 @@ Animation:
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &-5573138927667896177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b7d70cd1be9b834aa47de8ea806230b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shootable: 0
 --- !u!1 &100004
 GameObject:
   m_ObjectHideFlags: 0

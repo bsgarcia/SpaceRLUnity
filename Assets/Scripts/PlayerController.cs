@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
 	public int fireCount = 0;
 	public int upCount = 0;
     public int downCount = 0;
-    public int leftCount = 0;
+	public int leftCount = 0;
     public int rightCount= 0;
 
     private GameController gameController;
@@ -92,7 +92,8 @@ public class PlayerController : MonoBehaviour
         }
 
 
-		if ((Input.GetButton("Fire1") || Input.GetKey("space")) && Time.time > nextFire && shotAllowed)
+		if ((Input.GetButton("Fire1") || Input.GetKey("space")) && (Time.time > nextFire) && (
+			new int[] {-4, 4}.Contains((int) transform.position.x)) && shotAllowed)
         {
 			shotAllowed = false;
             nextFire = Time.time + fireRate;
@@ -142,17 +143,18 @@ public class PlayerController : MonoBehaviour
 		// constrained X mov. and tilting(below)
 		// get option position from game controller
 		// then move the ship to the option position
-		if (gameController.option1 == null || gameController.option2 == null)
-			return;
-		if (gameController.waveAllowed == true)
-			return;
-		GameObject option = moveHorizontal > 0 ? gameController.option1 : gameController.option2;
+		//
+		float x = moveHorizontal > 0 ? 4f : -4f;
 
+		if (moveHorizontal == 0)
+		{
+			return;
+		}
 		// only move on position x	
-		if (moveHorizontal != 0) {
-			Vector3 newPos = new Vector3(option.transform.position.x, transform.position.y, transform.position.z);
+		Vector3 newPos = new Vector3(x, transform.position.y, transform.position.z);
 
-			transform.position = Vector3.MoveTowards(transform.position, newPos, 1f);
+		transform.position = Vector3.MoveTowards(transform.position, newPos, 2f);
+		GetComponent<Rigidbody>().rotation = Quaternion.Euler(0f, 0f, moveHorizontal * -tilt * 12);
 
         // adapt the speed
         //GetComponent<Rigidbody>().velocity = movement * speed;
@@ -166,9 +168,8 @@ public class PlayerController : MonoBehaviour
 //			);
 //
 			// tilt the ship to its side when moving
-			//GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, moveVertical * -tilt*10, GetComponent<Rigidbody>().velocity.x * -tilt);
-			GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, 0.0f, GetComponent<Rigidbody>().velocity.x * -tilt);
-		}
+			//GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, moveHorizontal * -tilt*10, GetComponent<Rigidbody>().velocity.x * -tilt);
+			
 
 			//tilt the ship 
         //GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, , 0.0f);

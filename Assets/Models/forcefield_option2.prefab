@@ -13,10 +13,10 @@ GameObject:
   - component: {fileID: 1376114138195496045}
   - component: {fileID: 7072780007449682192}
   - component: {fileID: -7407232022714545110}
-  - component: {fileID: -7946976385058011477}
-  - component: {fileID: 4879988359650394381}
-  - component: {fileID: 5630187061244512026}
   - component: {fileID: 3155334975133283753}
+  - component: {fileID: 464615999870490716}
+  - component: {fileID: -9141853374508040216}
+  - component: {fileID: -3795112811118269688}
   m_Layer: 0
   m_Name: forcefield_option2
   m_TagString: Untagged
@@ -116,59 +116,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &-7946976385058011477
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5173755259565289548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41632a77e4274f2459e85acbf2f180c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  explosion: {fileID: 100012, guid: 160925a6fe2664f2a978566b819f0af0, type: 3}
-  explosionFailed: {fileID: 100004, guid: 942bfcf1c84352d8a8619528008e9eff, type: 3}
-  scoreValue: 0
-  counterscoreValue: 0
-  outcomeOpt1: 0
-  outcomeOpt2: 0
-  choice: 0
-  choseLeft: 0
-  corr: 0
-  pDestroy: 1
-  otherPDestroy: 1
-  shootable: 1
-  showFeedback: 1
-  addToScore: 1
---- !u!114 &4879988359650394381
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5173755259565289548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35478c3d6c9f639449a4d46e963a9a3b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: -3
---- !u!114 &5630187061244512026
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5173755259565289548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 286004a50d8662c689f51b26d3855e8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  opt1: {fileID: 2100000, guid: 32a76832b79e84347ad9df08b12709c3, type: 2}
-  opt2: {fileID: 2100000, guid: c446a300a097a59a6b05edd627216724, type: 2}
 --- !u!111 &3155334975133283753
 Animation:
   m_ObjectHideFlags: 0
@@ -185,6 +132,46 @@ Animation:
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &464615999870490716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5173755259565289548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b7d70cd1be9b834aa47de8ea806230b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shootable: 0
+--- !u!114 &-9141853374508040216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5173755259565289548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 286004a50d8662c689f51b26d3855e8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  opt1: {fileID: 2100000, guid: 32a76832b79e84347ad9df08b12709c3, type: 2}
+  opt2: {fileID: 2100000, guid: c446a300a097a59a6b05edd627216724, type: 2}
+--- !u!114 &-3795112811118269688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5173755259565289548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35478c3d6c9f639449a4d46e963a9a3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: -3
 --- !u!1 &6507064380921096660
 GameObject:
   m_ObjectHideFlags: 0
@@ -195,13 +182,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4999124568079372691}
   - component: {fileID: 4601645023759211941}
-  - component: {fileID: 9063692628196380107}
-  - component: {fileID: 6730608078180131807}
-  - component: {fileID: 4476187352817899571}
   - component: {fileID: 1920899304492690668}
   - component: {fileID: 4586341299168669147}
   - component: {fileID: 7668189380922278832}
-  - component: {fileID: 2942711687009694788}
   m_Layer: 0
   m_Name: UFO_option(Clone)
   m_TagString: Untagged
@@ -237,58 +220,6 @@ CapsuleCollider:
   m_Height: 1.6
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &9063692628196380107
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6507064380921096660}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39d976ec51e261f4786626737f61c46c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tumble: 1.5
---- !u!114 &6730608078180131807
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6507064380921096660}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41632a77e4274f2459e85acbf2f180c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  explosion: {fileID: 100004, guid: a6d58f54ce5934781962a4f887e834f3, type: 3}
-  explosionFailed: {fileID: 0}
-  scoreValue: 0
-  counterscoreValue: 0
-  outcomeOpt1: 0
-  outcomeOpt2: 0
-  choice: 0
-  choseLeft: 0
-  corr: 0
-  pDestroy: 1
-  otherPDestroy: 1
-  shootable: 1
-  showFeedback: 1
-  addToScore: 1
---- !u!114 &4476187352817899571
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6507064380921096660}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35478c3d6c9f639449a4d46e963a9a3b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: -3
 --- !u!111 &1920899304492690668
 Animation:
   m_ObjectHideFlags: 0
@@ -352,17 +283,3 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6507064380921096660}
   m_Mesh: {fileID: 7810371007003685382, guid: 8d73a7c2cbcd79a3ead7f39f034b807d, type: 3}
---- !u!114 &2942711687009694788
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6507064380921096660}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 286004a50d8662c689f51b26d3855e8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  opt1: {fileID: 2100000, guid: 32a76832b79e84347ad9df08b12709c3, type: 2}
-  opt2: {fileID: 2100000, guid: c446a300a097a59a6b05edd627216724, type: 2}

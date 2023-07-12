@@ -4713,10 +4713,10 @@ GameObject:
   - component: {fileID: 13500000}
   - component: {fileID: 8200000}
   - component: {fileID: 1525329313689555159}
-  - component: {fileID: 3709020832948221695}
   - component: {fileID: 6493823007755435079}
+  - component: {fileID: 681325439310924385}
   m_Layer: 0
-  m_Name: Enemy Ship 2
+  m_Name: Enemy Ship 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4735,7 +4735,7 @@ Transform:
   m_Children:
   - {fileID: 400000}
   - {fileID: 400006}
-  - {fileID: 3029228928069706511}
+  - {fileID: 2082272912393524655}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4763,10 +4763,10 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 100002}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 1.2
+  m_Radius: 1.5
   m_Center: {x: 0, y: 0, z: -0.3}
 --- !u!82 &8200000
 AudioSource:
@@ -4877,32 +4877,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: -3
---- !u!114 &3709020832948221695
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100002}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41632a77e4274f2459e85acbf2f180c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  explosion: {fileID: 100012, guid: 160925a6fe2664f2a978566b819f0af0, type: 3}
-  explosionFailed: {fileID: 0}
-  scoreValue: 0
-  counterscoreValue: 0
-  outcomeOpt1: 0
-  outcomeOpt2: 0
-  choice: 0
-  choseLeft: 0
-  corr: 0
-  pDestroy: 10
-  otherPDestroy: 10
-  shootable: 0
-  showFeedback: 1
-  addToScore: 1
 --- !u!111 &6493823007755435079
 Animation:
   m_ObjectHideFlags: 0
@@ -4919,6 +4893,19 @@ Animation:
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &681325439310924385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b7d70cd1be9b834aa47de8ea806230b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shootable: 0
 --- !u!1 &100006
 GameObject:
   m_ObjectHideFlags: 0
@@ -4949,7 +4936,7 @@ Transform:
   m_Father: {fileID: 400002}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &3029228928069319055
+--- !u!1001 &2082272912393654063
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -4958,7 +4945,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100000, guid: d9808401c68af274a8edfbed3d1b53c7, type: 3}
       propertyPath: m_Name
-      value: vehicle_playerShip
+      value: vehicle_playerShip (1)
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: d9808401c68af274a8edfbed3d1b53c7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5016,11 +5003,27 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: d9808401c68af274a8edfbed3d1b53c7, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: d9808401c68af274a8edfbed3d1b53c7, type: 3}
+      propertyPath: m_ReceiveShadows
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: d9808401c68af274a8edfbed3d1b53c7, type: 3}
+      propertyPath: m_CastShadows
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: d9808401c68af274a8edfbed3d1b53c7, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: f36c72c738c55f741afcd674a0b1245f, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d9808401c68af274a8edfbed3d1b53c7, type: 3}
---- !u!4 &3029228928069706511 stripped
+--- !u!4 &2082272912393524655 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: d9808401c68af274a8edfbed3d1b53c7,
     type: 3}
-  m_PrefabInstance: {fileID: 3029228928069319055}
+  m_PrefabInstance: {fileID: 2082272912393654063}
   m_PrefabAsset: {fileID: 0}

@@ -1,3 +1,6 @@
+using System.ComponentModel;
+using System.Xml.Serialization;
+using System.Net;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,7 +22,13 @@ public class BoundaryController : MonoBehaviour
         // Debug.Log("BoundaryController: " + tag);
         if (tag == "BoundaryMissed")
         {  
-            gameController.MissedTrial();
+            if (gameController.GetOptionController().missed)
+            {
+                gameController.MissedTrial();
+            }
+            gameController.AllowWave(true);
+            Destroy(other.gameObject);
+
             gameController.AllowWave(true);
             Destroy(other.gameObject);
         }
@@ -40,8 +49,11 @@ public class BoundaryController : MonoBehaviour
 
         }
         if (tag == "BoundaryMissed")
-        {  
-            gameController.MissedTrial();
+        {   
+            if (gameController.GetOptionController().missed)
+            {
+                gameController.MissedTrial();
+            }
             gameController.AllowWave(true);
             Destroy(other.gameObject);
         }

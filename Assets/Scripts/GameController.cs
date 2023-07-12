@@ -115,7 +115,7 @@ public class GameController : MonoBehaviour
         optionController = obj;
     }
 
-    public List<GameObject> GetOptionControllers()
+    public List<GameObject> GetOptions()
     {
         return new List<GameObject>(){option1, option2};
     }
@@ -126,9 +126,7 @@ public class GameController : MonoBehaviour
     
     public void DisplayFeedback(bool value)
     {
-        List<GameObject> optionControllers = GetOptionControllers();
-        optionControllers[0].GetComponent<OptionController>().showFeedback = value;
-        optionControllers[1].GetComponent<OptionController>().showFeedback = value;
+        optionController.showFeedback = value;
 
     }
 
@@ -232,6 +230,7 @@ public class GameController : MonoBehaviour
         dataController = GameObject.FindWithTag("DataController").GetComponent<DataController>();
         playerController = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
         pauseController = GameObject.FindWithTag("PauseController").GetComponent<PauseController>();
+        optionController = GameObject.FindWithTag("OptionController").GetComponent<OptionController>();
 
     }
 
@@ -370,7 +369,6 @@ public class GameController : MonoBehaviour
 
     public void AddScore(int newScoreValue)
     {
-
         score += newScoreValue;
         Save("score", (int)score);
         if (feedbackInfo == 0)
@@ -514,20 +512,24 @@ public class GameController : MonoBehaviour
 
     public void SetForceFields(bool value=true)
     {
-        if (!value)
+        OptionController optionController = GetOptionController();
+
+        if (!value) {
+            optionController.forcefield = false;
             return;
+
+        }
 
         Material[] mat1 = option1.GetComponent<MeshRenderer>().materials;
         Material[] mat2 = option2.GetComponent<MeshRenderer>().materials;
 
         (Color color1, Color color2, int colorIdx1, int colorIdx2) = GetColor();
 
-        OptionController optionController1 = option1.GetComponent<OptionController>();
-        OptionController optionController2 = option2.GetComponent<OptionController>();
+
+        optionController.forcefield = true;
 
         double[] p = new double[] {0.1, 0.14, 0.18, 0.2, 0.25, .3, .5, .75, .85, .9, 1};
-        optionController1.SetProbability(p[colorIdx1], p[colorIdx2]);
-        optionController2.SetProbability(p[colorIdx2], p[colorIdx1]);
+        optionController.SetPDestroy(p[colorIdx1], p[colorIdx2]);
 
         mat1[1] = option1.GetComponent<OptMaterials>().GetForceField(color1, 1);
         mat2[1] = option1.GetComponent<OptMaterials>().GetForceField(color2, 2);
@@ -626,9 +628,10 @@ public class StateMachine
     {
         this.owner = owner;
         states = new List<IState>();
-        states.Add(new TrainingTestPerception());
+
         states.Add(new TrainingTestRL());
         states.Add(new TrainingTestFull());
+        states.Add(new TrainingTestPerception());
 
         stateNumber = -1;
     }
@@ -742,7 +745,7 @@ public class TrainingTestPerception : IState
                 gameController.Save("choice", (int)optionController.choice);
                 gameController.Save("outcome", (int)optionController.scoreValue);
                 gameController.Save("cfoutcome", (int)optionController.counterscoreValue);
-                gameController.Save("rt", (int)optionController.st.ElapsedMilliseconds);
+                // gameController.Save("rt", (int)optionController.st.ElapsedMilliseconds);
                 gameController.Save("choseLeft", (int)optionController.choseLeft);
                 gameController.Save("corr", (int)optionController.corr);
 
