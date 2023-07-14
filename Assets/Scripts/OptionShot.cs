@@ -62,7 +62,7 @@ public class OptionShot: MonoBehaviour
         }
     }
     
-    public void LeaveScreen(float speed, float height) 
+    public void LeaveScreen(float speed = .8f, float height = 2.5f) 
     {
         shootable = false;
         

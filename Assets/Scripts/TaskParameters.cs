@@ -40,6 +40,7 @@ public class TaskParameters : MonoBehaviour
     public int[] symMap = new int[8];
     public static int[] symOptionMapping = new int[8];
 
+
     [VectorLabels("Opt1", "Opt2", "info")]
     public Vector3Int Condition1;
 
@@ -124,7 +125,7 @@ public class TaskParameters : MonoBehaviour
     private void MakeSymbols()
 
     {
-        for (int c = 0; c < conditions.Count; c++)
+        for (int c = 0; c < 2; c++)//conditions.Count; c++)
         {
 
             symbols.Add(new Vector2(
@@ -141,7 +142,7 @@ public class TaskParameters : MonoBehaviour
 
     private void MakeRewards()
     {
-        for (int c = 0; c < conditions.Count; c++)
+        for (int c = 0; c < 2; c++)///conditions.Count; c++)
         {
             // Learning
             // make rewards for option 1 & 2
@@ -190,7 +191,7 @@ public class TaskParameters : MonoBehaviour
         List<List<int>> conditionIdxTemp = new List<List<int>>();
         List<List<int>> conditionTransferIdxTemp = new List<List<int>>();
 
-        for (int c = 0; c < conditions.Count; c++)
+        for (int c = 0; c < 2; c++)//conditions.Count; c++)
         {
             List<int> x = Enumerable.Repeat(c, nTrialsPerCondition).ToList();
             conditionIdxTemp.Add(x);

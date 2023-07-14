@@ -44,10 +44,10 @@ public class BoundaryController : MonoBehaviour
     {
         if ((tag == "BoundaryShootable") &&  (other.tag == "Opt1" || other.tag == "Opt2"))
         {
-            // Debug.Log("BoundaryController: " + other.tag);
             gameController.GetPlayerController().AllowShot(true);
 
         }
+
         if (tag == "BoundaryMissed")
         {   
             if (gameController.GetOptionController().missed)
@@ -56,6 +56,11 @@ public class BoundaryController : MonoBehaviour
             }
             gameController.AllowWave(true);
             Destroy(other.gameObject);
+        }
+
+        if (tag == "BoundaryLeave" && (other.tag == "Opt1" || other.tag == "Opt2"))
+        {
+            gameController.GetOptionController().MakeOptionsLeave();
         }
 
     }

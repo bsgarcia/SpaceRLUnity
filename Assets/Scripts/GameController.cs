@@ -540,7 +540,7 @@ public class GameController : MonoBehaviour
     }
 
 
-    public void SpawnOptions(string phase="perception")
+    public void SpawnOptions(int idx1=0, int idx2=1, string phase="perception")
     {
         Quaternion spawnRotation = Quaternion.identity; //* Quaternion.Euler(45, 0, 0);
 
@@ -573,8 +573,8 @@ public class GameController : MonoBehaviour
                 hazard2 = perceptionHazard;
                 break;
             case "RL":
-                hazard1 = RLHazard[0];
-                hazard2 = RLHazard[1];
+                hazard1 = RLHazard[idx1];
+                hazard2 = RLHazard[idx2];
                 break;
             case "full":
                 hazard1 = fullHazard[0];
@@ -713,8 +713,17 @@ public class TrainingTestPerception : IState
             int cond = (int)TaskParameters.conditionIdx[t];
 
             gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
+            
+            List<int[]> idxs = new List<int[]>
+            {
+                new int[] {0, 1},
+                new int[] {2, 3},
+            };
 
-            gameController.SpawnOptions(phase: "perception");
+            int idx1 = idxs[cond][0];
+            int idx2 = idxs[cond][1];
+
+            gameController.SpawnOptions(idx1, idx2, phase: "perception");
             gameController.SetForceFields();
 
             gameController.DisplayFeedback(false);
@@ -829,7 +838,16 @@ public class TrainingTestRL : IState
 
             gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
 
-            gameController.SpawnOptions(phase: "RL");
+            List<int[]> idxs = new List<int[]>
+            {
+                new int[] {0, 1},
+                new int[] {2, 3},
+            };
+
+            int idx1 = idxs[cond][0];
+            int idx2 = idxs[cond][1];
+
+            gameController.SpawnOptions(idx1, idx2, phase: "RL");
 
             gameController.DisplayFeedback(true);
             gameController.SetForceFields(false);
@@ -944,7 +962,16 @@ public class TrainingTestFull : IState
 
             gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
 
-            gameController.SpawnOptions(phase: "full");
+            List<int[]> idxs = new List<int[]>
+            {
+                new int[] {0, 1},
+                new int[] {2, 3},
+            };
+
+            int idx1 = idxs[cond][0];
+            int idx2 = idxs[cond][1];
+
+            gameController.SpawnOptions(idx1, idx2, phase: "full");
 
             gameController.DisplayFeedback(true);
             gameController.SetForceFields(true);

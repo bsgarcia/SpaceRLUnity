@@ -21,6 +21,7 @@ TagManager:
   - LeaveScreenTargetLeft
   - LeaveScreenTargetRight
   - OptionController
+  - BoundaryLeave
   layers:
   - Default
   - TransparentFX

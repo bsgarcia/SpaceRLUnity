@@ -40,6 +40,8 @@ public class OptionController : MonoBehaviour
     public GameObject option1;
     public GameObject option2;
     
+    private bool isLeaving = false;
+    
 
 	void Awake()
 	{
@@ -90,11 +92,8 @@ public class OptionController : MonoBehaviour
 
             Instantiate(explosionFailed, option.transform.localPosition, option.transform.localRotation);
 
-            float speed = 1.2f; //How fast the object should move
-            float height = 2.0f; //The height of the arc                
-        
-            option.GetComponent<OptionShot>().LeaveScreen(speed, height);
-            otherOption.GetComponent<OptionShot>().LeaveScreen(speed, height);
+            option.GetComponent<OptionShot>().LeaveScreen();
+            otherOption.GetComponent<OptionShot>().LeaveScreen();
 
             exploded = false;
             missed = true;
@@ -106,10 +105,7 @@ public class OptionController : MonoBehaviour
             exploded = true;
             missed = false;
             Instantiate(explosion, option.transform.localPosition, option.transform.localRotation);
-            float speed = 1.2f; //How fast the object should move
-            float height = 2.0f; //The height of the arc                
-
-            otherOption.GetComponent<OptionShot>().LeaveScreen(speed, height);
+            otherOption.GetComponent<OptionShot>().LeaveScreen();
         }
 
 
@@ -164,6 +160,19 @@ public class OptionController : MonoBehaviour
         }
 
         }
+    
+    public void MakeOptionsLeave() 
+    {
+        if (!isLeaving) 
+        {
+            isLeaving = true;
+            
+            option1.GetComponent<OptionShot>().LeaveScreen();
+            option2.GetComponent<OptionShot>().LeaveScreen();
+
+            isLeaving = false;
+        }
+    }
 
     }
 
