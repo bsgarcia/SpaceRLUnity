@@ -63,10 +63,7 @@ public class GameController : MonoBehaviour
 
     public bool sendData = false;
 
-
-
     // private members
-
     private bool gameOver;
     private bool restart;
 
@@ -89,7 +86,9 @@ public class GameController : MonoBehaviour
     private PauseController pauseController;
 
     private bool isQuitting = false;
-
+    
+    public int forcefieldIdx = 0;
+    public int spaceshipIdx = 0;
 
     // JS interactions
     [DllImport("__Internal")]
@@ -119,6 +118,7 @@ public class GameController : MonoBehaviour
     {
         return new List<GameObject>(){option1, option2};
     }
+
     public OptionController GetOptionController()
     {
         return optionController;
@@ -231,12 +231,22 @@ public class GameController : MonoBehaviour
         playerController = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
         pauseController = GameObject.FindWithTag("PauseController").GetComponent<PauseController>();
         optionController = GameObject.FindWithTag("OptionController").GetComponent<OptionController>();
-
+        
     }
 
     public void RunWrapper()
     {
         StartCoroutine(Run());
+    }
+    
+    public void UpdateForcefield()
+    {
+        forcefieldIdx = (forcefieldIdx + 1) % 11;
+    }
+    
+    public void UpdateSpaceship()
+    {
+        spaceshipIdx = (spaceshipIdx + 1) % 9;
     }
 
     public IEnumerator Run()
@@ -459,8 +469,8 @@ public class GameController : MonoBehaviour
     public void MissedTrial()
     {
         missedTrial = 1;
-        missedTrialText.text = "Missed trial!\n -2";
-        AddScore(-1);
+        missedTrialText.text = "Missed trial!";
+        //AddScore(-1);
         AllowSendData(true);
         StartCoroutine("DeleteFeedback", TaskParameters.feedbackTime);
     }
@@ -486,57 +496,9 @@ public class GameController : MonoBehaviour
         (Texture)Resources.Load("backgrounds/space");
     }
 
-    public (Color color1, Color color2, int colorIdx1, int colorIdx2) GetColor()
+    public void SetForceFields(int value=0)
     {
-        Color[] colors = new Color[]
-        {
-            new Color(0.12156863f, 0.46666667f, 0.70588235f, 1f),
-            new Color(0.20036909f, 0.43221838f, 0.64559785f, 1f),
-            new Color(0.27916955f, 0.39777009f, 0.58531334f, 1f),
-            new Color(0.36078431f, 0.3620915f, 0.52287582f, 1f),
-            new Color(0.43958478f, 0.32764321f, 0.46259131f, 1f),
-            new Color(0.52119954f, 0.29196463f, 0.40015379f, 1f),
-            new Color(0.6f, 0.25751634f, 0.33986928f, 1f),
-            new Color(0.68161476f, 0.22183775f, 0.27743176f, 1f),
-            new Color(0.76041522f, 0.18738947f, 0.21714725f, 1f),
-            new Color(0.83921569f, 0.15294118f, 0.15686275f, 1f)
-        };
-        // pick 2 colors from the list (randomly)
-        int colorIdx1 = Random.Range(0, colors.Length);
-        int colorIdx2 = Random.Range(0, colors.Length);
-        Color color1 = colors[colorIdx1];
-        Color color2 = colors[colorIdx2];
-
-        return (color1, color2, colorIdx1 + 1, colorIdx2 + 1);
-    }
-
-    public void SetForceFields(bool value=true)
-    {
-        OptionController optionController = GetOptionController();
-
-        if (!value) {
-            optionController.forcefield = false;
-            return;
-
-        }
-
-        Material[] mat1 = option1.GetComponent<MeshRenderer>().materials;
-        Material[] mat2 = option2.GetComponent<MeshRenderer>().materials;
-
-        (Color color1, Color color2, int colorIdx1, int colorIdx2) = GetColor();
-
-
-        optionController.forcefield = true;
-
-        double[] p = new double[] {0.1, 0.14, 0.18, 0.2, 0.25, .3, .5, .75, .85, .9, 1};
-        optionController.SetPDestroy(p[colorIdx1], p[colorIdx2]);
-
-        mat1[1] = option1.GetComponent<OptMaterials>().GetForceField(color1, 1);
-        mat2[1] = option1.GetComponent<OptMaterials>().GetForceField(color2, 2);
-
-        option1.GetComponent<MeshRenderer>().materials = mat1;
-        option2.GetComponent<MeshRenderer>().materials = mat2;
-
+        optionController.SetForceFields(value);
     }
 
 
@@ -556,7 +518,7 @@ public class GameController : MonoBehaviour
             leftright = -spawnValues.x;
         }
         // fixed 
-        leftright = Mathf.Abs(leftright);
+        //leftright = Mathf.Abs(leftright);
         //
         //Vector3 scaleChange = new Vector3(1f, 1f, 1f);
 
@@ -566,25 +528,27 @@ public class GameController : MonoBehaviour
         GameObject hazard2;
         // check that phase is either 'perception' or 'RL'
         // use a switch statement
-        switch (phase)
-        {
-            case "perception":
-                hazard1 = perceptionHazard;
-                hazard2 = perceptionHazard;
-                break;
-            case "RL":
-                hazard1 = RLHazard[idx1];
-                hazard2 = RLHazard[idx2];
-                break;
-            case "full":
-                hazard1 = fullHazard[0];
-                hazard2 = fullHazard[1];
-                break;
+        if (spaceshipIdx == 0) {
+            hazard1 = perceptionHazard;
+            hazard2 = perceptionHazard;
+        } else {
+            switch (phase)
+            {
+                case "perception":
+                    hazard1 = perceptionHazard;
+                    hazard2 = perceptionHazard;
+                    break;
+                case "RL":
+                case "full":
+                    hazard1 = RLHazard[idx1-1];
+                    hazard2 = RLHazard[idx2-1];
+                    break;
 
-            default:
-                hazard1 = perceptionHazard;
-                hazard2 = perceptionHazard;
-                break;
+                default:
+                    hazard1 = perceptionHazard;
+                    hazard2 = perceptionHazard;
+                    break;
+            }
         }
 
         option1 = Instantiate(hazard1, spawnPosition1, spawnRotation);
@@ -629,9 +593,9 @@ public class StateMachine
         this.owner = owner;
         states = new List<IState>();
 
+        states.Add(new TrainingTestPerception());
         states.Add(new TrainingTestRL());
         states.Add(new TrainingTestFull());
-        states.Add(new TrainingTestPerception());
 
         stateNumber = -1;
     }
@@ -700,7 +664,7 @@ public class TrainingTestPerception : IState
 
         int[] condTrial = new int[TaskParameters.nConds];
 
-        for (int t = 0; t < TaskParameters.nTrialsTrainingPerception; t++)
+        for (int t = 0; t < 9000; t++)
         {
 
             while (!gameController.waveAllowed)
@@ -710,27 +674,19 @@ public class TrainingTestPerception : IState
 
             yield return new WaitForSeconds(gameController.waveWait);
 
-            int cond = (int)TaskParameters.conditionIdx[t];
+            //int cond = (int)TaskParameters.conditionIdx[t];
 
-            gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
-            
-            List<int[]> idxs = new List<int[]>
-            {
-                new int[] {0, 1},
-                new int[] {2, 3},
-            };
+            //gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
+            int cond = 0;
 
-            int idx1 = idxs[cond][0];
-            int idx2 = idxs[cond][1];
-
-            gameController.SpawnOptions(idx1, idx2, phase: "perception");
-            gameController.SetForceFields();
+            gameController.SpawnOptions(gameController.spaceshipIdx, gameController.spaceshipIdx, phase: "RL");
+            gameController.SetForceFields(gameController.forcefieldIdx);
 
             gameController.DisplayFeedback(false);
             
             // gameController.GetPlayerController().AllowShot(true);
             
-            condTrial[cond]++;
+            //condTrial[cond]++;
 
 
             gameController.AllowWave(false);
@@ -840,17 +796,17 @@ public class TrainingTestRL : IState
 
             List<int[]> idxs = new List<int[]>
             {
-                new int[] {0, 1},
-                new int[] {2, 3},
+                new int[] {4, 5},
+                new int[] {6, 7},
             };
 
             int idx1 = idxs[cond][0];
             int idx2 = idxs[cond][1];
 
             gameController.SpawnOptions(idx1, idx2, phase: "RL");
-
+            
             gameController.DisplayFeedback(true);
-            gameController.SetForceFields(false);
+            gameController.SetForceFields(0);
             //gameController.SetForceFields();
 
             // gameController.GetPlayerController().AllowShot(true);
@@ -974,7 +930,7 @@ public class TrainingTestFull : IState
             gameController.SpawnOptions(idx1, idx2, phase: "full");
 
             gameController.DisplayFeedback(true);
-            gameController.SetForceFields(true);
+            gameController.SetForceFields(0);
             //gameController.SetForceFields();
 
             // gameController.GetPlayerController().AllowShot(true);

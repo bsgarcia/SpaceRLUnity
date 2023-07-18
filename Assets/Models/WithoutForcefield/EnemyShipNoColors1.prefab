@@ -4906,6 +4906,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shootable: 0
+  isLeaving: 0
 --- !u!1 &100006
 GameObject:
   m_ObjectHideFlags: 0

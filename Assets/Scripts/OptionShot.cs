@@ -12,6 +12,8 @@ public class OptionShot: MonoBehaviour
     private OptionController optionController;
     
     public bool shootable = false;
+    
+    public bool isLeaving = false;
 
 	void Awake()
 	{
@@ -46,6 +48,7 @@ public class OptionShot: MonoBehaviour
 
     IEnumerator MoveInArc(Transform transform_, Vector3 startPos, Vector3 endPos, float speed, float height) 
     {
+        isLeaving = true;
         float i = 0.0f;
         float rate = 1.0f/speed;
         while (i < 1.0f) 
@@ -60,6 +63,7 @@ public class OptionShot: MonoBehaviour
             
             yield return null;
         }
+        isLeaving = false;
     }
     
     public void LeaveScreen(float speed = .8f, float height = 2.5f) 
