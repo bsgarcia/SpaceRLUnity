@@ -5573,6 +5573,8 @@ MonoBehaviour:
   score: 0
   missedTrial: 0
   sendData: 0
+  forcefieldIdx: 0
+  spaceshipIdx: 0
 --- !u!4 &654598942
 Transform:
   m_ObjectHideFlags: 0
@@ -10762,7 +10764,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &847809692
 Transform:
   m_ObjectHideFlags: 0

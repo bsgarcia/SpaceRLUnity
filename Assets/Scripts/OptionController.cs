@@ -110,7 +110,7 @@ public class OptionController : MonoBehaviour
         
     }
     
-    public (Color color1, Color color2, int colorIdx1, int colorIdx2) GetColor(int colorIdx1, int colorIdx2)
+    public (Color color1, Color color2, int colorIdx1, int colorIdx2) GetColor()
     {
         Color[] colors = new Color[]
         {
@@ -125,6 +125,9 @@ public class OptionController : MonoBehaviour
             new Color(0.76041522f, 0.18738947f, 0.21714725f, 1f),
             new Color(0.83921569f, 0.15294118f, 0.15686275f, 1f)
         };
+        
+        int colorIdx1 = Random.Range(0, colors.Length);
+        int colorIdx2 = Random.Range(0, colors.Length);
         // pick 2 colors from the list (randomly)
         Color color1 = colors[colorIdx1];
         Color color2 = colors[colorIdx2];
@@ -132,17 +135,14 @@ public class OptionController : MonoBehaviour
         return (color1, color2, colorIdx1, colorIdx2);
     }
 
-    public void SetForceFields(int value)
+    public void SetForceFields(bool value)
     {
-        if (value == 0) {
-            forcefield = false;
-        } else {
-            forcefield = true;
-        }
+        forcefield = value;
+
         option1 = gameController.option1;
         option2 = gameController.option2;
 
-        if (value==0) {
+        if (!value) {
             // disable mesh rendered of option1 and option2
             option1.GetComponent<MeshRenderer>().enabled = false;
             option2.GetComponent<MeshRenderer>().enabled = false;
@@ -153,7 +153,7 @@ public class OptionController : MonoBehaviour
         Material[] mat2 = option2.GetComponent<MeshRenderer>().materials;
         
 
-        (Color color1, Color color2, int colorIdx1, int colorIdx2) = GetColor(value-1, value-1);
+        (Color color1, Color color2, int colorIdx1, int colorIdx2) = GetColor();
 
 
         double[] p = new double[] {0.1, 0.14, 0.18, 0.2, 0.25, .3, .5, .75, .85, .9, 1};

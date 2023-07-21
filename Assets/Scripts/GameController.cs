@@ -1,3 +1,4 @@
+// using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -496,7 +497,7 @@ public class GameController : MonoBehaviour
         (Texture)Resources.Load("backgrounds/space");
     }
 
-    public void SetForceFields(int value=0)
+    public void SetForceFields(bool value=true)
     {
         optionController.SetForceFields(value);
     }
@@ -528,27 +529,22 @@ public class GameController : MonoBehaviour
         GameObject hazard2;
         // check that phase is either 'perception' or 'RL'
         // use a switch statement
-        if (spaceshipIdx == 0) {
-            hazard1 = perceptionHazard;
-            hazard2 = perceptionHazard;
-        } else {
-            switch (phase)
-            {
-                case "perception":
-                    hazard1 = perceptionHazard;
-                    hazard2 = perceptionHazard;
-                    break;
-                case "RL":
-                case "full":
-                    hazard1 = RLHazard[idx1-1];
-                    hazard2 = RLHazard[idx2-1];
-                    break;
+        switch (phase)
+        {
+            case "perception":
+                hazard1 = perceptionHazard;
+                hazard2 = perceptionHazard;
+                break;
+            case "RL":
+            case "full":
+                hazard1 = RLHazard[idx1];
+                hazard2 = RLHazard[idx2];
+                break;
 
-                default:
-                    hazard1 = perceptionHazard;
-                    hazard2 = perceptionHazard;
-                    break;
-            }
+            default:
+                hazard1 = perceptionHazard;
+                hazard2 = perceptionHazard;
+                break;
         }
 
         option1 = Instantiate(hazard1, spawnPosition1, spawnRotation);
@@ -593,8 +589,8 @@ public class StateMachine
         this.owner = owner;
         states = new List<IState>();
 
-        states.Add(new TrainingTestPerception());
         states.Add(new TrainingTestRL());
+        states.Add(new TrainingTestPerception());
         states.Add(new TrainingTestFull());
 
         stateNumber = -1;
@@ -664,7 +660,7 @@ public class TrainingTestPerception : IState
 
         int[] condTrial = new int[TaskParameters.nConds];
 
-        for (int t = 0; t < 9000; t++)
+        for (int t = 0; t < TaskParameters.nTrialsTrainingPerception; t++)
         {
 
             while (!gameController.waveAllowed)
@@ -674,20 +670,13 @@ public class TrainingTestPerception : IState
 
             yield return new WaitForSeconds(gameController.waveWait);
 
-            //int cond = (int)TaskParameters.conditionIdx[t];
+            int cond = (int)TaskParameters.conditionIdx[t];
 
-            //gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
-            int cond = 0;
+            gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
 
-            gameController.SpawnOptions(gameController.spaceshipIdx, gameController.spaceshipIdx, phase: "RL");
-            gameController.SetForceFields(gameController.forcefieldIdx);
-
+            gameController.SpawnOptions(0, 0, "perception");
+            gameController.SetForceFields(true);
             gameController.DisplayFeedback(false);
-            
-            // gameController.GetPlayerController().AllowShot(true);
-            
-            //condTrial[cond]++;
-
 
             gameController.AllowWave(false);
             gameController.AllowSendData(false);
@@ -780,7 +769,7 @@ public class TrainingTestRL : IState
 
         int[] condTrial = new int[TaskParameters.nConds];
 
-        for (int t = 0; t < TaskParameters.nTrialsTrainingRL; t++)
+        for (int t = 0; t < TaskParameters.nTrialsTrainingRL+100; t++)
         {
 
             while (!gameController.waveAllowed)
@@ -796,17 +785,21 @@ public class TrainingTestRL : IState
 
             List<int[]> idxs = new List<int[]>
             {
+                new int[] {0, 1},
+                new int[] {2, 3},
                 new int[] {4, 5},
                 new int[] {6, 7},
             };
+            
+            int[] randomIdx = idxs[Random.Range(0, idxs.Count-1)];
 
-            int idx1 = idxs[cond][0];
-            int idx2 = idxs[cond][1];
+            // int idx1 = idxs[cond][0];
+            // int idx2 = idxs[cond][1];
 
-            gameController.SpawnOptions(idx1, idx2, phase: "RL");
+            gameController.SpawnOptions(randomIdx[0], randomIdx[1], phase: "RL");
             
             gameController.DisplayFeedback(true);
-            gameController.SetForceFields(0);
+            gameController.SetForceFields(false);
             //gameController.SetForceFields();
 
             // gameController.GetPlayerController().AllowShot(true);
@@ -914,7 +907,7 @@ public class TrainingTestFull : IState
 
             yield return new WaitForSeconds(gameController.waveWait);
 
-            int cond = (int)TaskParameters.conditionIdx[t];
+            int cond = (int) TaskParameters.conditionIdx[t];
 
             gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
 
@@ -930,11 +923,7 @@ public class TrainingTestFull : IState
             gameController.SpawnOptions(idx1, idx2, phase: "full");
 
             gameController.DisplayFeedback(true);
-            gameController.SetForceFields(0);
-            //gameController.SetForceFields();
-
-            // gameController.GetPlayerController().AllowShot(true);
-
+            gameController.SetForceFields(false);
 
             gameController.SetOutcomes(
                 TaskParameters.rewards[cond * 2][condTrial[cond]],
