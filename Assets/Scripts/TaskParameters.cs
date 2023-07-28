@@ -27,7 +27,6 @@ public class TaskParameters : MonoBehaviour
     public float minReward;
     public float maxReward;
 
-    public int nColor;
     [VectorLabels("mag", "proba", "val")]
     public Vector3 Option1;
 
@@ -40,8 +39,6 @@ public class TaskParameters : MonoBehaviour
     [VectorLabels("mag", "proba", "val")]
     public Vector3 Option4;
 
-    public int[] symMap = new int[8];
-    public static int[] symOptionMapping = new int[8];
 
     public int std;
 
@@ -58,6 +55,7 @@ public class TaskParameters : MonoBehaviour
     [VectorLabels("Opt1", "Opt2", "info")]
     public Vector3Int ConditionTraining2;
 
+    public static List<List<int>> pairs = new List<List<int>>();
 
     public static List<Vector2> colors = new List<Vector2>();
 
@@ -67,8 +65,7 @@ public class TaskParameters : MonoBehaviour
     public static List<int> conditionIdx;
     public static List<int> conditionTrainingIdx;
 
-
-    public static List<List<int>> rewards = new List<List<int>>();
+    public static List<List<List<int>>> rewards = new List<List<List<int>>>();
     public static List<List<int>> rewardsTraining = new List<List<int>>();
 
     private List<int> availableOptions = new List<int>();
@@ -78,17 +75,25 @@ public class TaskParameters : MonoBehaviour
 
     void Start()
     {
+        GameController gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < gameController.RLHazard.Count; i++)
         {
             availableOptions.Add(i);
-
         }
+
         Shuffle2(availableOptions);
-
-        nColor = availableOptions.Count;
-
-        symOptionMapping = symMap;
+        
+        // create a list of list<int>
+        // each list<int> is a pair of options
+        // split the options into pairs of 2 (in a list)
+        for (int i = 0; i < availableOptions.Count; i += 2)
+        {
+            List<int> pair = new List<int>();
+            pair.Add(availableOptions[i]);
+            pair.Add(availableOptions[i + 1]);
+            pairs.Add(pair);
+        }
 
         options.Add(Option1);
         options.Add(Option2);
@@ -105,88 +110,25 @@ public class TaskParameters : MonoBehaviour
         nTrials = nTrialsPerCondition*conditions.Count;
         feedbackTime = fbTime;
 
-        // MakeSymbols();
-        MakeRewards();
         MakeConditionsIdx();
-        
-        // Next
-
+        MakeDistributionRewards();
     }
-
-    private void MakeSymbols()
-
-    {
-        for (int c = 0; c < 2; c++)//conditions.Count; c++)
-        {
-
-            symbols.Add(new Vector2(
-                availableOptions[(int)conditions[c][0]],
-                availableOptions[(int)conditions[c][1]]));
-
-            symbolsTransfer.Add(new Vector2(
-                availableOptions[(int)conditionsTransfer[c][0]],
-                availableOptions[(int)conditionsTransfer[c][1]]));
-        }
-
-    }
-
 
     private void MakeDistributionRewards() {
-        
-        rewards = new List<List<int>>();
-        for (c = 0; c < nConds; c++) {
-            rewards[c] = RandomGaussian(conditions[c][0], std, 0, 100, nTrialsPerCondition);            
+        for (int c = 0; c < nConds; c++) {
+            // 2 options
+            rewards.Add(new List<List<int>>()); // Initialize the innermost list
+
+            for (int i = 0; i < 2; i++) {
+                rewards[c].Add(
+                    RandomGaussian(conditions[c][i], std, minReward, maxReward, nTrialsPerCondition));
+            }
         }
-
-    }
-    // private void MakeRewards()
-    // {
-    //     for (int c = 0; c < 2; c++)///conditions.Count; c++)
-    //     {
-    //         // Learning
-    //         // make rewards for option 1 & 2
-    //         rewards.Add(MakeRewardsForOneOption(options[(int)
-    //             symOptionMapping[(int)conditions[c][0]] - 1]
-    //         ));
-    //         rewards.Add(MakeRewardsForOneOption(options[(int)
-    //             symOptionMapping[(int)conditions[c][1]] - 1]
-    //         ));
-
-    //         // Transfer
-    //         // make rewards for option 1 & 2
-    //         rewardsTransfer.Add(MakeRewardsForOneOption(options[(int)
-    //                 symOptionMapping[(int)conditionsTransfer[c][0]] - 1]
-    //             ));
-    //         rewardsTransfer.Add(MakeRewardsForOneOption(options[(int)
-    //             symOptionMapping[(int)conditionsTransfer[c][1]] - 1]
-    //         ));
-    //     }
-
-    // }
-
-    public static Vector3 GetOption(int cond, int n)
-    {
-        return options[
-            (int)symOptionMapping[
-                (int)conditions[cond][n - 1]
-            ] - 1
-       ];
-    }
-
-    public static Vector3 GetOptionTransfer(int cond, int n)
-    {
-        return options[
-            (int)symOptionMapping[
-                (int)conditionsTransfer[cond][n - 1]
-            ] - 1
-       ];
     }
 
 
     private void MakeConditionsIdx()
     {
-
-
         List<List<int>> conditionIdxTemp = new List<List<int>>();
         List<List<int>> conditionTrainingIdxTemp = new List<List<int>>();
 
@@ -201,40 +143,13 @@ public class TaskParameters : MonoBehaviour
         Shuffle2(conditionTrainingIdxTemp);
 
         conditionIdx = conditionIdxTemp.SelectMany(i => i).ToList<int>();
-        conditionTransferIdx = conditionTransferIdxTemp.SelectMany(i => i).ToList<int>();
+        conditionTrainingIdx = conditionTrainingIdxTemp.SelectMany(i => i).ToList<int>();
 
         if (interleaved)
         {
             Shuffle2(conditionIdx);
-            Shuffle2(conditionTransferIdx);
+            Shuffle2(conditionTrainingIdx);
         }
-
-
-    }
-
-    private List<int> MakeRewardsForOneOption(Vector3 option)
-
-    {
-
-        List<int> rewardsTemp = new List<int>();
-
-        for (int i = 0; i < nTrialsPerCondition; i++)
-        {
-            if (i < Math.Round(nTrialsPerCondition * option.y))
-            {
-                rewardsTemp.Add(5);//1 * (int)option.x * (int)option.z);
-            }
-            else
-            {
-                rewardsTemp.Add(-5);
-            }
-
-        }
-
-
-        Shuffle2(rewardsTemp);
-
-        return rewardsTemp;
 
     }
 
@@ -279,7 +194,11 @@ public class TaskParameters : MonoBehaviour
      
         return v1 * s;
     }
-
+    
+    public void GetOption()
+    {
+        return;
+    }
 
 
 }

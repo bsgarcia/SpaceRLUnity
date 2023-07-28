@@ -153,20 +153,19 @@ MonoBehaviour:
   nTrialsPerCondition: 4
   fbTime: 1.5
   interleaved: 1
+  minReward: 0
+  maxReward: 100
   nColor: 8
   Option1: {x: 1, y: 0.75, z: 1}
   Option2: {x: 1, y: 0.25, z: 1}
   Option3: {x: 1, y: 0.25, z: -1}
   Option4: {x: 1, y: 0.75, z: -1}
   symMap: 0100000002000000030000000400000001000000020000000300000004000000
-  Condition1: {x: 0, y: 1, z: 1}
-  Condition2: {x: 4, y: 5, z: 1}
-  Condition3: {x: 2, y: 3, z: 1}
-  Condition4: {x: 6, y: 7, z: 1}
-  ConditionTransfer1: {x: 0, y: 3, z: 0}
-  ConditionTransfer2: {x: 4, y: 7, z: 0}
-  ConditionTransfer3: {x: 1, y: 2, z: 0}
-  ConditionTransfer4: {x: 5, y: 6, z: 0}
+  std: 5
+  Condition1: {x: 60, y: 40, z: 1}
+  Condition2: {x: 80, y: 20, z: 1}
+  ConditionTraining1: {x: 50, y: 50, z: 0}
+  ConditionTraining2: {x: 50, y: 50, z: 0}
 --- !u!4 &109284361
 Transform:
   m_ObjectHideFlags: 0
@@ -5224,7 +5223,7 @@ Camera:
   m_GameObject: {fileID: 450463504}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 1
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -5536,14 +5535,14 @@ MonoBehaviour:
   perceptionHazard: {fileID: 5173755259565289548, guid: d5ed23ef93d27fc4d90eee58c0965907,
     type: 3}
   RLHazard:
-  - {fileID: 747326714603306446, guid: 03fa2f0eb5cefba4b99512ae7c0d1efe, type: 3}
+  - {fileID: 747326714603306446, guid: 3039654beb7ccd4429c5760a9e6ca6ab, type: 3}
   - {fileID: 747326714603306446, guid: b4fbbbd67672c9341946fc9bb35ddfe1, type: 3}
   - {fileID: 747326714603306446, guid: d51e19b89163222458196364d87e36fb, type: 3}
   - {fileID: 747326714603306446, guid: 1e9ce834f11627644ae7da698c371f60, type: 3}
   - {fileID: 747326714603306446, guid: fe2d01cda5bae954689c4299436da9ae, type: 3}
   - {fileID: 747326714603306446, guid: a9948360a697131489f1fc46a05d4f13, type: 3}
   - {fileID: 747326714603306446, guid: f07969ed674f8cf4fa6097376f427e30, type: 3}
-  - {fileID: 747326714603306446, guid: 3039654beb7ccd4429c5760a9e6ca6ab, type: 3}
+  - {fileID: 747326714603306446, guid: 03fa2f0eb5cefba4b99512ae7c0d1efe, type: 3}
   fullHazard:
   - {fileID: 747326714603306446, guid: 3039654beb7ccd4429c5760a9e6ca6ab, type: 3}
   - {fileID: 747326714603306446, guid: 1e9ce834f11627644ae7da698c371f60, type: 3}
@@ -22652,6 +22651,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 418641c90da66c442a7b6425ce089486, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fixedMove: 0
   speed: 10
   tilt: 4
   boundary:

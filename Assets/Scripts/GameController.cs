@@ -141,7 +141,11 @@ public class GameController : MonoBehaviour
     {
         return playerController;
     }
-
+    
+    public void MovePlayerCenter()
+    {
+        StartCoroutine(playerController.MoveCenter());
+    }
 
     public bool IsGameOver()
     {
@@ -590,8 +594,8 @@ public class StateMachine
         states = new List<IState>();
 
         states.Add(new TrainingTestRL());
-        states.Add(new TrainingTestPerception());
-        states.Add(new TrainingTestFull());
+        // states.Add(new TrainingTestPerception());
+        // states.Add(new TrainingTestFull());
 
         stateNumber = -1;
     }
@@ -779,36 +783,26 @@ public class TrainingTestRL : IState
 
             yield return new WaitForSeconds(gameController.waveWait);
 
-            int cond = (int)TaskParameters.conditionIdx[t];
+            // replace player at the center of the screen
+            gameController.MovePlayerCenter();
 
-            gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
+            // get options
+            int cond = (int) TaskParameters.conditionIdx[t];
+            gameController.feedbackInfo = (int) TaskParameters.conditions[cond][2];
 
-            List<int[]> idxs = new List<int[]>
-            {
-                new int[] {0, 1},
-                new int[] {2, 3},
-                new int[] {4, 5},
-                new int[] {6, 7},
-            };
-            
-            int[] randomIdx = idxs[Random.Range(0, idxs.Count-1)];
+            List<int> options = TaskParameters.pairs[cond];
 
-            // int idx1 = idxs[cond][0];
-            // int idx2 = idxs[cond][1];
-
-            gameController.SpawnOptions(randomIdx[0], randomIdx[1], phase: "RL");
+            gameController.SpawnOptions(options[0], options[1], phase: "RL");
             
             gameController.DisplayFeedback(true);
             gameController.SetForceFields(false);
-            //gameController.SetForceFields();
 
-            // gameController.GetPlayerController().AllowShot(true);
             gameController.SetOutcomes(
-                TaskParameters.rewards[cond * 2][condTrial[cond]],
-                TaskParameters.rewards[cond * 2 + 1][condTrial[cond]]);
+                TaskParameters.rewards[cond][0][condTrial[cond]],
+                TaskParameters.rewards[cond][1][condTrial[cond]]
+            );
 
             condTrial[cond]++;
-
 
             gameController.AllowWave(false);
             gameController.AllowSendData(false);
@@ -853,15 +847,17 @@ public class TrainingTestRL : IState
 
 
                 // retrieve probabilities
-                float p1 = TaskParameters.GetOption(cond, 1)[1];
-                float p2 = TaskParameters.GetOption(cond, 2)[1];
+                float p1 = TaskParameters.GetOptionMean(cond, 1)[1];
+                float p2 = TaskParameters.GetOptionMean(cond, 2)[1];
 
                 gameController.Save("p1", (float)p1);
                 gameController.Save("p2", (float)p2);
 
                 yield return gameController.SendToDB();
             }
+
             gameController.AllowWave(true);
+
         }
 
         isDone = true;
@@ -926,8 +922,8 @@ public class TrainingTestFull : IState
             gameController.SetForceFields(false);
 
             gameController.SetOutcomes(
-                TaskParameters.rewards[cond * 2][condTrial[cond]],
-                TaskParameters.rewards[cond * 2 + 1][condTrial[cond]]);
+                TaskParameters.rewards[cond][0][condTrial[cond]],
+                TaskParameters.rewards[cond][1][condTrial[cond]]);
 
             condTrial[cond]++;
 
@@ -997,228 +993,3 @@ public void Exit()
 
 
 
-
-public class LearningTest : IState
-{
-    GameController gameController;
-    public bool isDone;
-
-    public void Enter()
-    {
-        gameController = GameObject.FindWithTag("GameController").
-            GetComponent<GameController>();
-        Debug.Log("entering learning test");
-
-    }
-
-    public bool IsDone()
-    {
-        return isDone;
-    }
-
-    public IEnumerator Execute()
-    {
-        gameController.ChangeBackground();
-
-        int[] condTrial = new int[TaskParameters.nConds];
-
-        for (int t = 0; t < TaskParameters.nTrials; t++)
-        {
-
-            while (!gameController.waveAllowed)
-            {
-                yield return new WaitForSeconds(.5f);
-            }
-
-            yield return new WaitForSeconds(gameController.waveWait);
-
-            int cond = (int)TaskParameters.conditionIdx[t];
-
-            gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
-
-            gameController.SpawnOptions();
-            gameController.SetForceFields();
-
-
-            gameController.SetOutcomes(
-                TaskParameters.rewards[cond * 2][condTrial[cond]],
-                TaskParameters.rewards[cond * 2 + 1][condTrial[cond]]);
-
-            condTrial[cond]++;
-
-
-            gameController.AllowWave(false);
-            gameController.AllowSendData(false);
-
-            while (!gameController.sendData)
-            {
-                yield return new WaitForSeconds(.5f);
-
-            }
-            // once the option is shot we can get the option controller and gather the data 
-            OptionController optionController = gameController.GetOptionController();
-            PlayerController playerController = gameController.GetPlayerController();
-
-            gameController.Save("con", (int)cond + 1);
-            gameController.Save("t", t);
-            gameController.Save("session", 1);
-
-            gameController.Save("choice", (int)optionController.choice);
-            gameController.Save("outcome", (int)optionController.scoreValue);
-            gameController.Save("cfoutcome", (int)optionController.counterscoreValue);
-            gameController.Save("rt", (int)optionController.st.ElapsedMilliseconds);
-            gameController.Save("choseLeft", (int)optionController.choseLeft);
-            gameController.Save("corr", (int)optionController.corr);
-
-            gameController.Save("fireCount", (int)playerController.fireCount);
-            gameController.Save("upCount", (int)playerController.upCount);
-            gameController.Save("downCount", (int)playerController.downCount);
-            gameController.Save("leftCount", (int)playerController.leftCount);
-            gameController.Save("rightCount", (int)playerController.rightCount);
-
-            gameController.Save("prolificID", gameController.subID);
-            gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
-            gameController.Save("missedTrial", (int)gameController.missedTrial);
-            gameController.Save("score", (int)gameController.score);
-            gameController.Save("optFile1",
-                 (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");
-            gameController.Save("optFile2",
-                 (string)TaskParameters.symbols[cond][1].ToString() + ".tiff");
-            //gameController.Save("optFile2", (string)gameController.symbol2.ToString());
-
-
-            // retrieve probabilities
-            float p1 = TaskParameters.GetOption(cond, 1)[1];
-            float p2 = TaskParameters.GetOption(cond, 2)[1];
-
-            gameController.Save("p1", (float)p1);
-            gameController.Save("p2", (float)p2);
-
-            yield return gameController.SendToDB();
-
-        }
-
-        isDone = true;
-    }
-
-
-    public void Exit()
-    {
-        Debug.Log("Exiting learning test");
-
-    }
-}
-
-
-
-public class TransferTest : IState
-{
-    GameController gameController;
-    public bool isDone;
-
-    public void Enter()
-    {
-        gameController = GameObject.FindWithTag("GameController").
-            GetComponent<GameController>();
-        Debug.Log("entering transfer test");
-
-    }
-
-    public bool IsDone()
-    {
-        return isDone;
-    }
-
-    public IEnumerator Execute()
-    {
-        yield return new WaitForSeconds(1.5f);
-        //gameController.ChangeBackground();
-        //yield return new WaitForSeconds(1.5f);
-        int[] condTrial = new int[TaskParameters.nConds];
-
-
-        for (int t = 0; t < TaskParameters.nTrials; t++)
-        {
-            while (!gameController.waveAllowed)
-            {
-                yield return new WaitForSeconds(.5f);
-            }
-
-
-            yield return new WaitForSeconds(gameController.waveWait);
-
-            int cond = (int)TaskParameters.conditionTransferIdx[t];
-
-            gameController.feedbackInfo = (int)TaskParameters.conditionsTransfer[cond][2];
-
-            gameController.SpawnOptions();
-            gameController.SetForceFields();
-
-            gameController.SetOutcomes(
-                TaskParameters.rewardsTransfer[cond * 2][condTrial[cond]],
-                TaskParameters.rewardsTransfer[cond * 2 + 1][condTrial[cond]]);
-            condTrial[cond]++;
-
-            gameController.AllowWave(false);
-            gameController.AllowSendData(false);
-
-            while (!gameController.sendData)
-            {
-                yield return new WaitForSeconds(.5f);
-
-            }
-
-            // once the option is shot we can get the option controller and gather the data 
-            OptionController optionController = gameController.GetOptionController();
-            PlayerController playerController = gameController.GetPlayerController();
-
-            gameController.Save("con", (int)cond + 1);
-            gameController.Save("t", t);
-            gameController.Save("session", 2);
-
-            gameController.Save("choice", (int)optionController.choice);
-            gameController.Save("outcome", (int)optionController.scoreValue);
-            gameController.Save("cfoutcome", (int)optionController.counterscoreValue);
-            gameController.Save("rt", (int)optionController.st.ElapsedMilliseconds);
-            gameController.Save("choseLeft", (int)optionController.choseLeft);
-            gameController.Save("corr", (int)optionController.corr);
-
-
-            gameController.Save("fireCount", (int)playerController.fireCount);
-            gameController.Save("upCount", (int)playerController.upCount);
-            gameController.Save("downCount", (int)playerController.downCount);
-            gameController.Save("leftCount", (int)playerController.leftCount);
-            gameController.Save("rightCount", (int)playerController.rightCount);
-
-            gameController.Save("prolificID", gameController.subID);
-            gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
-            gameController.Save("missedTrial", (int)gameController.missedTrial);
-            gameController.Save("score", (int)gameController.score);
-            gameController.Save("optFile1",
-                 (string)TaskParameters.symbolsTransfer[cond][0].ToString() + ".tiff");
-            gameController.Save("optFile2",
-                 (string)TaskParameters.symbolsTransfer[cond][1].ToString() + ".tiff");
-
-
-            // retrieve probabilities
-            float p1 = TaskParameters.GetOptionTransfer(cond, 1)[1];
-            float p2 = TaskParameters.GetOptionTransfer(cond, 2)[1];
-
-            gameController.Save("p1", (float)p1);
-            gameController.Save("p2", (float)p2);
-
-            yield return gameController.SendToDB();
-        }
-        isDone = true;
-    }
-
-
-    public void Exit()
-    {
-        Debug.Log("Exiting transfer test");
-        gameController.SetGameOver();
-
-    }
-
-
-}

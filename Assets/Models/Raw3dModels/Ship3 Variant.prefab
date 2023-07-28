@@ -75,12 +75,17 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 33358ec60a98a6f49890d8a151e87cdc,
         type: 3}
       propertyPath: m_Name
-      value: Ship3
+      value: Ship3 Variant
       objectReference: {fileID: 0}
     - target: {fileID: 2662957862360720456, guid: 33358ec60a98a6f49890d8a151e87cdc,
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4420389215292994794, guid: 33358ec60a98a6f49890d8a151e87cdc,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 33358ec60a98a6f49890d8a151e87cdc, type: 3}

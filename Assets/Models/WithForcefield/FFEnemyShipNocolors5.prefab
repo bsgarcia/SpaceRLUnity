@@ -32,7 +32,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 747326714603306446}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.6666667, y: 5.6800156, z: 5.381137}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2408617261480809475}
@@ -228,6 +228,33 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1719728325870987199, guid: ce74a6c54ed22e04292f98cd5b47f062,
+        type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1719728325870987199, guid: ce74a6c54ed22e04292f98cd5b47f062,
+        type: 3}
+      propertyPath: m_ReceiveShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1719728325870987199, guid: ce74a6c54ed22e04292f98cd5b47f062,
+        type: 3}
+      propertyPath: m_LightProbeUsage
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1719728325870987199, guid: ce74a6c54ed22e04292f98cd5b47f062,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: -3033667219593020291, guid: 630972a15f1f0eb468d304fac1c634ef,
+        type: 3}
+    - target: {fileID: 4856453252859351905, guid: ce74a6c54ed22e04292f98cd5b47f062,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: -3033667219593020291, guid: 630972a15f1f0eb468d304fac1c634ef,
+        type: 3}
     m_RemovedComponents:
     - {fileID: 5400000, guid: ce74a6c54ed22e04292f98cd5b47f062, type: 3}
     - {fileID: 13500000, guid: ce74a6c54ed22e04292f98cd5b47f062, type: 3}
@@ -235,6 +262,7 @@ PrefabInstance:
     - {fileID: 1525329313689555159, guid: ce74a6c54ed22e04292f98cd5b47f062, type: 3}
     - {fileID: 6493823007755435079, guid: ce74a6c54ed22e04292f98cd5b47f062, type: 3}
     - {fileID: -5573138927667896177, guid: ce74a6c54ed22e04292f98cd5b47f062, type: 3}
+    - {fileID: 5662585662758950362, guid: ce74a6c54ed22e04292f98cd5b47f062, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ce74a6c54ed22e04292f98cd5b47f062, type: 3}
 --- !u!4 &2408617261480809475 stripped
 Transform:

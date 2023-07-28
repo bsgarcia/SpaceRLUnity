@@ -217,7 +217,7 @@ public class OptionController : MonoBehaviour
             case "Opt1":
 
                 otherOption = GameObject.FindWithTag("Opt2");
-                scoreValue = RandomGaussian(mean: 5, std: 2, min: 0, max: 10); // gameController.outcomeOpt1;
+                scoreValue = gameController.outcomeOpt1;
                 counterscoreValue = gameController.outcomeOpt2;
                 corr = 1;
                 choice = 1;
@@ -227,7 +227,7 @@ public class OptionController : MonoBehaviour
             case "Opt2":
 
                 otherOption = GameObject.FindWithTag("Opt1");
-                scoreValue = RandomGaussian(mean: 0, std: 2, min: -5, max: 5); // gameController.outcomeOpt1;
+                scoreValue = gameController.outcomeOpt2;
                 counterscoreValue = gameController.outcomeOpt1;
                 choice = 2;
                 corr = 0;
@@ -260,7 +260,7 @@ public class OptionController : MonoBehaviour
             Destroy(other.gameObject);
         }
 
-        }
+    }
     
     public void MakeOptionsLeave() 
     {
@@ -274,6 +274,11 @@ public class OptionController : MonoBehaviour
             isLeaving = false;
         }
     }
-
+    
+    public float GetOptionP(int cond, int idx)
+    {
+       return; 
     }
+
+}
 

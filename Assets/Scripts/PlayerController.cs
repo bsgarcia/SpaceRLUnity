@@ -17,6 +17,8 @@ public class Boundary
 public class PlayerController : MonoBehaviour
 {
 
+	public bool fixedMove = false;
+
 	public float speed;
 	public float tilt;
 	public Boundary boundary;
@@ -63,8 +65,6 @@ public class PlayerController : MonoBehaviour
 	void Start()
     {
 		gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
-	
-
     }
 
 	public void ResetCount()
@@ -81,6 +81,25 @@ public class PlayerController : MonoBehaviour
 	{
 		shotAllowed = value;	
 	}
+	
+	// Coroutine to move the ship to the center of the screen
+	// after the player has fired
+	public IEnumerator MoveCenter()
+	{
+		yield return new WaitForSeconds(0.8f);
+		StartCoroutine(TempFixed(.8f));
+		// smoothly move the ship to the center of the screen
+		Vector3 newPos = new Vector3(0f, transform.position.y, transform.position.z);
+		transform.position = Vector3.MoveTowards(transform.position, newPos, 5f);
+		StartCoroutine(TempFixed(.8f));
+	}
+	
+	public IEnumerator TempFixed(float time)
+	{
+		fixedMove = true;
+		yield return new WaitForSeconds(time);
+		fixedMove = false;
+	}
 
 	void Update()
 	{
@@ -90,7 +109,6 @@ public class PlayerController : MonoBehaviour
         {
 			lastKeyPressed = null;
         }
-
 
 		if ((Input.GetButton("Fire1") || Input.GetKey("space")) && (Time.time > nextFire) && (
 			new int[] {-4, 4}.Contains((int) transform.position.x)) && shotAllowed)
@@ -133,46 +151,24 @@ public class PlayerController : MonoBehaviour
 		float moveHorizontal = Input.GetAxis("Horizontal");
 		float moveVertical   = Input.GetAxis("Vertical");
 
-         //XY movments
-        //Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
-
-        // free X mov. and tilting(below)
-        //Vector3 movement = new Vector3(moveHorizontal, 0.0f, 0.0f);
-		
-
-		// constrained X mov. and tilting(below)
-		// get option position from game controller
-		// then move the ship to the option position
-		//
 		float x = moveHorizontal > 0 ? 4f : -4f;
 
 		if (moveHorizontal == 0)
 		{
 			return;
 		}
+		if (fixedMove) 
+		{
+			Debug.Log("Blocked movements");
+			return;
+		}
+
+
 		// only move on position x	
 		Vector3 newPos = new Vector3(x, transform.position.y, transform.position.z);
 
 		transform.position = Vector3.MoveTowards(transform.position, newPos, 2f);
 		GetComponent<Rigidbody>().rotation = Quaternion.Euler(0f, 0f, moveHorizontal * -tilt * 12);
-
-        // adapt the speed
-        //GetComponent<Rigidbody>().velocity = movement * speed;
-
-			// constraint the ship inside the screen
-//			GetComponent<Rigidbody>().position = new Vector3
-//			(
-//				Mathf.Clamp(GetComponent<Rigidbody>().position.x, boundary.xMin, boundary.xMax),	// constraint the vertical movement with the math function Clamp
-//				0.0f,																				// the ship does not move in depth
-//				Mathf.Clamp(GetComponent<Rigidbody>().position.z, boundary.zMin, boundary.zMax)		// constraint the horizontal movement with the math function Clamp
-//			);
-//
-			// tilt the ship to its side when moving
-			//GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, moveHorizontal * -tilt*10, GetComponent<Rigidbody>().velocity.x * -tilt);
-			
-
-			//tilt the ship 
-        //GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, , 0.0f);
 
     }
 }
