@@ -156,7 +156,7 @@ public class OptionController : MonoBehaviour
         (Color color1, Color color2, int colorIdx1, int colorIdx2) = GetColor();
 
 
-        double[] p = new double[] {0.1, 0.14, 0.18, 0.2, 0.25, .3, .5, .75, .85, .9, 1};
+        double[] p = new double[] {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,  1};
         SetPDestroy(p[colorIdx1], p[colorIdx2]);
 
         mat1[1] = option1.GetComponent<OptMaterials>().GetForceField(color1, 1);
@@ -181,6 +181,10 @@ public class OptionController : MonoBehaviour
         // if the forcefield option is chosen, it is destroyed with probability p1
         // pick a random p between 0 and 1
         randomP = ((double) Random.Range(0, 100))/100;
+        if ((randomP > 1) || (randomP < 0))
+        {
+            throw new System.NotSupportedException("randomP invalid value");
+        }
         double pDestroy = tag == "Opt1" ? option1PDestroy : option2PDestroy;
         
         // print all probabilities
@@ -277,7 +281,7 @@ public class OptionController : MonoBehaviour
     
     public float GetOptionP(int cond, int idx)
     {
-       return; 
+       return .5f; 
     }
 
 }

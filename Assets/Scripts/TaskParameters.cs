@@ -10,17 +10,21 @@ using System.Security.Cryptography;
 public class TaskParameters : MonoBehaviour
 {
 
-    public int nTrialsPerCondition;
+    public int nTrialsPerception;
+    public int nTrialsPerConditionFull;
+    public int nTrialsPerConditionTrainingRL;
+
     public float fbTime;
     public bool interleaved;
     public static bool online = false;
     // public int n_conditions;
     // public int feedback_info;
 
-    public static int nTrials;
+    public static int nTrialsFull;
+    public static int nTrialsTrainingRL;
     
-    public static int nTrialsTrainingPerception = 8;
-    public static int nTrialsTrainingRL = 8;
+    public static int nTrialsPerceptualTraining;
+
     public static int nConds;
     public static float feedbackTime;
 
@@ -66,7 +70,7 @@ public class TaskParameters : MonoBehaviour
     public static List<int> conditionTrainingIdx;
 
     public static List<List<List<int>>> rewards = new List<List<List<int>>>();
-    public static List<List<int>> rewardsTraining = new List<List<int>>();
+    public static List<List<List<int>>> rewardsTraining = new List<List<List<int>>>();
 
     private List<int> availableOptions = new List<int>();
     public static List<Vector2> symbols = new List<Vector2>();
@@ -107,8 +111,11 @@ public class TaskParameters : MonoBehaviour
         conditionsTraining.Add(ConditionTraining2);
 
         nConds = conditions.Count;
-        nTrials = nTrialsPerCondition*conditions.Count;
+        nTrialsFull = nTrialsPerConditionFull*conditions.Count;
         feedbackTime = fbTime;
+
+        nTrialsPerceptualTraining = nTrialsPerception;
+        nTrialsTrainingRL = nTrialsPerConditionTrainingRL*conditionsTraining.Count;
 
         MakeConditionsIdx();
         MakeDistributionRewards();
@@ -118,10 +125,13 @@ public class TaskParameters : MonoBehaviour
         for (int c = 0; c < nConds; c++) {
             // 2 options
             rewards.Add(new List<List<int>>()); // Initialize the innermost list
+            rewardsTraining.Add(new List<List<int>>());
 
             for (int i = 0; i < 2; i++) {
                 rewards[c].Add(
-                    RandomGaussian(conditions[c][i], std, minReward, maxReward, nTrialsPerCondition));
+                    RandomGaussian(conditions[c][i], std, minReward, maxReward, nTrialsPerConditionFull));
+                rewardsTraining[c].Add(
+                    RandomGaussian(conditionsTraining[c][i], std, minReward, maxReward, nTrialsPerConditionTrainingRL));
             }
         }
     }
@@ -134,9 +144,10 @@ public class TaskParameters : MonoBehaviour
 
         for (int c = 0; c < nConds; c++)//conditions.Count; c++)
         {
-            List<int> x = Enumerable.Repeat(c, nTrialsPerCondition).ToList();
-            conditionIdxTemp.Add(x);
-            conditionTrainingIdxTemp.Add(x);
+            List<int> x1 = Enumerable.Repeat(c, nTrialsPerConditionFull).ToList();
+            conditionIdxTemp.Add(x1);
+            List<int> x2 = Enumerable.Repeat(c, nTrialsPerConditionTrainingRL).ToList();
+            conditionTrainingIdxTemp.Add(x2);
         }
 
         Shuffle2(conditionIdxTemp);

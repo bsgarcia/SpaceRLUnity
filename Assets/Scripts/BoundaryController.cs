@@ -18,7 +18,13 @@ public class BoundaryController : MonoBehaviour
     
     }
 
-	//void OnTriggerExit(Collider other)
+	void OnTriggerExit(Collider other)
+    {
+        if ((tag == "BoundaryMissedLeft") || (tag == "BoundaryMissedRight"))
+        {
+            Destroy(other.gameObject);
+        }
+    }
     //{
     //    // Debug.Log("BoundaryController: " + tag);
     //    if (tag == "BoundaryMissed")
@@ -55,7 +61,7 @@ public class BoundaryController : MonoBehaviour
                 gameController.MissedTrial();
             }
             gameController.AllowWave(true);
-            Destroy(other.gameObject);
+            StartCoroutine(gameController.DestroyWithDelay(other.gameObject, 1f));
             gameController.GetPlayerController().AllowShot(false);
         }
 

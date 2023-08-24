@@ -86,12 +86,12 @@ public class PlayerController : MonoBehaviour
 	// after the player has fired
 	public IEnumerator MoveCenter()
 	{
-		yield return new WaitForSeconds(0.8f);
-		StartCoroutine(TempFixed(.8f));
+		yield return new WaitForSeconds(.8f);
+		// StartCoroutine(TempFixed(2.5f));
 		// smoothly move the ship to the center of the screen
 		Vector3 newPos = new Vector3(0f, transform.position.y, transform.position.z);
 		transform.position = Vector3.MoveTowards(transform.position, newPos, 5f);
-		StartCoroutine(TempFixed(.8f));
+		StartCoroutine(TempFixed(2.5f));
 	}
 	
 	public IEnumerator TempFixed(float time)
@@ -118,6 +118,7 @@ public class PlayerController : MonoBehaviour
             Instantiate(shot, shotSpawn.position, shotSpawn.rotation); 
             GetComponent<AudioSource>().Play(); // fire sound
 			fireCount++;
+			StartCoroutine(MoveCenter());
         }
 
         if (keyDown == lastKeyPressed)

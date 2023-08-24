@@ -45,6 +45,7 @@ public class OptionShot: MonoBehaviour
             return;
         }
     }
+    
 
     IEnumerator MoveInArc(Transform transform_, Vector3 startPos, Vector3 endPos, float speed, float height) 
     {
@@ -66,7 +67,7 @@ public class OptionShot: MonoBehaviour
         isLeaving = false;
     }
     
-    public void LeaveScreen(float speed = .8f, float height = 2.5f) 
+    public void LeaveScreen(float speed = .8f, float height = 2.2f) 
     {
         shootable = false;
         
@@ -102,6 +103,6 @@ public class OptionShot: MonoBehaviour
         
         // get that direction and apply to bold rotation (to make it look like it's going in that direction)
         other.transform.rotation = Quaternion.LookRotation(other.GetComponent<Rigidbody>().velocity);
-        StartCoroutine(gameController.DestroyWithDelay(other.gameObject, 1.5f));
+        // StartCoroutine(gameController.DestroyWithDelay(other.gameObject, 1.5f));
     }
 }

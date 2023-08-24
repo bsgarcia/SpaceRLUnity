@@ -25,7 +25,7 @@ Material:
         m_Offset: {x: 1, y: 1}
     m_Floats:
     - _FresnelPower: 1.72
-    - _OutlineWidth: 0.11
+    - _OutlineWidth: 0.05
     m_Colors:
-    - _Color: {r: 0.5211995, g: 0.29196462, b: 0.4001538, a: 1}
+    - _Color: {r: 0.4395848, g: 0.32764322, b: 0.46259132, a: 1}
     - _ScrollDirection: {r: 0.01, g: 0.09, b: 0.09, a: 0}

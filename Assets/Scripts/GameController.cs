@@ -593,9 +593,9 @@ public class StateMachine
         this.owner = owner;
         states = new List<IState>();
 
+        states.Add(new TrainingTestPerception());
         states.Add(new TrainingTestRL());
-        // states.Add(new TrainingTestPerception());
-        // states.Add(new TrainingTestFull());
+        states.Add(new TrainingTestFull());
 
         stateNumber = -1;
     }
@@ -664,7 +664,7 @@ public class TrainingTestPerception : IState
 
         int[] condTrial = new int[TaskParameters.nConds];
 
-        for (int t = 0; t < TaskParameters.nTrialsTrainingPerception; t++)
+        for (int t = 0; t < TaskParameters.nTrialsPerceptualTraining; t++)
         {
 
             while (!gameController.waveAllowed)
@@ -672,11 +672,17 @@ public class TrainingTestPerception : IState
                 yield return new WaitForSeconds(.5f);
             }
 
+            if (t==0)
+                gameController.MovePlayerCenter();
             yield return new WaitForSeconds(gameController.waveWait);
 
-            int cond = (int)TaskParameters.conditionIdx[t];
 
-            gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
+            // replace player at the center of the screen
+            // gameController.MovePlayerCenter();
+
+            // int cond = (int)TaskParameters.conditionIdx[t];
+
+            // gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
 
             gameController.SpawnOptions(0, 0, "perception");
             gameController.SetForceFields(true);
@@ -696,40 +702,40 @@ public class TrainingTestPerception : IState
                 OptionController optionController = gameController.GetOptionController();
                 PlayerController playerController = gameController.GetPlayerController();
 
-                gameController.Save("con", (int)cond + 1);
+                // gameController.Save("con", (int)cond + 1);
                 gameController.Save("t", t);
                 gameController.Save("session", 1);
 
-                gameController.Save("choice", (int)optionController.choice);
-                gameController.Save("outcome", (int)optionController.scoreValue);
-                gameController.Save("cfoutcome", (int)optionController.counterscoreValue);
+                gameController.Save("choice", (int) optionController.choice);
+                gameController.Save("outcome", (int) optionController.scoreValue);
+                gameController.Save("cfoutcome", (int) optionController.counterscoreValue);
                 // gameController.Save("rt", (int)optionController.st.ElapsedMilliseconds);
-                gameController.Save("choseLeft", (int)optionController.choseLeft);
-                gameController.Save("corr", (int)optionController.corr);
+                gameController.Save("choseLeft", (int) optionController.choseLeft);
+                gameController.Save("corr", (int) optionController.corr);
 
-                gameController.Save("fireCount", (int)playerController.fireCount);
-                gameController.Save("upCount", (int)playerController.upCount);
-                gameController.Save("downCount", (int)playerController.downCount);
-                gameController.Save("leftCount", (int)playerController.leftCount);
-                gameController.Save("rightCount", (int)playerController.rightCount);
+                gameController.Save("fireCount", (int) playerController.fireCount);
+                gameController.Save("upCount", (int) playerController.upCount);
+                gameController.Save("downCount", (int) playerController.downCount);
+                gameController.Save("leftCount", (int) playerController.leftCount);
+                gameController.Save("rightCount", (int) playerController.rightCount);
 
                 gameController.Save("prolificID", gameController.subID);
-                gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
-                gameController.Save("missedTrial", (int)gameController.missedTrial);
-                gameController.Save("score", (int)gameController.score);
-                gameController.Save("optFile1",
-                     (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");
-                gameController.Save("optFile2",
-                     (string)TaskParameters.symbols[cond][1].ToString() + ".tiff");
+                gameController.Save("feedbackInfo", (int) gameController.feedbackInfo);
+                gameController.Save("missedTrial", (int) gameController.missedTrial);
+                gameController.Save("score", (int) gameController.score);
+                // gameController.Save("optFile1",
+                    //  (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");
+                // gameController.Save("optFile2",
+                    //  (string)TaskParameters.symbols[cond][1].ToString() + ".tiff");
                 //gameController.Save("optFile2", (string)gameController.symbol2.ToString());
 
 
                 // retrieve probabilities
-                float p1 = TaskParameters.GetOption(cond, 1)[1];
-                float p2 = TaskParameters.GetOption(cond, 2)[1];
+                // float p1 = TaskParameters.GetOption(cond, 1)[1];
+                // float p2 = TaskParameters.GetOption(cond, 2)[1];
 
-                gameController.Save("p1", (float)p1);
-                gameController.Save("p2", (float)p2);
+                // gameController.Save("p1", (float)p1);
+                // gameController.Save("p2", (float)p2);
 
                 yield return gameController.SendToDB();
             }
@@ -773,7 +779,7 @@ public class TrainingTestRL : IState
 
         int[] condTrial = new int[TaskParameters.nConds];
 
-        for (int t = 0; t < TaskParameters.nTrialsTrainingRL+100; t++)
+        for (int t = 0; t < TaskParameters.nTrialsTrainingRL; t++)
         {
 
             while (!gameController.waveAllowed)
@@ -784,7 +790,7 @@ public class TrainingTestRL : IState
             yield return new WaitForSeconds(gameController.waveWait);
 
             // replace player at the center of the screen
-            gameController.MovePlayerCenter();
+            // gameController.MovePlayerCenter();
 
             // get options
             int cond = (int) TaskParameters.conditionIdx[t];
@@ -847,11 +853,11 @@ public class TrainingTestRL : IState
 
 
                 // retrieve probabilities
-                float p1 = TaskParameters.GetOptionMean(cond, 1)[1];
-                float p2 = TaskParameters.GetOptionMean(cond, 2)[1];
+                // float p1 = TaskParameters.GetOptionMean(cond, 1)[1];
+                // float p2 = TaskParameters.GetOptionMean(cond, 2)[1];
 
-                gameController.Save("p1", (float)p1);
-                gameController.Save("p2", (float)p2);
+                // gameController.Save("p1", (float)p1);
+                // gameController.Save("p2", (float)p2);
 
                 yield return gameController.SendToDB();
             }
@@ -893,7 +899,7 @@ public class TrainingTestFull : IState
 
         int[] condTrial = new int[TaskParameters.nConds];
 
-        for (int t = 0; t < TaskParameters.nTrialsTrainingRL; t++)
+        for (int t = 0; t < TaskParameters.nTrialsFull; t++)
         {
 
             while (!gameController.waveAllowed)
@@ -903,23 +909,26 @@ public class TrainingTestFull : IState
 
             yield return new WaitForSeconds(gameController.waveWait);
 
+            // gameController.MovePlayerCenter();
+
             int cond = (int) TaskParameters.conditionIdx[t];
 
             gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
 
-            List<int[]> idxs = new List<int[]>
-            {
-                new int[] {0, 1},
-                new int[] {2, 3},
-            };
+            // List<int[]> idxs = new List<int[]>
+            // {
+            //     new int[] {0, 1},
+            //     new int[] {2, 3},
+            // };
 
-            int idx1 = idxs[cond][0];
-            int idx2 = idxs[cond][1];
+            // int idx1 = idxs[cond][0];
+            // int idx2 = idxs[cond][1];
+            List<int> options = TaskParameters.pairs[cond+2];
 
-            gameController.SpawnOptions(idx1, idx2, phase: "full");
+            gameController.SpawnOptions(options[0], options[1], phase: "full");
 
             gameController.DisplayFeedback(true);
-            gameController.SetForceFields(false);
+            gameController.SetForceFields(true);
 
             gameController.SetOutcomes(
                 TaskParameters.rewards[cond][0][condTrial[cond]],
@@ -971,11 +980,11 @@ public class TrainingTestFull : IState
 
 
                 // retrieve probabilities
-                float p1 = TaskParameters.GetOption(cond, 1)[1];
-                float p2 = TaskParameters.GetOption(cond, 2)[1];
+                // float p1 = TaskParameters.GetOption(cond, 1)[1+];
+                // float p2 = TaskParameters.GetOption(cond, 2)[1];
 
-                gameController.Save("p1", (float)p1);
-                gameController.Save("p2", (float)p2);
+                // gameController.Save("p1", (float)p1);
+                // gameController.Save("p2", (float)p2);
 
                 yield return gameController.SendToDB();
             }
