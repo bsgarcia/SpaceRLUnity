@@ -27,5 +27,5 @@ Material:
     - _FresnelPower: 1.5
     - _OutlineWidth: 2.2
     m_Colors:
-    - _Color: {r: 0.6, g: 0.25751635, b: 0.3398693, a: 1}
+    - _Color: {r: 0.8392157, g: 0.15294118, b: 0.15686275, a: 1}
     - _ScrollDirection: {r: 0.01, g: 0.09, b: 0.09, a: 0}
