@@ -16,7 +16,7 @@ public class TaskParameters : MonoBehaviour
 
     public float fbTime;
     public bool interleaved;
-    public static bool online = false;
+    public static bool online = true;
     // public int n_conditions;
     // public int feedback_info;
 

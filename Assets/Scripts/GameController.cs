@@ -704,25 +704,25 @@ public class TrainingTestPerception : IState
 
                 // gameController.Save("con", (int)cond + 1);
                 gameController.Save("t", t);
-                gameController.Save("session", 1);
+                // gameController.Save("session", 1);
 
-                gameController.Save("choice", (int) optionController.choice);
-                gameController.Save("outcome", (int) optionController.scoreValue);
-                gameController.Save("cfoutcome", (int) optionController.counterscoreValue);
-                // gameController.Save("rt", (int)optionController.st.ElapsedMilliseconds);
-                gameController.Save("choseLeft", (int) optionController.choseLeft);
-                gameController.Save("corr", (int) optionController.corr);
+                gameController.Save("choice", (int)optionController.choice);
+                gameController.Save("outcome", (int)optionController.scoreValue);
+                // gameController.Save("cfoutcome", (int)optionController.counterscoreValue);
+                gameController.Save("rt", (int)optionController.st.ElapsedMilliseconds);
+                gameController.Save("choseLeft", (int)optionController.choseLeft);
+                // gameController.Save("corr", (int)optionController.corr);
 
-                gameController.Save("fireCount", (int) playerController.fireCount);
-                gameController.Save("upCount", (int) playerController.upCount);
-                gameController.Save("downCount", (int) playerController.downCount);
-                gameController.Save("leftCount", (int) playerController.leftCount);
-                gameController.Save("rightCount", (int) playerController.rightCount);
+                // gameController.Save("fireCount", (int)playerController.fireCount);
+                // gameController.Save("upCount", (int)playerController.upCount);
+                // gameController.Save("downCount", (int)playerController.downCount);
+                // gameController.Save("leftCount", (int)playerController.leftCount);
+                // gameController.Save("rightCount", (int)playerController.rightCount);
 
                 gameController.Save("prolificID", gameController.subID);
-                gameController.Save("feedbackInfo", (int) gameController.feedbackInfo);
-                gameController.Save("missedTrial", (int) gameController.missedTrial);
-                gameController.Save("score", (int) gameController.score);
+                // gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
+                // gameController.Save("missedTrial", (int)gameController.missedTrial);
+                // gameController.Save("score", (int)gameController.score);
                 // gameController.Save("optFile1",
                     //  (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");
                 // gameController.Save("optFile2",
@@ -731,8 +731,8 @@ public class TrainingTestPerception : IState
 
 
                 // retrieve probabilities
-                // float p1 = TaskParameters.GetOption(cond, 1)[1];
-                // float p2 = TaskParameters.GetOption(cond, 2)[1];
+                // float p1 = TaskParameters.GetOptionMean(cond, 1)[1];
+                // float p2 = TaskParameters.GetOptionMean(cond, 2)[1];
 
                 // gameController.Save("p1", (float)p1);
                 // gameController.Save("p2", (float)p2);
@@ -741,7 +741,6 @@ public class TrainingTestPerception : IState
             }
 
             gameController.AllowWave(true);
-            yield return new WaitForSeconds(.5f);
 
         }
 
@@ -824,31 +823,31 @@ public class TrainingTestRL : IState
                 OptionController optionController = gameController.GetOptionController();
                 PlayerController playerController = gameController.GetPlayerController();
 
-                gameController.Save("con", (int)cond + 1);
+                // gameController.Save("con", (int)cond + 1);
                 gameController.Save("t", t);
-                gameController.Save("session", 1);
+                // gameController.Save("session", 1);
 
                 gameController.Save("choice", (int)optionController.choice);
                 gameController.Save("outcome", (int)optionController.scoreValue);
-                gameController.Save("cfoutcome", (int)optionController.counterscoreValue);
+                // gameController.Save("cfoutcome", (int)optionController.counterscoreValue);
                 gameController.Save("rt", (int)optionController.st.ElapsedMilliseconds);
                 gameController.Save("choseLeft", (int)optionController.choseLeft);
-                gameController.Save("corr", (int)optionController.corr);
+                // gameController.Save("corr", (int)optionController.corr);
 
-                gameController.Save("fireCount", (int)playerController.fireCount);
-                gameController.Save("upCount", (int)playerController.upCount);
-                gameController.Save("downCount", (int)playerController.downCount);
-                gameController.Save("leftCount", (int)playerController.leftCount);
-                gameController.Save("rightCount", (int)playerController.rightCount);
+                // gameController.Save("fireCount", (int)playerController.fireCount);
+                // gameController.Save("upCount", (int)playerController.upCount);
+                // gameController.Save("downCount", (int)playerController.downCount);
+                // gameController.Save("leftCount", (int)playerController.leftCount);
+                // gameController.Save("rightCount", (int)playerController.rightCount);
 
                 gameController.Save("prolificID", gameController.subID);
-                gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
-                gameController.Save("missedTrial", (int)gameController.missedTrial);
-                gameController.Save("score", (int)gameController.score);
-                gameController.Save("optFile1",
-                     (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");
-                gameController.Save("optFile2",
-                     (string)TaskParameters.symbols[cond][1].ToString() + ".tiff");
+                // gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
+                // gameController.Save("missedTrial", (int)gameController.missedTrial);
+                // gameController.Save("score", (int)gameController.score);
+                // gameController.Save("optFile1",
+                    //  (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");
+                // gameController.Save("optFile2",
+                    //  (string)TaskParameters.symbols[cond][1].ToString() + ".tiff");
                 //gameController.Save("optFile2", (string)gameController.symbol2.ToString());
 
 
@@ -951,43 +950,44 @@ public class TrainingTestFull : IState
                 OptionController optionController = gameController.GetOptionController();
                 PlayerController playerController = gameController.GetPlayerController();
 
-                gameController.Save("con", (int)cond + 1);
+                // gameController.Save("con", (int)cond + 1);
                 gameController.Save("t", t);
-                gameController.Save("session", 1);
+                // gameController.Save("session", 1);
 
                 gameController.Save("choice", (int)optionController.choice);
                 gameController.Save("outcome", (int)optionController.scoreValue);
-                gameController.Save("cfoutcome", (int)optionController.counterscoreValue);
+                // gameController.Save("cfoutcome", (int)optionController.counterscoreValue);
                 gameController.Save("rt", (int)optionController.st.ElapsedMilliseconds);
                 gameController.Save("choseLeft", (int)optionController.choseLeft);
-                gameController.Save("corr", (int)optionController.corr);
+                // gameController.Save("corr", (int)optionController.corr);
 
-                gameController.Save("fireCount", (int)playerController.fireCount);
-                gameController.Save("upCount", (int)playerController.upCount);
-                gameController.Save("downCount", (int)playerController.downCount);
-                gameController.Save("leftCount", (int)playerController.leftCount);
-                gameController.Save("rightCount", (int)playerController.rightCount);
+                // gameController.Save("fireCount", (int)playerController.fireCount);
+                // gameController.Save("upCount", (int)playerController.upCount);
+                // gameController.Save("downCount", (int)playerController.downCount);
+                // gameController.Save("leftCount", (int)playerController.leftCount);
+                // gameController.Save("rightCount", (int)playerController.rightCount);
 
                 gameController.Save("prolificID", gameController.subID);
-                gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
-                gameController.Save("missedTrial", (int)gameController.missedTrial);
-                gameController.Save("score", (int)gameController.score);
-                gameController.Save("optFile1",
-                     (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");
-                gameController.Save("optFile2",
-                     (string)TaskParameters.symbols[cond][1].ToString() + ".tiff");
+                // gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
+                // gameController.Save("missedTrial", (int)gameController.missedTrial);
+                // gameController.Save("score", (int)gameController.score);
+                // gameController.Save("optFile1",
+                    //  (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");
+                // gameController.Save("optFile2",
+                    //  (string)TaskParameters.symbols[cond][1].ToString() + ".tiff");
                 //gameController.Save("optFile2", (string)gameController.symbol2.ToString());
 
 
                 // retrieve probabilities
-                // float p1 = TaskParameters.GetOption(cond, 1)[1+];
-                // float p2 = TaskParameters.GetOption(cond, 2)[1];
+                // float p1 = TaskParameters.GetOptionMean(cond, 1)[1];
+                // float p2 = TaskParameters.GetOptionMean(cond, 2)[1];
 
                 // gameController.Save("p1", (float)p1);
                 // gameController.Save("p2", (float)p2);
 
                 yield return gameController.SendToDB();
             }
+
             gameController.AllowWave(true);
         }
 

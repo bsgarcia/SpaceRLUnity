@@ -150,7 +150,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed268102e3d691141b7ceaa38de9402e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nTrialsPerCondition: 4
+  nTrialsPerception: 5
+  nTrialsPerConditionFull: 5
+  nTrialsPerConditionTrainingRL: 5
   fbTime: 1.5
   interleaved: 1
   minReward: 0
@@ -5527,8 +5529,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5f2b6ec00325b48a50e820a429cffb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverURL: https://human-rl.scicog.fr/SpaceRLTesting/php/InsertLearning.php
-  online: 0
+  serverURL: /data-api/rest/Trial/
+  online: 1
   skipTuto: 1
   perceptionHazard: {fileID: 5173755259565289548, guid: d5ed23ef93d27fc4d90eee58c0965907,
     type: 3}

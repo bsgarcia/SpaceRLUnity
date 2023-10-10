@@ -170,6 +170,8 @@ public class OptionController : MonoBehaviour
     
     public void SetChoice(string tag, Collider other)
     {
+        st.Stop();
+
         // reset the missed variable
         missed = false;
         // get the option

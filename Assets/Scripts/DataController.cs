@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,7 @@ public class DataController : MonoBehaviour
 {
     private Dictionary<string, object> data;
 
+    private string url;
 
 
     private GameController gameController;
@@ -29,6 +31,11 @@ public class DataController : MonoBehaviour
         {
             Debug.Log("Cannot find 'GameController' script");
         }
+        
+        //url = Application.absoluteURL + gameController.serverURL;
+        // remove double slashes
+        //url = url.Replace("//", "/");
+        url = gameController.serverURL;
 
     }
 
@@ -51,7 +58,7 @@ public class DataController : MonoBehaviour
         }
 
     }
-
+    
 
     public IEnumerator SendToDB()
     {
@@ -66,20 +73,37 @@ public class DataController : MonoBehaviour
         List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
         int error = 0;
         bool success = false;
+        string str = "{";
 
+        // object obj = CreateObjectFromDictionary(data);
         foreach (KeyValuePair<string, object> entry in data)
         {
-            formData.Add(new MultipartFormDataSection(entry.Key, entry.Value.ToString().Replace(",", ".")));
-
+            // formData.Add(new MultipartFormDataSection(entry.Key, entry.Value.ToString().Replace(",", ".")));
+            //string += entry.Key + ": " + entry.Value.ToString().Replace(",", ".") + "\n";
+            // format as json string
+            str += "\"" + entry.Key + "\": " + "\"" + entry.Value.ToString().Replace(",", ".") + "\" ,";
         }
-
+        // add slash before each quote
+        //str = str.Replace("\"", "\\\"");
         
+        // remove last comma
+        str = str.Substring(0, str.Length - 2);
+        str += "}";
+
+        // Convert the dictionary to a JSON string
+        Debug.Log("Sending to server: " + str);
+                // Serialize the object to JSON
+        // string json = JsonConvert.SerializeObject(obj);
+        
+        //Debug.Log("Sending to server: " + str);
+
         while ((error < 4) && !success)
 
         {
-            UnityWebRequest www = UnityWebRequest.Post(gameController.serverURL, formData);
+            UnityWebRequest www = UnityWebRequest.Post(url, str, "application/json");
             www.SetRequestHeader("Access-Control-Allow-Credentials", "true");
             www.SetRequestHeader("Access-Control-Allow-Headers", "Accept, Content-Type, X-Access-Token, X-Application-Name, X-Request-Sent-Time");
+            //www.SetRequestHeader("Content-Type", "application/json");
             www.SetRequestHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
             www.SetRequestHeader("Access-Control-Allow-Origin", "*");
             yield return www.SendWebRequest();
