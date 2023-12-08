@@ -155,8 +155,10 @@ public class OptionController : MonoBehaviour
 
         (Color color1, Color color2, int colorIdx1, int colorIdx2) = GetColor();
 
-
-        double[] p = new double[] {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,  1};
+        double[] p = new double[] {0.11920292202211755, 0.16798161486607552,
+         0.23147521650098238, 0.35434369377420455, 0.45016600268752216,
+         0.549833997312478, 0.6456563062257954, 0.7685247834990175,
+         0.8320183851339245, 0.8807970779778823};
         SetPDestroy(p[colorIdx1], p[colorIdx2]);
 
         mat1[1] = option1.GetComponent<OptMaterials>().GetForceField(color1, 1);

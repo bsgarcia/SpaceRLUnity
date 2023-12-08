@@ -563,6 +563,50 @@ public class GameController : MonoBehaviour
         option2.tag = "Opt2";
 
     }
+    
+    
+    public void SaveData(int t, int session)
+    {
+        // once the option is shot we can get the option controller and gather the data 
+        // OptionController optionController = gameController.GetOptionController();
+        // PlayerController playerController = gameController.GetPlayerController();
+
+        // gameController.Save("con", (int)cond + 1);
+        Save("t", t);
+        // Save("session", session);
+
+        Save("choice", (int)optionController.choice);
+        Save("outcome", (int)optionController.scoreValue);
+        // Save("cfoutcome", (int)optionController.counterscoreValue);
+        Save("firetime", (int)optionController.st.ElapsedMilliseconds);
+        Save("choseLeft", (int)optionController.choseLeft);
+        // Save("corr", (int)optionController.corr);
+
+        // Save("fireCount", (int)playerController.fireCount);
+        // Save("upCount", (int)playerController.upCount);
+        // Save("downCount", (int)playerController.downCount);
+        // Save("leftCount", (int)playerController.leftCount);
+        // Save("rightCount", (int)playerController.rightCount);
+
+        Save("prolificID", subID);
+        // gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
+        // gameController.Save("missedTrial", (int)gameController.missedTrial);
+        // gameController.Save("score", (int)gameController.score);
+        // gameController.Save("optFile1",
+            //  (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");
+        // gameController.Save("optFile2",
+            //  (string)TaskParameters.symbols[cond][1].ToString() + ".tiff");
+        //gameController.Save("optFile2", (string)gameController.symbol2.ToString());
+
+
+        // retrieve probabilities
+        // float p1 = TaskParameters.GetOptionMean(cond, 1)[1];
+        // float p2 = TaskParameters.GetOptionMean(cond, 2)[1];
+
+        // gameController.Save("p1", (float)p1);
+        // gameController.Save("p2", (float)p2);
+
+    } 
 
 
 }
@@ -698,45 +742,7 @@ public class TrainingTestPerception : IState
             }
             
             if (TaskParameters.online) {
-                // once the option is shot we can get the option controller and gather the data 
-                OptionController optionController = gameController.GetOptionController();
-                PlayerController playerController = gameController.GetPlayerController();
-
-                // gameController.Save("con", (int)cond + 1);
-                gameController.Save("t", t);
-                // gameController.Save("session", 1);
-
-                gameController.Save("choice", (int)optionController.choice);
-                gameController.Save("outcome", (int)optionController.scoreValue);
-                // gameController.Save("cfoutcome", (int)optionController.counterscoreValue);
-                gameController.Save("rt", (int)optionController.st.ElapsedMilliseconds);
-                gameController.Save("choseLeft", (int)optionController.choseLeft);
-                // gameController.Save("corr", (int)optionController.corr);
-
-                // gameController.Save("fireCount", (int)playerController.fireCount);
-                // gameController.Save("upCount", (int)playerController.upCount);
-                // gameController.Save("downCount", (int)playerController.downCount);
-                // gameController.Save("leftCount", (int)playerController.leftCount);
-                // gameController.Save("rightCount", (int)playerController.rightCount);
-
-                gameController.Save("prolificID", gameController.subID);
-                // gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
-                // gameController.Save("missedTrial", (int)gameController.missedTrial);
-                // gameController.Save("score", (int)gameController.score);
-                // gameController.Save("optFile1",
-                    //  (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");
-                // gameController.Save("optFile2",
-                    //  (string)TaskParameters.symbols[cond][1].ToString() + ".tiff");
-                //gameController.Save("optFile2", (string)gameController.symbol2.ToString());
-
-
-                // retrieve probabilities
-                // float p1 = TaskParameters.GetOptionMean(cond, 1)[1];
-                // float p2 = TaskParameters.GetOptionMean(cond, 2)[1];
-
-                // gameController.Save("p1", (float)p1);
-                // gameController.Save("p2", (float)p2);
-
+                gameController.SaveData(t, 1); 
                 yield return gameController.SendToDB();
             }
 
@@ -819,45 +825,7 @@ public class TrainingTestRL : IState
             }
             
             if (TaskParameters.online) {
-                // once the option is shot we can get the option controller and gather the data 
-                OptionController optionController = gameController.GetOptionController();
-                PlayerController playerController = gameController.GetPlayerController();
-
-                // gameController.Save("con", (int)cond + 1);
-                gameController.Save("t", t);
-                // gameController.Save("session", 1);
-
-                gameController.Save("choice", (int)optionController.choice);
-                gameController.Save("outcome", (int)optionController.scoreValue);
-                // gameController.Save("cfoutcome", (int)optionController.counterscoreValue);
-                gameController.Save("rt", (int)optionController.st.ElapsedMilliseconds);
-                gameController.Save("choseLeft", (int)optionController.choseLeft);
-                // gameController.Save("corr", (int)optionController.corr);
-
-                // gameController.Save("fireCount", (int)playerController.fireCount);
-                // gameController.Save("upCount", (int)playerController.upCount);
-                // gameController.Save("downCount", (int)playerController.downCount);
-                // gameController.Save("leftCount", (int)playerController.leftCount);
-                // gameController.Save("rightCount", (int)playerController.rightCount);
-
-                gameController.Save("prolificID", gameController.subID);
-                // gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
-                // gameController.Save("missedTrial", (int)gameController.missedTrial);
-                // gameController.Save("score", (int)gameController.score);
-                // gameController.Save("optFile1",
-                    //  (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");
-                // gameController.Save("optFile2",
-                    //  (string)TaskParameters.symbols[cond][1].ToString() + ".tiff");
-                //gameController.Save("optFile2", (string)gameController.symbol2.ToString());
-
-
-                // retrieve probabilities
-                // float p1 = TaskParameters.GetOptionMean(cond, 1)[1];
-                // float p2 = TaskParameters.GetOptionMean(cond, 2)[1];
-
-                // gameController.Save("p1", (float)p1);
-                // gameController.Save("p2", (float)p2);
-
+                gameController.SaveData(t, 2);
                 yield return gameController.SendToDB();
             }
 
@@ -947,44 +915,7 @@ public class TrainingTestFull : IState
             
             if (TaskParameters.online) {
                 // once the option is shot we can get the option controller and gather the data 
-                OptionController optionController = gameController.GetOptionController();
-                PlayerController playerController = gameController.GetPlayerController();
-
-                // gameController.Save("con", (int)cond + 1);
-                gameController.Save("t", t);
-                // gameController.Save("session", 1);
-
-                gameController.Save("choice", (int)optionController.choice);
-                gameController.Save("outcome", (int)optionController.scoreValue);
-                // gameController.Save("cfoutcome", (int)optionController.counterscoreValue);
-                gameController.Save("rt", (int)optionController.st.ElapsedMilliseconds);
-                gameController.Save("choseLeft", (int)optionController.choseLeft);
-                // gameController.Save("corr", (int)optionController.corr);
-
-                // gameController.Save("fireCount", (int)playerController.fireCount);
-                // gameController.Save("upCount", (int)playerController.upCount);
-                // gameController.Save("downCount", (int)playerController.downCount);
-                // gameController.Save("leftCount", (int)playerController.leftCount);
-                // gameController.Save("rightCount", (int)playerController.rightCount);
-
-                gameController.Save("prolificID", gameController.subID);
-                // gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
-                // gameController.Save("missedTrial", (int)gameController.missedTrial);
-                // gameController.Save("score", (int)gameController.score);
-                // gameController.Save("optFile1",
-                    //  (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");
-                // gameController.Save("optFile2",
-                    //  (string)TaskParameters.symbols[cond][1].ToString() + ".tiff");
-                //gameController.Save("optFile2", (string)gameController.symbol2.ToString());
-
-
-                // retrieve probabilities
-                // float p1 = TaskParameters.GetOptionMean(cond, 1)[1];
-                // float p2 = TaskParameters.GetOptionMean(cond, 2)[1];
-
-                // gameController.Save("p1", (float)p1);
-                // gameController.Save("p2", (float)p2);
-
+                gameController.SaveData(t, 3);
                 yield return gameController.SendToDB();
             }
 

@@ -32,6 +32,6 @@ Material:
     - _FresnelPower: 1.72
     - _OutlineWidth: 0.05
     m_Colors:
-    - _Color: {r: 0.4395848, g: 0.32764322, b: 0.46259132, a: 1}
+    - _Color: {r: 0.20036909, g: 0.43221837, b: 0.6455979, a: 1}
     - _ScrollDirection: {r: 0.01, g: 0.09, b: 0.09, a: 0}
   m_BuildTextureStacks: []
