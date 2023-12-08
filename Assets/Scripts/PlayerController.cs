@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using System.Runtime.InteropServices;
 using System.Linq;
+// include stopwatch
+using Stopwatch = System.Diagnostics.Stopwatch;
 
 // define the screen boundaries in Unity
 [System.Serializable]
@@ -33,6 +35,10 @@ public class PlayerController : MonoBehaviour
     public int downCount = 0;
 	public int leftCount = 0;
     public int rightCount= 0;
+
+	 // reaction time
+    public Stopwatch fireTime;
+    public Stopwatch moveTime;
 
     private GameController gameController;
 	private KeyCode? lastKeyPressed;
@@ -91,7 +97,7 @@ public class PlayerController : MonoBehaviour
 		// smoothly move the ship to the center of the screen
 		Vector3 newPos = new Vector3(0f, transform.position.y, transform.position.z);
 		transform.position = Vector3.MoveTowards(transform.position, newPos, 5f);
-		StartCoroutine(TempFixed(2.5f));
+		// StartCoroutine(TempFixed(2.5f));
 	}
 	
 	public IEnumerator TempFixed(float time)
@@ -110,14 +116,20 @@ public class PlayerController : MonoBehaviour
 			lastKeyPressed = null;
         }
 
+		// if shot allowed, player is left or right, and fire button is pressed
 		if ((Input.GetButton("Fire1") || Input.GetKey("space")) && (Time.time > nextFire) && (
 			new int[] {-4, 4}.Contains((int) transform.position.x)) && shotAllowed)
         {
+			fireTime.Stop();
+			Debug.Log("Fire time: " + fireTime.ElapsedMilliseconds);
+			ResetCount();
 			shotAllowed = false;
             nextFire = Time.time + fireRate;
             Instantiate(shot, shotSpawn.position, shotSpawn.rotation); 
             GetComponent<AudioSource>().Play(); // fire sound
 			fireCount++;
+
+			fixedMove = true;	
 			StartCoroutine(MoveCenter());
         }
 
@@ -150,7 +162,7 @@ public class PlayerController : MonoBehaviour
 	{
 		// move the ship
 		float moveHorizontal = Input.GetAxis("Horizontal");
-		float moveVertical   = Input.GetAxis("Vertical");
+		// float moveVertical   = Input.GetAxis("Vertical");
 
 		float x = moveHorizontal > 0 ? 4f : -4f;
 
@@ -164,6 +176,11 @@ public class PlayerController : MonoBehaviour
 			return;
 		}
 
+		// check if moveTime exists and is running
+		if ((moveTime != null) && moveTime.IsRunning) {
+			moveTime.Stop();
+			Debug.Log("Move time: " + moveTime.ElapsedMilliseconds);
+		}
 
 		// only move on position x	
 		Vector3 newPos = new Vector3(x, transform.position.y, transform.position.z);

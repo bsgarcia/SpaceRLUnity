@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+// include stopwatch
+using Stopwatch = System.Diagnostics.Stopwatch;
 
 
 public class OptionShot: MonoBehaviour
@@ -10,6 +12,7 @@ public class OptionShot: MonoBehaviour
 
 	private GameController gameController;
     private OptionController optionController;
+    private PlayerController playerController;
     
     public bool shootable = false;
     
@@ -20,6 +23,7 @@ public class OptionShot: MonoBehaviour
 		GameObject gameControllerObject = GameObject.FindWithTag(
             "GameController");
         gameController = gameControllerObject.GetComponent<GameController>();
+        playerController = gameController.GetPlayerController();
         optionController = gameController.GetOptionController();
 
     }
@@ -30,15 +34,17 @@ public class OptionShot: MonoBehaviour
         if (other.tag == "BoundaryShootable")
         {
             shootable = true;
-            optionController.st.Start();
+            playerController.fixedMove = false;
+            playerController.fireTime = new Stopwatch();
+            playerController.moveTime = new Stopwatch();
+            playerController.fireTime.Start();
+            playerController.moveTime.Start();
         }
 
         // the option is shot
         if (other.tag == "Bolt" && shootable)
         {
             shootable = false;
-            // record reaction time
-            optionController.st.Stop();    
 
             //DeviateShot(other);
             optionController.SetChoice(tag, other);

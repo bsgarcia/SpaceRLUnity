@@ -90,6 +90,9 @@ public class GameController : MonoBehaviour
     
     public int forcefieldIdx = 0;
     public int spaceshipIdx = 0;
+    
+    // whether the option 1 is on the left or not
+    private float leftright;
 
     // JS interactions
     [DllImport("__Internal")]
@@ -512,8 +515,6 @@ public class GameController : MonoBehaviour
         Quaternion spawnRotation = Quaternion.identity; //* Quaternion.Euler(45, 0, 0);
 
 
-        float leftright;
-
         if (Random.value < 0.5f)
         {
             leftright = spawnValues.x;
@@ -565,7 +566,7 @@ public class GameController : MonoBehaviour
     }
     
     
-    public void SaveData(int t, int session)
+    public void SaveData(int t, int session, int cond)
     {
         // once the option is shot we can get the option controller and gather the data 
         // OptionController optionController = gameController.GetOptionController();
@@ -573,25 +574,27 @@ public class GameController : MonoBehaviour
 
         // gameController.Save("con", (int)cond + 1);
         Save("t", t);
-        // Save("session", session);
-
+        Save("session", session);
+        Save("block", (int) cond);
         Save("choice", (int)optionController.choice);
-        Save("outcome", (int)optionController.scoreValue);
-        // Save("cfoutcome", (int)optionController.counterscoreValue);
-        Save("firetime", (int)optionController.st.ElapsedMilliseconds);
         Save("choseLeft", (int)optionController.choseLeft);
-        // Save("corr", (int)optionController.corr);
-
-        // Save("fireCount", (int)playerController.fireCount);
-        // Save("upCount", (int)playerController.upCount);
-        // Save("downCount", (int)playerController.downCount);
-        // Save("leftCount", (int)playerController.leftCount);
-        // Save("rightCount", (int)playerController.rightCount);
-
+        Save("op1IsLeft",  (int) ((leftright < 0) ? 1 : 0));
+        Save("outcome", (int)optionController.scoreValue);
+        Save("cfoutcome", (int)optionController.counterscoreValue);
+        Save("fireTime", (int)playerController.fireTime.ElapsedMilliseconds);
+        Save("moveTime", (int)playerController.moveTime.ElapsedMilliseconds);
+        Save("leftCount", (int)playerController.leftCount);
+        Save("rightCount", (int)playerController.rightCount);
+        // TODO: add the other counts
+        // Save("ev1", (float) TaskParameters.GetOptionMean(cond, 1));
+        // Save("ev2", (float) TaskParameters.GetOptionMean(cond, 2));
+        //
+        Save("p1", (float) optionController.option1PDestroy);
+        Save("p2", (float) optionController.option2PDestroy);
         Save("prolificID", subID);
         // gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
-        // gameController.Save("missedTrial", (int)gameController.missedTrial);
-        // gameController.Save("score", (int)gameController.score);
+        Save("missedTrial", (int) missedTrial);
+        Save("score", (int)score);
         // gameController.Save("optFile1",
             //  (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");
         // gameController.Save("optFile2",
@@ -742,7 +745,7 @@ public class TrainingTestPerception : IState
             }
             
             if (TaskParameters.online) {
-                gameController.SaveData(t, 1); 
+                gameController.SaveData(t:t, session:1, cond: -1); 
                 yield return gameController.SendToDB();
             }
 
@@ -825,7 +828,7 @@ public class TrainingTestRL : IState
             }
             
             if (TaskParameters.online) {
-                gameController.SaveData(t, 2);
+                gameController.SaveData(t, 2, cond);
                 yield return gameController.SendToDB();
             }
 
@@ -915,7 +918,7 @@ public class TrainingTestFull : IState
             
             if (TaskParameters.online) {
                 // once the option is shot we can get the option controller and gather the data 
-                gameController.SaveData(t, 3);
+                gameController.SaveData(t, 3, cond);
                 yield return gameController.SendToDB();
             }
 

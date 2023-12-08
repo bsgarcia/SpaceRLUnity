@@ -30,7 +30,7 @@ public class OptionController : MonoBehaviour
     public bool missed = true;
     public bool forcefield = false;
 
-    public Stopwatch st = new Stopwatch();
+   
 
 	private GameController gameController;
 
@@ -172,7 +172,6 @@ public class OptionController : MonoBehaviour
     
     public void SetChoice(string tag, Collider other)
     {
-        st.Stop();
 
         // reset the missed variable
         missed = false;

@@ -135,6 +135,10 @@ public class TaskParameters : MonoBehaviour
             }
         }
     }
+    
+    public static  int GetOptionMean(int c, int option) {
+        return (int) conditions[c][option-1];
+    }
 
 
     private void MakeConditionsIdx()
