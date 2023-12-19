@@ -137,7 +137,12 @@ public class TaskParameters : MonoBehaviour
     }
     
     public static  int GetOptionMean(int c, int option) {
-        return (int) conditions[c][option-1];
+        if (c<0) {
+            Debug.Log("c: " + 0 + " option: " + option);
+            return (int) conditionsTraining[0][option];
+        }
+        Debug.Log("c: " + c + " option: " + option);
+        return (int) conditions[c][option];
     }
 
 

@@ -247,7 +247,6 @@ public class OptionController : MonoBehaviour
                 break;
         }
 
-        choseLeft = transform.position.x < 0 ? 1 : 0;
 
         if ((showFeedback) && (exploded)) {
             gameController.PrintFeedback(
@@ -263,6 +262,9 @@ public class OptionController : MonoBehaviour
         // destroy chosen option + laser shot
         if (exploded)
         {
+            choseLeft = transform.position.x < 0 ? 1 : 0;
+            Debug.Log("Chose left: " + choseLeft);
+            Debug.Log("Position: " + transform.position.x);
             Destroy(option);
             Destroy(other.gameObject);
         }

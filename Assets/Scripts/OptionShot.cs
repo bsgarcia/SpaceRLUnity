@@ -34,7 +34,8 @@ public class OptionShot: MonoBehaviour
         if (other.tag == "BoundaryShootable")
         {
             shootable = true;
-            playerController.fixedMove = false;
+            playerController.AllowMove(true);
+            playerController.AllowShot(true);
             playerController.fireTime = new Stopwatch();
             playerController.moveTime = new Stopwatch();
             playerController.fireTime.Start();

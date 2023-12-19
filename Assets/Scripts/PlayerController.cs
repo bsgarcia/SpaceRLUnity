@@ -19,7 +19,8 @@ public class Boundary
 public class PlayerController : MonoBehaviour
 {
 
-	public bool fixedMove = false;
+	public bool moveAllowed = true;
+	public bool shotAllowed = true;
 
 	public float speed;
 	public float tilt;
@@ -42,7 +43,6 @@ public class PlayerController : MonoBehaviour
 
     private GameController gameController;
 	private KeyCode? lastKeyPressed;
-	private bool shotAllowed = false;
 
 	private static readonly KeyCode[] keyCodes = System.Enum.GetValues(typeof(KeyCode))
 												 .Cast<KeyCode>()
@@ -88,10 +88,16 @@ public class PlayerController : MonoBehaviour
 		shotAllowed = value;	
 	}
 	
+	public void AllowMove(bool value)
+	{
+		 moveAllowed = value;
+	}
+	
 	// Coroutine to move the ship to the center of the screen
 	// after the player has fired
 	public IEnumerator MoveCenter()
 	{
+		Debug.Log("Player centering...");
 		yield return new WaitForSeconds(.8f);
 		// StartCoroutine(TempFixed(2.5f));
 		// smoothly move the ship to the center of the screen
@@ -102,9 +108,25 @@ public class PlayerController : MonoBehaviour
 	
 	public IEnumerator TempFixed(float time)
 	{
-		fixedMove = true;
+		moveAllowed = false;
 		yield return new WaitForSeconds(time);
-		fixedMove = false;
+		moveAllowed = true;
+	}
+	
+	public void Shoot()
+	{
+		try {
+			fireTime.Stop();
+			Debug.Log("Fire time: " + fireTime.ElapsedMilliseconds);
+		} catch {
+			// Debug.Log("Error: " + e);
+			Debug.Log("Fire time error");
+		}
+		shotAllowed = false;
+        nextFire = Time.time + fireRate;
+        Instantiate(shot, shotSpawn.position, shotSpawn.rotation); 
+        GetComponent<AudioSource>().Play(); // fire sound
+		fireCount++;
 	}
 
 	void Update()
@@ -120,21 +142,16 @@ public class PlayerController : MonoBehaviour
 		if ((Input.GetButton("Fire1") || Input.GetKey("space")) && (Time.time > nextFire) && (
 			new int[] {-4, 4}.Contains((int) transform.position.x)) && shotAllowed)
         {
-			fireTime.Stop();
-			Debug.Log("Fire time: " + fireTime.ElapsedMilliseconds);
-			ResetCount();
-			shotAllowed = false;
-            nextFire = Time.time + fireRate;
-            Instantiate(shot, shotSpawn.position, shotSpawn.rotation); 
-            GetComponent<AudioSource>().Play(); // fire sound
-			fireCount++;
-
-			fixedMove = true;	
+			Shoot();
+			AllowMove(false);
 			StartCoroutine(MoveCenter());
         }
 
         if (keyDown == lastKeyPressed)
             return;
+
+		if (!moveAllowed)
+			return;
 
         switch (keyDown)
         {
@@ -170,11 +187,14 @@ public class PlayerController : MonoBehaviour
 		{
 			return;
 		}
-		if (fixedMove) 
+		if (!moveAllowed) 
 		{
 			Debug.Log("Blocked movements");
 			return;
 		}
+		
+		Debug.Log("Right count: " + rightCount);
+		Debug.Log("Left count: " + leftCount);
 
 		// check if moveTime exists and is running
 		if ((moveTime != null) && moveTime.IsRunning) {

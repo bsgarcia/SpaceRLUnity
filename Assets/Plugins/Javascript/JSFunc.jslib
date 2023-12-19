@@ -10,11 +10,11 @@ mergeInto(LibraryManager.library, {
 
     SetScore: function (score) {
             window.score = score ;
-            setTimeout(function () {
-            window.nextFunc(window.nextParams);
-            }, 6500);
         },
     Alert: function (str) {
             window.alert(str);
         },
+    SetEnd: function() {
+        window.gameEnded();
+    }
 });

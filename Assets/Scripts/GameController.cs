@@ -97,6 +97,8 @@ public class GameController : MonoBehaviour
     // JS interactions
     [DllImport("__Internal")]
     private static extern void SetScore(int score);
+    [DllImport("__Internal")]
+    private static extern void SetEnd();
 
     [DllImport("__Internal")]
     private static extern string GetSubID();
@@ -231,8 +233,12 @@ public class GameController : MonoBehaviour
 
         UpdateScore();
 
-        // GetSubID();
-        subID = "test";
+        try {
+            subID = GetSubID();
+        } catch (System.Exception e) {
+            Debug.Log("Not running in browser: " + e);
+            subID = "test";
+        }
 
         //StartCoroutine(SpawnWaves()); 
         dataController = GameObject.FindWithTag("DataController").GetComponent<DataController>();
@@ -281,6 +287,10 @@ public class GameController : MonoBehaviour
 
     void ManageKeyPhase()
     {
+        if (tutorialDone)
+        {
+            return;
+        }
         if (playButton.gameObject.active)
         {
             return;
@@ -295,15 +305,19 @@ public class GameController : MonoBehaviour
             return;
 
         }
+
+        playerController.AllowShot(false);
+        playerController.AllowMove(true);
         // Debug.Log(KeyPhaseMoveDone);
         if (!KeyPhaseMoveDone)
         {
-            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow))
+            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow))
             {
                 KeyPhaseMoveDone = true;
-                StartCoroutine(HideWithDelay(moveImage.gameObject, 3f));
-                StartCoroutine(ShowWithDelay(spaceImage.gameObject, 5f));
-                StartCoroutine(DisplayMsg("Good!", 2f, 3f));
+                StartCoroutine(HideWithDelay(moveImage.gameObject, 1f));
+                StartCoroutine(ShowWithDelay(spaceImage.gameObject, 4f));
+                StartCoroutine(DisplayMsg("Good!", 1.2f, 2f));
+                playerController.AllowShot(true);
             }
 
         }
@@ -311,12 +325,15 @@ public class GameController : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.LeftControl))
             {
+                playerController.Shoot();
 
                 KeyPhaseShootDone = true;
-
                 StartCoroutine(HideWithDelay(spaceImage.gameObject, 3f));
-                StartCoroutine(DisplayMsg("Perfect!\n Now  get  ready,\n  asteroids  are\n  coming!", 4f, 3f));
+                StartCoroutine(DisplayMsg("Perfect!\n Now  get  ready,\n  ennemies  are\n  coming!", 4f, 3f));
                 StartCoroutine(SetBoolWithDelay(value => tutorialDone = value, true, 7f));
+                StartCoroutine(playerController.MoveCenter());
+                playerController.AllowMove(false);
+                playerController.ResetCount();
             }
 
         }
@@ -335,7 +352,12 @@ public class GameController : MonoBehaviour
         if (IsGameOver())
         {
             StartCoroutine(DisplayGameOver());
-            SetScore(score);
+            try {
+                SetScore(score);
+                SetEnd();
+            } catch (System.Exception e) {
+                Debug.Log("Not running in browser: " + e);
+            }
             StartCoroutine(QuitGame());
         }
 
@@ -576,18 +598,18 @@ public class GameController : MonoBehaviour
         Save("t", t);
         Save("session", session);
         Save("block", (int) cond);
-        Save("choice", (int)optionController.choice);
-        Save("choseLeft", (int)optionController.choseLeft);
+        Save("choice", (int) optionController.choice);
+        Save("choseLeft", (int) optionController.choseLeft);
         Save("op1IsLeft",  (int) ((leftright < 0) ? 1 : 0));
-        Save("outcome", (int)optionController.scoreValue);
-        Save("cfoutcome", (int)optionController.counterscoreValue);
-        Save("fireTime", (int)playerController.fireTime.ElapsedMilliseconds);
-        Save("moveTime", (int)playerController.moveTime.ElapsedMilliseconds);
-        Save("leftCount", (int)playerController.leftCount);
-        Save("rightCount", (int)playerController.rightCount);
+        Save("outcome", (int) optionController.scoreValue);
+        Save("cfoutcome", (int) optionController.counterscoreValue);
+        Save("fireTime", (int) playerController.fireTime.ElapsedMilliseconds);
+        Save("moveTime", (int) playerController.moveTime.ElapsedMilliseconds);
+        Save("leftCount", (int) playerController.leftCount);
+        Save("rightCount", (int) playerController.rightCount);
         // TODO: add the other counts
-        // Save("ev1", (float) TaskParameters.GetOptionMean(cond, 1));
-        // Save("ev2", (float) TaskParameters.GetOptionMean(cond, 2));
+        Save("ev1", (float) TaskParameters.GetOptionMean(cond, 0));
+        Save("ev2", (float) TaskParameters.GetOptionMean(cond, 1));
         //
         Save("p1", (float) optionController.option1PDestroy);
         Save("p2", (float) optionController.option2PDestroy);
@@ -608,8 +630,15 @@ public class GameController : MonoBehaviour
 
         // gameController.Save("p1", (float)p1);
         // gameController.Save("p2", (float)p2);
-
+        AfterSavingData();
     } 
+    
+    public void AfterSavingData() {
+        // TODO: doesnt' work with missed trial
+        // choseLeft does not work
+        playerController.ResetCount();
+
+    }
 
 
 }
@@ -678,6 +707,7 @@ public class StateMachine
         else
         {
             Debug.Log("Last state reached");
+            this.owner.SetGameOver();
         }
     }
 
