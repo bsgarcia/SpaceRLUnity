@@ -58,7 +58,7 @@ public class GameController : MonoBehaviour
     public int feedbackInfo;
 
     public string subID = "test";
-    public int score;
+    public int score = 0;
 
     public int missedTrial = 0;
 
@@ -87,24 +87,31 @@ public class GameController : MonoBehaviour
     private PauseController pauseController;
 
     private bool isQuitting = false;
-    
+
     public int forcefieldIdx = 0;
     public int spaceshipIdx = 0;
-    
+
     // whether the option 1 is on the left or not
     private float leftright;
 
     // JS interactions
     [DllImport("__Internal")]
     private static extern void SetScore(int score);
+
     [DllImport("__Internal")]
     private static extern void SetEnd();
+
+    [DllImport("__Internal")]
+    private static extern void SetEndTrainingPerceptual();
+
+    [DllImport("__Internal")]
+    private static extern void SetEndTrainingRL();
 
     [DllImport("__Internal")]
     private static extern string GetSubID();
 
     [DllImport("__Internal")]
-    private static extern void Alert(string text);
+    public static extern void Alert(string text);
 
     //[DllImport("__Internal")]
     //private static extern void DisplayNextButton();
@@ -122,14 +129,14 @@ public class GameController : MonoBehaviour
 
     public List<GameObject> GetOptions()
     {
-        return new List<GameObject>(){option1, option2};
+        return new List<GameObject>() { option1, option2 };
     }
 
     public OptionController GetOptionController()
     {
         return optionController;
     }
-    
+
     public void DisplayFeedback(bool value)
     {
         optionController.showFeedback = value;
@@ -146,7 +153,7 @@ public class GameController : MonoBehaviour
     {
         return playerController;
     }
-    
+
     public void MovePlayerCenter()
     {
         StartCoroutine(playerController.MoveCenter());
@@ -233,9 +240,12 @@ public class GameController : MonoBehaviour
 
         UpdateScore();
 
-        try {
+        try
+        {
             subID = GetSubID();
-        } catch (System.Exception e) {
+        }
+        catch (System.Exception e)
+        {
             Debug.Log("Not running in browser: " + e);
             subID = "test";
         }
@@ -245,19 +255,19 @@ public class GameController : MonoBehaviour
         playerController = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
         pauseController = GameObject.FindWithTag("PauseController").GetComponent<PauseController>();
         optionController = GameObject.FindWithTag("OptionController").GetComponent<OptionController>();
-        
+
     }
 
     public void RunWrapper()
     {
         StartCoroutine(Run());
     }
-    
+
     public void UpdateForcefield()
     {
         forcefieldIdx = (forcefieldIdx + 1) % 11;
     }
-    
+
     public void UpdateSpaceship()
     {
         spaceshipIdx = (spaceshipIdx + 1) % 9;
@@ -266,7 +276,8 @@ public class GameController : MonoBehaviour
     public IEnumerator Run()
     {
         playButton.gameObject.SetActive(false);
-        moveImage.gameObject.SetActive(true);
+        if (!skipTuto)
+            moveImage.gameObject.SetActive(true);
 
         while (!tutorialDone)
         {
@@ -346,18 +357,12 @@ public class GameController : MonoBehaviour
 
         if (isQuitting)
         {
-            return;
+            Application.Quit();
         }
 
         if (IsGameOver())
         {
-            StartCoroutine(DisplayGameOver());
-            try {
-                SetScore(score);
-                SetEnd();
-            } catch (System.Exception e) {
-                Debug.Log("Not running in browser: " + e);
-            }
+            DisplayGameOver();
             StartCoroutine(QuitGame());
         }
 
@@ -372,6 +377,10 @@ public class GameController : MonoBehaviour
         if (stateMachine != null && stateMachine.CurrentStateIsDone())
         {
             stateMachine.currentState.Exit();
+            if (IsGameOver())
+            {
+                return;
+            }
             stateMachine.NextState();
             stateMachine.Update();
         }
@@ -379,11 +388,11 @@ public class GameController : MonoBehaviour
 
     }
 
-    IEnumerator QuitGame()
+    public IEnumerator QuitGame()
     {
-        isQuitting = true;
+        Debug.Log("Quitting game");
         yield return new WaitForSeconds(1000f);
-        Application.Quit();
+        isQuitting = true;
     }
 
     // Graphical manager (to put in its own controller later)
@@ -489,9 +498,8 @@ public class GameController : MonoBehaviour
 
     }
 
-    IEnumerator DisplayGameOver()
+    public void DisplayGameOver()
     {
-        yield return new WaitForSeconds(5);
         gameOverText.text = "End!";
     }
 
@@ -499,7 +507,7 @@ public class GameController : MonoBehaviour
     public void MissedTrial()
     {
         missedTrial = 1;
-        missedTrialText.text = "Missed trial!";
+        missedTrialText.text = "Missed   trial!";
         //AddScore(-1);
         AllowSendData(true);
         StartCoroutine("DeleteFeedback", TaskParameters.feedbackTime);
@@ -526,13 +534,13 @@ public class GameController : MonoBehaviour
         (Texture)Resources.Load("backgrounds/space");
     }
 
-    public void SetForceFields(bool value=true)
+    public void SetForceFields(bool value = true)
     {
         optionController.SetForceFields(value);
     }
 
 
-    public void SpawnOptions(int idx1=0, int idx2=1, string phase="perception")
+    public void SpawnOptions(int idx1 = 0, int idx2 = 1, string phase = "perception")
     {
         Quaternion spawnRotation = Quaternion.identity; //* Quaternion.Euler(45, 0, 0);
 
@@ -586,8 +594,8 @@ public class GameController : MonoBehaviour
         option2.tag = "Opt2";
 
     }
-    
-    
+
+
     public void SaveData(int t, int session, int cond)
     {
         // once the option is shot we can get the option controller and gather the data 
@@ -597,30 +605,30 @@ public class GameController : MonoBehaviour
         // gameController.Save("con", (int)cond + 1);
         Save("t", t);
         Save("session", session);
-        Save("block", (int) cond);
-        Save("choice", (int) optionController.choice);
-        Save("choseLeft", (int) optionController.choseLeft);
-        Save("op1IsLeft",  (int) ((leftright < 0) ? 1 : 0));
-        Save("outcome", (int) optionController.scoreValue);
-        Save("cfoutcome", (int) optionController.counterscoreValue);
-        Save("fireTime", (int) playerController.fireTime.ElapsedMilliseconds);
-        Save("moveTime", (int) playerController.moveTime.ElapsedMilliseconds);
-        Save("leftCount", (int) playerController.leftCount);
-        Save("rightCount", (int) playerController.rightCount);
+        Save("block", (int)cond);
+        Save("choice", (int)optionController.choice);
+        Save("choseLeft", (int)optionController.choseLeft);
+        Save("op1IsLeft", (int)((leftright < 0) ? 1 : 0));
+        Save("outcome", (int)optionController.scoreValue);
+        Save("cfoutcome", (int)optionController.counterscoreValue);
+        Save("fireTime", (int)playerController.fireTime.ElapsedMilliseconds);
+        Save("moveTime", (int)playerController.moveTime.ElapsedMilliseconds);
+        Save("leftCount", (int)playerController.leftCount);
+        Save("rightCount", (int)playerController.rightCount);
         // TODO: add the other counts
-        Save("ev1", (float) TaskParameters.GetOptionMean(cond, 0));
-        Save("ev2", (float) TaskParameters.GetOptionMean(cond, 1));
+        Save("ev1", (float)TaskParameters.GetOptionMean(cond, 0));
+        Save("ev2", (float)TaskParameters.GetOptionMean(cond, 1));
         //
-        Save("p1", (float) optionController.option1PDestroy);
-        Save("p2", (float) optionController.option2PDestroy);
+        Save("p1", (float)optionController.option1PDestroy);
+        Save("p2", (float)optionController.option2PDestroy);
         Save("prolificID", subID);
         // gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
-        Save("missedTrial", (int) missedTrial);
+        Save("missedTrial", (int)missedTrial);
         Save("score", (int)score);
         // gameController.Save("optFile1",
-            //  (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");
+        //  (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");
         // gameController.Save("optFile2",
-            //  (string)TaskParameters.symbols[cond][1].ToString() + ".tiff");
+        //  (string)TaskParameters.symbols[cond][1].ToString() + ".tiff");
         //gameController.Save("optFile2", (string)gameController.symbol2.ToString());
 
 
@@ -631,9 +639,10 @@ public class GameController : MonoBehaviour
         // gameController.Save("p1", (float)p1);
         // gameController.Save("p2", (float)p2);
         AfterSavingData();
-    } 
-    
-    public void AfterSavingData() {
+    }
+
+    public void AfterSavingData()
+    {
         // TODO: doesnt' work with missed trial
         // choseLeft does not work
         playerController.ResetCount();
@@ -717,8 +726,16 @@ public class StateMachine
     }
 }
 
-public class TrainingTestPerception : IState
+public class TrainingTestPerception : MonoBehaviour, IState
 {
+    // JS interactions
+    [DllImport("__Internal")]
+    private static extern void SetScore(int score);
+
+    [DllImport("__Internal")]
+    private static extern void SetEndTrainingPerceptual();
+
+
     GameController gameController;
     public bool isDone;
 
@@ -749,7 +766,7 @@ public class TrainingTestPerception : IState
                 yield return new WaitForSeconds(.5f);
             }
 
-            if (t==0)
+            if (t == 0)
                 gameController.MovePlayerCenter();
             yield return new WaitForSeconds(gameController.waveWait);
 
@@ -763,7 +780,10 @@ public class TrainingTestPerception : IState
 
             gameController.SpawnOptions(0, 0, "perception");
             gameController.SetForceFields(true);
-            gameController.DisplayFeedback(false);
+            gameController.DisplayFeedback(true);
+            
+            gameController.feedbackInfo = 1;///(int)TaskParameters.conditions[cond][2];
+            gameController.SetOutcomes(5, 5);
 
             gameController.AllowWave(false);
             gameController.AllowSendData(false);
@@ -773,9 +793,10 @@ public class TrainingTestPerception : IState
                 yield return new WaitForSeconds(.5f);
 
             }
-            
-            if (TaskParameters.online) {
-                gameController.SaveData(t:t, session:1, cond: -1); 
+
+            if (TaskParameters.online)
+            {
+                gameController.SaveData(t: t, session: 1, cond: -1);
                 yield return gameController.SendToDB();
             }
 
@@ -787,14 +808,37 @@ public class TrainingTestPerception : IState
     }
     public void Exit()
     {
-        Debug.Log("Exiting learning test");
+        Debug.Log("Exiting perceptual training");
+
+        if (TaskParameters.nTrialsPerceptualTraining == 0)
+            return;
+        // StartCoroutine(gameController.DisplayGameOver());
+        try
+        {
+            SetScore(gameController.score);
+            SetEndTrainingPerceptual();
+        }
+        catch (System.Exception e)
+        {
+            Debug.Log("Not running in browser: " + e);
+        }
+        // StartCoroutine(gameController.QuitGame());
+        gameController.SetGameOver();
 
     }
 
 }
 
-public class TrainingTestRL : IState
+public class TrainingTestRL : MonoBehaviour, IState
 {
+    // JS interactions
+    [DllImport("__Internal")]
+    private static extern void SetScore(int score);
+
+    [DllImport("__Internal")]
+    private static extern void SetEndTrainingRL();
+
+
     GameController gameController;
     public bool isDone;
 
@@ -830,20 +874,20 @@ public class TrainingTestRL : IState
             // replace player at the center of the screen
             // gameController.MovePlayerCenter();
 
-            // get options
-            int cond = (int) TaskParameters.conditionIdx[t];
-            gameController.feedbackInfo = (int) TaskParameters.conditions[cond][2];
+            int cond = (int)TaskParameters.conditionTrainingIdx[t];
 
-            List<int> options = TaskParameters.pairs[cond];
+            gameController.feedbackInfo = 1;///(int)TaskParameters.conditions[cond][2];
+
+            List<int> options = TaskParameters.trainingPairs[cond];
 
             gameController.SpawnOptions(options[0], options[1], phase: "RL");
-            
+
             gameController.DisplayFeedback(true);
             gameController.SetForceFields(false);
 
             gameController.SetOutcomes(
-                TaskParameters.rewards[cond][0][condTrial[cond]],
-                TaskParameters.rewards[cond][1][condTrial[cond]]
+                TaskParameters.rewardsTraining[cond][0][condTrial[cond]],
+                TaskParameters.rewardsTraining[cond][1][condTrial[cond]]
             );
 
             condTrial[cond]++;
@@ -856,8 +900,9 @@ public class TrainingTestRL : IState
                 yield return new WaitForSeconds(.5f);
 
             }
-            
-            if (TaskParameters.online) {
+
+            if (TaskParameters.online)
+            {
                 gameController.SaveData(t, 2, cond);
                 yield return gameController.SendToDB();
             }
@@ -868,15 +913,37 @@ public class TrainingTestRL : IState
 
         isDone = true;
     }
-public void Exit()
+    public void Exit()
     {
-        Debug.Log("Exiting learning test");
+        Debug.Log("Exiting RL training");
+
+        if (TaskParameters.nTrialsTrainingRL == 0)
+            return;
+        // StartCoroutine(gameController.DisplayGameOver());
+        gameController.SetGameOver();
+
+        try
+        {
+            SetScore(gameController.score);
+            SetEndTrainingRL();
+        }
+        catch (System.Exception e)
+        {
+            Debug.Log("Not running in browser: " + e);
+        }
 
     }
 }
 
-public class TrainingTestFull : IState
+public class TrainingTestFull : MonoBehaviour, IState
 {
+    // JS interactions
+    [DllImport("__Internal")]
+    private static extern void SetScore(int score);
+
+    [DllImport("__Internal")]
+    private static extern void SetEnd();
+
     GameController gameController;
     public bool isDone;
 
@@ -911,7 +978,7 @@ public class TrainingTestFull : IState
 
             // gameController.MovePlayerCenter();
 
-            int cond = (int) TaskParameters.conditionIdx[t];
+            int cond = (int)TaskParameters.conditionIdx[t];
 
             gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
 
@@ -923,7 +990,7 @@ public class TrainingTestFull : IState
 
             // int idx1 = idxs[cond][0];
             // int idx2 = idxs[cond][1];
-            List<int> options = TaskParameters.pairs[cond+2];
+            List<int> options = TaskParameters.pairs[cond];
 
             gameController.SpawnOptions(options[0], options[1], phase: "full");
 
@@ -945,8 +1012,9 @@ public class TrainingTestFull : IState
                 yield return new WaitForSeconds(.5f);
 
             }
-            
-            if (TaskParameters.online) {
+
+            if (TaskParameters.online)
+            {
                 // once the option is shot we can get the option controller and gather the data 
                 gameController.SaveData(t, 3, cond);
                 yield return gameController.SendToDB();
@@ -957,10 +1025,23 @@ public class TrainingTestFull : IState
 
         isDone = true;
     }
-public void Exit()
+    public void Exit()
     {
-        Debug.Log("Exiting learning test");
+        Debug.Log("Exiting full main phase");
+        if (TaskParameters.nTrialsFull == 0)
+            return;
+        // StartCoroutine(gameController.DisplayGameOver());
+        gameController.SetGameOver();
 
+        try
+        {
+            SetScore(gameController.score);
+            SetEnd();
+        }
+        catch (System.Exception e)
+        {
+            Debug.Log("Not running in browser: " + e);
+        }
     }
 }
 

@@ -153,8 +153,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed268102e3d691141b7ceaa38de9402e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nTrialsPerception: 0
-  nTrialsPerConditionFull: 2
+  nTrialsPerception: 50
+  nTrialsPerConditionFull: 0
   nTrialsPerConditionTrainingRL: 0
   fbTime: 1.5
   interleaved: 1
@@ -5753,7 +5753,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverURL: https://brainandlearning.org/basile/insert.php
-  online: 1
+  online: 0
   skipTuto: 1
   perceptionHazard: {fileID: 5173755259565289548, guid: d5ed23ef93d27fc4d90eee58c0965907,
     type: 3}

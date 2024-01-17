@@ -154,8 +154,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nTrialsPerception: 0
-  nTrialsPerConditionFull: 2
-  nTrialsPerConditionTrainingRL: 0
+  nTrialsPerConditionFull: 0
+  nTrialsPerConditionTrainingRL: 2
   fbTime: 1.5
   interleaved: 1
   minReward: 0
@@ -12810,12 +12810,6 @@ PrefabInstance:
       propertyPath: m_Materials.Array.size
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 8282335681026237444, guid: 49e9d997ccbeba94fa80af0d848d74e4,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 6469365671203522939, guid: e3df9c01efc9d4a41b96b30c5061eb3e,
-        type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

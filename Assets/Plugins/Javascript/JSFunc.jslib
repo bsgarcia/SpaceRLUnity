@@ -15,6 +15,16 @@ mergeInto(LibraryManager.library, {
             window.alert(str);
         },
     SetEnd: function() {
-        window.gameEnded();
-    }
+        window.endGame();
+    },
+
+    SetEndTrainingRL: function() {
+        window.endTrainingRL();
+    },
+
+    SetEndTrainingPerceptual: function() {
+        window.endTrainingPerceptual();
+    },
+    
+    
 });

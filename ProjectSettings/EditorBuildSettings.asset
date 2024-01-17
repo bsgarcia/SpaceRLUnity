@@ -11,7 +11,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SpaceShooter/Game.unity
     guid: 40114fdf2bb272b42b59ee6a845c8dd4
-  - enabled: 1
+  - enabled: 0
     path: Assets/_Scenes/Main.unity
     guid: a1792b957082852409ffa726620f2bdc
+  - enabled: 1
+    path: Assets/_Scenes/TrainingPerceptual.unity
+    guid: 310a5fad62e3b5840915113cc4b2854a
+  - enabled: 0
+    path: Assets/_Scenes/TrainingRL.unity
+    guid: 46676f84997b7e642a6948cfa13aadb2
   m_configObjects: {}

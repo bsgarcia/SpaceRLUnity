@@ -7,6 +7,13 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Security.Cryptography;
 
+
+// Custom exception class for indicating common elements
+public class CommonElementsFoundException : Exception
+{
+    public CommonElementsFoundException(string message) : base(message) { }
+}
+
 public class TaskParameters : MonoBehaviour
 {
 
@@ -60,6 +67,7 @@ public class TaskParameters : MonoBehaviour
     public Vector3Int ConditionTraining2;
 
     public static List<List<int>> pairs = new List<List<int>>();
+    public static List<List<int>> trainingPairs = new List<List<int>>();
 
     public static List<Vector2> colors = new List<Vector2>();
 
@@ -81,11 +89,13 @@ public class TaskParameters : MonoBehaviour
     {
         GameController gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 
-        for (int i = 0; i < gameController.RLHazard.Count; i++)
+        for (int i = 0; i < gameController.RLHazard.Count/2; i++)
         {
             availableOptions.Add(i);
         }
 
+        Debug.Log("availableOptions: " + availableOptions.Count);
+        Debug.Log("gameController.RLHazard.Count: " + gameController.RLHazard.Count);   
         Shuffle2(availableOptions);
         
         // create a list of list<int>
@@ -97,6 +107,36 @@ public class TaskParameters : MonoBehaviour
             pair.Add(availableOptions[i]);
             pair.Add(availableOptions[i + 1]);
             pairs.Add(pair);
+        }
+        
+        List<int> availableOptions2 = new List<int>();
+
+        for (int i = availableOptions.Count; i < gameController.RLHazard.Count; i++)
+        {
+            availableOptions2.Add(i);
+        }
+
+        Debug.Log("availableOptions2: " + availableOptions2.Count);
+        Shuffle2(availableOptions2);
+        
+        // create a list of list<int>
+        // each list<int> is a pair of options
+        // split the options into pairs of 2 (in a list)
+        for (int i = 0; i < availableOptions2.Count; i += 2)
+        {
+            List<int> pair = new List<int>();
+            pair.Add(availableOptions2[i]);
+            pair.Add(availableOptions2[i + 1]);
+            trainingPairs.Add(pair);
+        }
+        
+        // Check for common elements between availableOptions and availableOptions2
+        IEnumerable<int> commonElements = availableOptions.Intersect(availableOptions2);
+
+        // If common elements exist, throw an exception
+        if (commonElements.Any())
+        {
+            throw new CommonElementsFoundException("Common elements found between availableOptions and availableOptions2.");
         }
 
         options.Add(Option1);

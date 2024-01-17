@@ -144,8 +144,10 @@ public class OptionController : MonoBehaviour
 
         if (!value) {
             // disable mesh rendered of option1 and option2
-            option1.GetComponent<MeshRenderer>().enabled = false;
-            option2.GetComponent<MeshRenderer>().enabled = false;
+            // option1.Find("flat_cut/Torus").GetComponent<MeshRenderer>().enabled = false;
+            // option2.Find("flat_cut/Torus").GetComponent<MeshRenderer>().enabled = false;
+            // option1.GetComponent<MeshRenderer>().enabled = false;
+            // option2.GetComponent<MeshRenderer>().enabled = false;
             return;
         }
 
@@ -161,12 +163,21 @@ public class OptionController : MonoBehaviour
          0.8320183851339245, 0.8807970779778823};
         SetPDestroy(p[colorIdx1], p[colorIdx2]);
 
-        mat1[1] = option1.GetComponent<OptMaterials>().GetForceField(color1, 1);
-        mat2[1] = option1.GetComponent<OptMaterials>().GetForceField(color2, 2);
+        // mat1[1] = option1.GetComponent<OptMaterials>().GetForceField(color1, 1);
+        // mat2[1] = option1.GetComponent<OptMaterials>().GetForceField(color2, 2);
+        // 
+        getChildGameObject((GameObject) option1, (string) "Torus").GetComponent<MeshRenderer>().materials[0].SetFloat("_Proportion", (float) p[colorIdx1]);
+        getChildGameObject((GameObject) option2, (string) "Torus").GetComponent<MeshRenderer>().materials[0].SetFloat("_Proportion", (float) p[colorIdx2]);
 
-        option1.GetComponent<MeshRenderer>().materials = mat1;
-        option2.GetComponent<MeshRenderer>().materials = mat2;
+        // option2.GetComponent<MeshRenderer>().materials = mat2;
+        // option1.GetComponent<MeshRenderer>().materials = mat1;
 
+    }
+    static public GameObject getChildGameObject(GameObject fromGameObject, string withName) {
+		//Author: Isaac Dart, June-13.
+		Transform[] ts = fromGameObject.transform.GetComponentsInChildren<Transform>();
+		foreach (Transform t in ts) if (t.gameObject.name == withName) return t.gameObject;
+        return null;
     }
     
     
