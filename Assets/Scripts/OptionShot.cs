@@ -34,12 +34,6 @@ public class OptionShot: MonoBehaviour
         if (other.tag == "BoundaryShootable")
         {
             shootable = true;
-            playerController.AllowMove(true);
-            playerController.AllowShot(true);
-            playerController.fireTime = new Stopwatch();
-            playerController.moveTime = new Stopwatch();
-            playerController.fireTime.Start();
-            playerController.moveTime.Start();
         }
 
         // the option is shot
@@ -98,11 +92,11 @@ public class OptionShot: MonoBehaviour
         // Determine if the collision is on the left or right side
         if (collisionNormal.x > 0)
         {
-            direction = Random.Range(-9, -1);
+            direction = Random.Range(-15, -5);
         }
         else
         {
-            direction = Random.Range(1, 9);
+            direction = Random.Range(5, 15);
         } 
 
         other.GetComponent<Rigidbody>().velocity = new Vector3(

@@ -4,6 +4,7 @@ using System.Net;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Stopwatch = System.Diagnostics.Stopwatch;
 
 
 public class BoundaryController : MonoBehaviour
@@ -51,12 +52,19 @@ public class BoundaryController : MonoBehaviour
     {
         if ((tag == "BoundaryShootable") &&  (other.tag == "Opt1" || other.tag == "Opt2"))
         {
-            gameController.GetPlayerController().AllowShot(true);
+            PlayerController playerController = gameController.GetPlayerController();
+            playerController.AllowMove(true);
+            playerController.AllowShot(true);
+            playerController.fireTimer = new Stopwatch();
+            playerController.moveTimer = new Stopwatch();
+            playerController.fireTimer.Start();
+            playerController.moveTimer.Start();
+
         }
 
         if ((tag == "BoundaryMissed") && (other.tag == "Opt1" || other.tag == "Opt2"))
         {   
-            if (gameController.GetOptionController().missed)
+            if (gameController.GetOptionController().missed==1)
             {
                 gameController.MissedTrial();
             }
@@ -65,13 +73,13 @@ public class BoundaryController : MonoBehaviour
             gameController.GetPlayerController().AllowShot(false);
         }
 
-        if (tag == "BoundaryLeave" && (other.tag == "Opt1" || other.tag == "Opt2") &&
-        other.gameObject.GetComponent<OptionShot>().isLeaving == false)
+        if ((tag == "BoundaryLeave") && (other.tag == "Opt1" || other.tag == "Opt2") &&
+        !other.gameObject.GetComponent<OptionShot>().isLeaving)
         {
             Debug.Log("BoundaryController.cs: BoundaryLeave - " + other.tag + "is leaving");
             gameController.GetPlayerController().AllowShot(false);
             gameController.GetOptionController().MakeOptionsLeave();
-            gameController.GetOptionController().missed = true;
+            gameController.GetOptionController().missed = 1;
         }
 
     }

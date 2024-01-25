@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using Stopwatch = System.Diagnostics.Stopwatch;
+using static System.Random;
 
 
 public class OptionController : MonoBehaviour
@@ -20,16 +21,12 @@ public class OptionController : MonoBehaviour
     public int corr;
 
     // set probability of the forcefield option to be destroyed
-    public double option1PDestroy = 1;
-    public double option2PDestroy = 1;
+    public float option1PDestroy = 1;
+    public float option2PDestroy = 1;
     
-    // the random p
-    private double randomP = 1;
-
     public bool shootable = false;
-    public bool missed = true;
+    public int missed = 0; 
     public bool forcefield = false;
-
    
 
 	private GameController gameController;
@@ -41,6 +38,7 @@ public class OptionController : MonoBehaviour
     public GameObject option2;
     
     private bool isLeaving = false;
+    
     
 
 	void Awake()
@@ -58,6 +56,14 @@ public class OptionController : MonoBehaviour
         List<GameObject> options = gameController.GetOptions();
         option1 = options[0];
         option2 = options[1];
+    }
+    
+    public void Reset() 
+    {
+        missed = 0;
+        choice = 0;
+        scoreValue = outcomeOpt1;
+        counterscoreValue = outcomeOpt2;
     }
 
     public static int RandomGaussian(float mean, float std, float min, float max) {
@@ -103,7 +109,7 @@ public class OptionController : MonoBehaviour
         return Mathf.Clamp(std * sigma + mean, minValue, maxValue);
     }
 
-    public void SetPDestroy(double pDestroy1, double pDestroy2)
+    public void SetPDestroy(float pDestroy1, float pDestroy2)
     {
         option1PDestroy = pDestroy1;
         option2PDestroy = pDestroy2;
@@ -135,7 +141,7 @@ public class OptionController : MonoBehaviour
         return (color1, color2, colorIdx1, colorIdx2);
     }
 
-    public void SetForceFields(bool value)
+    public void SetForceFields(bool value, int idx = 0)
     {
         forcefield = value;
 
@@ -144,6 +150,8 @@ public class OptionController : MonoBehaviour
 
         if (!value) {
             // disable mesh rendered of option1 and option2
+            getChildGameObject((GameObject) option1, (string) "Torus").GetComponent<MeshRenderer>().enabled = false;
+            getChildGameObject((GameObject) option2, (string) "Torus").GetComponent<MeshRenderer>().enabled = false;
             // option1.Find("flat_cut/Torus").GetComponent<MeshRenderer>().enabled = false;
             // option2.Find("flat_cut/Torus").GetComponent<MeshRenderer>().enabled = false;
             // option1.GetComponent<MeshRenderer>().enabled = false;
@@ -151,23 +159,25 @@ public class OptionController : MonoBehaviour
             return;
         }
 
-        Material[] mat1 = option1.GetComponent<MeshRenderer>().materials;
-        Material[] mat2 = option2.GetComponent<MeshRenderer>().materials;
+        // Material[] mat1 = option1.GetComponent<MeshRenderer>().materials;
+        // Material[] mat2 = option2.GetComponent<MeshRenderer>().materials;
         
 
-        (Color color1, Color color2, int colorIdx1, int colorIdx2) = GetColor();
+        // (Color color1, Color color2, int colorIdx1, int colorIdx2) = GetColor();
 
-        double[] p = new double[] {0.11920292202211755, 0.16798161486607552,
-         0.23147521650098238, 0.35434369377420455, 0.45016600268752216,
-         0.549833997312478, 0.6456563062257954, 0.7685247834990175,
-         0.8320183851339245, 0.8807970779778823};
-        SetPDestroy(p[colorIdx1], p[colorIdx2]);
+        // double[] p = new double[] {0.11920292202211755, 0.16798161486607552,
+        //  0.23147521650098238, 0.35434369377420455, 0.45016600268752216,
+        //  0.549833997312478, 0.6456563062257954, 0.7685247834990175,
+        //  0.8320183851339245, 0.8807970779778823};
+        float[] p = new float[2] {TaskParameters.probabilities[idx].x, TaskParameters.probabilities[idx].y};
+        
+        SetPDestroy(p[0], p[1]);
 
         // mat1[1] = option1.GetComponent<OptMaterials>().GetForceField(color1, 1);
         // mat2[1] = option1.GetComponent<OptMaterials>().GetForceField(color2, 2);
         // 
-        getChildGameObject((GameObject) option1, (string) "Torus").GetComponent<MeshRenderer>().materials[0].SetFloat("_Proportion", (float) p[colorIdx1]);
-        getChildGameObject((GameObject) option2, (string) "Torus").GetComponent<MeshRenderer>().materials[0].SetFloat("_Proportion", (float) p[colorIdx2]);
+        getChildGameObject((GameObject) option1, (string) "Torus").GetComponent<MeshRenderer>().materials[0].SetFloat("_Proportion", (float) p[0]);
+        getChildGameObject((GameObject) option2, (string) "Torus").GetComponent<MeshRenderer>().materials[0].SetFloat("_Proportion", (float) p[1]);
 
         // option2.GetComponent<MeshRenderer>().materials = mat2;
         // option1.GetComponent<MeshRenderer>().materials = mat1;
@@ -185,7 +195,7 @@ public class OptionController : MonoBehaviour
     {
 
         // reset the missed variable
-        missed = false;
+        missed = -1;
         // get the option
         GameObject option = GameObject.FindWithTag(tag);
         // get the other option
@@ -194,7 +204,12 @@ public class OptionController : MonoBehaviour
 
         // if the forcefield option is chosen, it is destroyed with probability p1
         // pick a random p between 0 and 1
-        randomP = ((double) Random.Range(0, 100))/100;
+        // Create a Random object
+        System.Random random = new System.Random();
+
+        // Get a random probability between 0 and 1
+        double randomP = random.NextDouble();
+
         if ((randomP > 1) || (randomP < 0))
         {
             throw new System.NotSupportedException("randomP invalid value");
@@ -217,14 +232,14 @@ public class OptionController : MonoBehaviour
             option.GetComponent<OptionShot>().LeaveScreen();
             otherOption.GetComponent<OptionShot>().LeaveScreen();
             exploded = false;
-            missed = true;
+            missed = 1;
             
         } 
         else 
         {
             Debug.Log("Option destroyed");
             exploded = true;
-            missed = false;
+            missed = 0;
             Instantiate(explosion, option.transform.localPosition, option.transform.localRotation);
             otherOption.GetComponent<OptionShot>().LeaveScreen();
         }
@@ -234,9 +249,10 @@ public class OptionController : MonoBehaviour
         {
             case "Opt1":
 
+                choseLeft = transform.position.x < 0 ? 1 : 0;
                 otherOption = GameObject.FindWithTag("Opt2");
-                scoreValue = gameController.outcomeOpt1;
-                counterscoreValue = gameController.outcomeOpt2;
+                scoreValue = outcomeOpt1;
+                counterscoreValue = outcomeOpt2;
                 corr = 1;
                 choice = 1;
                 
@@ -244,9 +260,10 @@ public class OptionController : MonoBehaviour
 
             case "Opt2":
 
+                choseLeft = transform.position.x < 0 ? 1 : 0;
                 otherOption = GameObject.FindWithTag("Opt1");
-                scoreValue = gameController.outcomeOpt2;
-                counterscoreValue = gameController.outcomeOpt1;
+                scoreValue = outcomeOpt2;
+                counterscoreValue = outcomeOpt1;
                 choice = 2;
                 corr = 0;
 
@@ -273,7 +290,6 @@ public class OptionController : MonoBehaviour
         // destroy chosen option + laser shot
         if (exploded)
         {
-            choseLeft = transform.position.x < 0 ? 1 : 0;
             Debug.Log("Chose left: " + choseLeft);
             Debug.Log("Position: " + transform.position.x);
             Destroy(option);
@@ -284,15 +300,15 @@ public class OptionController : MonoBehaviour
     
     public void MakeOptionsLeave() 
     {
-        if (!isLeaving) 
-        {
-            isLeaving = true;
-            
-            option1.GetComponent<OptionShot>().LeaveScreen();
-            option2.GetComponent<OptionShot>().LeaveScreen();
+        if (isLeaving) 
+            return;
+        
+        isLeaving = true;
+        
+        option1.GetComponent<OptionShot>().LeaveScreen();
+        option2.GetComponent<OptionShot>().LeaveScreen();
 
-            isLeaving = false;
-        }
+        isLeaving = false;
     }
     
     public float GetOptionP(int cond, int idx)

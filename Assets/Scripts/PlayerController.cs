@@ -19,6 +19,7 @@ public class Boundary
 public class PlayerController : MonoBehaviour
 {
 
+	public bool isMoving = false;
 	public bool moveAllowed = true;
 	public bool shotAllowed = true;
 
@@ -38,8 +39,11 @@ public class PlayerController : MonoBehaviour
     public int rightCount= 0;
 
 	 // reaction time
-    public Stopwatch fireTime;
-    public Stopwatch moveTime;
+    public Stopwatch fireTimer;
+    public Stopwatch moveTimer;
+	
+	public int moveTime = 0;
+	public int fireTime = 0;
 
     private GameController gameController;
 	private KeyCode? lastKeyPressed;
@@ -81,6 +85,8 @@ public class PlayerController : MonoBehaviour
         upCount = 0;
         downCount = 0;
         fireCount = 0;
+		moveTime = 0;
+		fireTime = 0;
     }
 
 	public void AllowShot(bool value)
@@ -116,8 +122,9 @@ public class PlayerController : MonoBehaviour
 	public void Shoot()
 	{
 		try {
-			fireTime.Stop();
-			Debug.Log("Fire time: " + fireTime.ElapsedMilliseconds);
+			fireTimer.Stop();
+			fireTime = (int) fireTimer.ElapsedMilliseconds;
+			Debug.Log("Fire time: " + fireTimer.ElapsedMilliseconds);
 		} catch {
 			// Debug.Log("Error: " + e);
 			Debug.Log("Fire time error");
@@ -153,7 +160,7 @@ public class PlayerController : MonoBehaviour
 		if (!moveAllowed)
 			return;
 
-        switch (keyDown)
+        /* switch (keyDown)
         {
             case KeyCode.DownArrow:	
     			downCount++;
@@ -169,7 +176,7 @@ public class PlayerController : MonoBehaviour
                 rightCount++;
                 break;
 
-        }
+        } */
         lastKeyPressed = keyDown;
 
     }
@@ -178,35 +185,50 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
 	{
 		// move the ship
+		// float moveHorizontal = Input.GetKeyDown("left") ? -.1f : Input.GetKeyDown("right") ? .1f : 0;
 		float moveHorizontal = Input.GetAxis("Horizontal");
-		// float moveVertical   = Input.GetAxis("Vertical");
 
 		float x = moveHorizontal > 0 ? 4f : -4f;
 
-		if (moveHorizontal == 0)
-		{
+		if (transform.position.x == x)
 			return;
-		}
+		if (moveHorizontal == 0)
+			return;
 		if (!moveAllowed) 
 		{
 			Debug.Log("Blocked movements");
 			return;
 		}
+		if (isMoving)
+			return;
 		
-		Debug.Log("Right count: " + rightCount);
-		Debug.Log("Left count: " + leftCount);
+		StartCoroutine(Move(moveHorizontal, x));
+	}
+
+	public IEnumerator Move(float moveHorizontal, float x)
+	{	
+		isMoving = true;
+
+		Debug.Log("Moving...");
+
+		leftCount += moveHorizontal < 0 ? 1 : 0;
+		rightCount += moveHorizontal > 0 ? 1 : 0;
 
 		// check if moveTime exists and is running
-		if ((moveTime != null) && moveTime.IsRunning) {
-			moveTime.Stop();
-			Debug.Log("Move time: " + moveTime.ElapsedMilliseconds);
+		if ((moveTimer != null) && moveTimer.IsRunning) {
+			moveTimer.Stop();
+			moveTime = (int) moveTimer.ElapsedMilliseconds;
+			Debug.Log("Move time: " + moveTimer.ElapsedMilliseconds);
+		}
+		while (transform.position.x != x) {
+			Vector3 newPos = new Vector3(x, transform.position.y, transform.position.z);
+			transform.position = Vector3.MoveTowards(transform.position, newPos, 2f);
+			GetComponent<Rigidbody>().rotation = Quaternion.Euler(0f, 0f, moveHorizontal * -tilt * 12);
+
+			yield return null;
 		}
 
-		// only move on position x	
-		Vector3 newPos = new Vector3(x, transform.position.y, transform.position.z);
-
-		transform.position = Vector3.MoveTowards(transform.position, newPos, 2f);
-		GetComponent<Rigidbody>().rotation = Quaternion.Euler(0f, 0f, moveHorizontal * -tilt * 12);
-
+		isMoving = false;
+		yield return new WaitForSeconds(0.2f);
     }
 }

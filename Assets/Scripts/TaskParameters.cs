@@ -17,7 +17,8 @@ public class CommonElementsFoundException : Exception
 public class TaskParameters : MonoBehaviour
 {
 
-    public int nTrialsPerception;
+    public int nTrialsPerceptionPerPair;
+    public int nPerceptualPairs = 16;
     public int nTrialsPerConditionFull;
     public int nTrialsPerConditionTrainingRL;
 
@@ -49,7 +50,6 @@ public class TaskParameters : MonoBehaviour
 
     [VectorLabels("mag", "proba", "val")]
     public Vector3 Option4;
-
 
     public int std;
 
@@ -83,7 +83,30 @@ public class TaskParameters : MonoBehaviour
     private List<int> availableOptions = new List<int>();
     public static List<Vector2> symbols = new List<Vector2>();
     public static List<Vector2> symbolsTransfer = new List<Vector2>();
+    public List<Vector2> proba = new List<Vector2>
+    {
+        new Vector2(0.12f, 0.88f),
+        new Vector2(0.12f, 0.71f),
+        new Vector2(0.12f, 0.45f),
+        new Vector2(0.12f, 0.22f),
+        new Vector2(0.16f, 0.84f),
+        new Vector2(0.16f, 0.63f),
+        new Vector2(0.22f, 0.37f),
+        new Vector2(0.29f, 0.88f),
+        new Vector2(0.29f, 0.71f),
+        new Vector2(0.37f, 0.84f),
+        new Vector2(0.37f, 0.63f),
+        new Vector2(0.37f, 0.45f),
+        new Vector2(0.55f, 0.88f),
+        new Vector2(0.55f, 0.63f),
+        new Vector2(0.63f, 0.78f),
+        new Vector2(0.78f, 0.88f)
+    };
 
+    public static List<Vector2> probabilities;
+
+    public static int[] ffPairIdx;
+    public int[] probPairIdx;
 
     void Start()
     {
@@ -94,8 +117,8 @@ public class TaskParameters : MonoBehaviour
             availableOptions.Add(i);
         }
 
-        Debug.Log("availableOptions: " + availableOptions.Count);
-        Debug.Log("gameController.RLHazard.Count: " + gameController.RLHazard.Count);   
+        // Debug.Log("availableOptions: " + availableOptions.Count);
+        // Debug.Log("gameController.RLHazard.Count: " + gameController.RLHazard.Count);   
         Shuffle2(availableOptions);
         
         // create a list of list<int>
@@ -116,7 +139,7 @@ public class TaskParameters : MonoBehaviour
             availableOptions2.Add(i);
         }
 
-        Debug.Log("availableOptions2: " + availableOptions2.Count);
+        // Debug.Log("availableOptions2: " + availableOptions2.Count);
         Shuffle2(availableOptions2);
         
         // create a list of list<int>
@@ -154,9 +177,16 @@ public class TaskParameters : MonoBehaviour
         nTrialsFull = nTrialsPerConditionFull*conditions.Count;
         feedbackTime = fbTime;
 
-        nTrialsPerceptualTraining = nTrialsPerception;
-        nTrialsTrainingRL = nTrialsPerConditionTrainingRL*conditionsTraining.Count;
+        if (nPerceptualPairs != proba.Count) {
+            Debug.Log("Warning!: nPerceptualPairs != proba.Count");
+        }
+        nTrialsPerceptualTraining = nTrialsPerceptionPerPair*nPerceptualPairs;
+        probPairIdx = new int[nTrialsPerceptualTraining];
 
+        nTrialsTrainingRL = nTrialsPerConditionTrainingRL*conditionsTraining.Count;
+        probabilities = proba;
+
+        MakeProbPairs();
         MakeConditionsIdx();
         MakeDistributionRewards();
     }
@@ -174,6 +204,19 @@ public class TaskParameters : MonoBehaviour
                     RandomGaussian(conditionsTraining[c][i], std, minReward, maxReward, nTrialsPerConditionTrainingRL));
             }
         }
+    }
+    
+    private void MakeProbPairs() {
+
+        // Create the array using Enumerable.Repeat and SelectMany
+        int repeatCount = nTrialsPerceptionPerPair;
+        int[] probPairIdx = Enumerable.Repeat(Enumerable.Range(0, nPerceptualPairs).ToArray(), repeatCount)
+                                   .SelectMany(x => x)
+                                   .ToArray();
+        Shuffle2(probPairIdx);
+         
+        ffPairIdx = probPairIdx;
+
     }
     
     public static  int GetOptionMean(int c, int option) {

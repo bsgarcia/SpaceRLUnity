@@ -153,7 +153,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed268102e3d691141b7ceaa38de9402e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nTrialsPerception: 50
+  nTrialsPerceptionPerPair: 24
+  nPerceptualPairs: 16
   nTrialsPerConditionFull: 0
   nTrialsPerConditionTrainingRL: 0
   fbTime: 1.5
@@ -169,6 +170,24 @@ MonoBehaviour:
   Condition2: {x: 72, y: 28, z: 1}
   ConditionTraining1: {x: 50, y: 50, z: 0}
   ConditionTraining2: {x: 50, y: 50, z: 0}
+  proba:
+  - {x: 0.12, y: 0.88}
+  - {x: 0.12, y: 0.71}
+  - {x: 0.12, y: 0.45}
+  - {x: 0.12, y: 0.22}
+  - {x: 0.16, y: 0.84}
+  - {x: 0.16, y: 0.63}
+  - {x: 0.22, y: 0.37}
+  - {x: 0.29, y: 0.88}
+  - {x: 0.29, y: 0.71}
+  - {x: 0.37, y: 0.84}
+  - {x: 0.37, y: 0.63}
+  - {x: 0.37, y: 0.45}
+  - {x: 0.55, y: 0.88}
+  - {x: 0.55, y: 0.63}
+  - {x: 0.63, y: 0.78}
+  - {x: 0.78, y: 0.88}
+  probPairIdx: 
 --- !u!4 &109284361
 Transform:
   m_ObjectHideFlags: 0
@@ -5755,6 +5774,7 @@ MonoBehaviour:
   serverURL: https://brainandlearning.org/basile/insert.php
   online: 0
   skipTuto: 1
+  autoPlay: 1
   perceptionHazard: {fileID: 5173755259565289548, guid: d5ed23ef93d27fc4d90eee58c0965907,
     type: 3}
   RLHazard:
@@ -23336,6 +23356,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 418641c90da66c442a7b6425ce089486, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isMoving: 0
   moveAllowed: 0
   shotAllowed: 0
   speed: 10
@@ -23353,6 +23374,8 @@ MonoBehaviour:
   downCount: 0
   leftCount: 0
   rightCount: 0
+  moveTime: 0
+  fireTime: 0
 --- !u!64 &1953792135
 MeshCollider:
   m_ObjectHideFlags: 0

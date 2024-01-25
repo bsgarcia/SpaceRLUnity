@@ -52,11 +52,14 @@ public class DataController : MonoBehaviour
     }
     public void PrintData()
     {   
+        string str = "";
         foreach (KeyValuePair<string, object> entry in data)
         {
-            Debug.Log(entry.Key + " = " + entry.Value);
-        }
 
+            str += "\"" + entry.Key + "\": " + "\"" + entry.Value.ToString().Replace(",", ".") + "\" ,";
+            // Debug.Log(entry.Key + " = " + entry.Value);
+        }
+        Debug.Log(str);
     }
     
 
@@ -91,7 +94,7 @@ public class DataController : MonoBehaviour
         str += "}";
 
         // Convert the dictionary to a JSON string
-        Debug.Log("Sending to server: " + str);
+        PrintData();
                 // Serialize the object to JSON
         // string json = JsonConvert.SerializeObject(obj);
         

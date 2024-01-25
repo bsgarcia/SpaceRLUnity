@@ -1,4 +1,5 @@
 // using System;
+using Stopwatch = System.Diagnostics.Stopwatch;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,8 @@ public class GameController : MonoBehaviour
 
     public bool online;
     public bool skipTuto;
+    
+    public bool autoPlay;
 
     public GameObject perceptionHazard;
     public List<GameObject> RLHazard = new List<GameObject>(new GameObject[2]);
@@ -78,6 +81,7 @@ public class GameController : MonoBehaviour
     private bool KeyPhaseMoveDone;
 
     private bool tutorialDone;
+    private bool op1IsLeft;
 
     private StateMachine stateMachine;
 
@@ -145,8 +149,8 @@ public class GameController : MonoBehaviour
 
     public void SetOutcomes(int v1, int v2)
     {
-        outcomeOpt1 = v1;
-        outcomeOpt2 = v2;
+        optionController.outcomeOpt1 = v1;
+        optionController.outcomeOpt2 = v2;
     }
 
     public PlayerController GetPlayerController()
@@ -187,7 +191,11 @@ public class GameController : MonoBehaviour
     public IEnumerator SendToDB()
     {
         //PrintData();
-        yield return dataController.SendToDB();
+        if (online)
+        {
+            yield return dataController.SendToDB();
+        }
+
         AfterSendToDB();
 
         Debug.Log("******************************************************");
@@ -201,7 +209,9 @@ public class GameController : MonoBehaviour
 
     public void AfterSendToDB()
     {
+        PrintData();
         playerController.ResetCount();
+        optionController.Reset();
         missedTrial = 0;
 
     }
@@ -355,11 +365,6 @@ public class GameController : MonoBehaviour
     {
         ManageKeyPhase();
 
-        if (isQuitting)
-        {
-            Application.Quit();
-        }
-
         if (IsGameOver())
         {
             DisplayGameOver();
@@ -390,9 +395,14 @@ public class GameController : MonoBehaviour
 
     public IEnumerator QuitGame()
     {
-        Debug.Log("Quitting game");
-        yield return new WaitForSeconds(1000f);
-        isQuitting = true;
+        yield return new WaitForSeconds(3f);
+        #if UNITY_EDITOR
+            Debug.Log("In editor...quitting game now!");
+            UnityEditor.EditorApplication.isPlaying = false;
+            // EditorApplication.ExecuteMenuItem("Edit/Play");
+        #else
+            Application.Quit();
+        #endif
     }
 
     // Graphical manager (to put in its own controller later)
@@ -534,9 +544,9 @@ public class GameController : MonoBehaviour
         (Texture)Resources.Load("backgrounds/space");
     }
 
-    public void SetForceFields(bool value = true)
+    public void SetForceFields(bool value = true, int idx = 0)
     {
-        optionController.SetForceFields(value);
+        optionController.SetForceFields(value, idx);
     }
 
 
@@ -548,10 +558,12 @@ public class GameController : MonoBehaviour
         if (Random.value < 0.5f)
         {
             leftright = spawnValues.x;
+            op1IsLeft = false;
         }
         else
         {
             leftright = -spawnValues.x;
+            op1IsLeft = true;
         }
         // fixed 
         //leftright = Mathf.Abs(leftright);
@@ -606,13 +618,15 @@ public class GameController : MonoBehaviour
         Save("t", t);
         Save("session", session);
         Save("block", (int)cond);
-        Save("choice", (int)optionController.choice);
-        Save("choseLeft", (int)optionController.choseLeft);
-        Save("op1IsLeft", (int)((leftright < 0) ? 1 : 0));
+        Save("choice", (int) optionController.choice);
+        Save("choseLeft", (int) (
+         (optionController.choice == 1) & (op1IsLeft)
+          | (optionController.choice == 2) & (!op1IsLeft) ? 1 : 0));
+        Save("op1IsLeft", (int) (op1IsLeft ? 1 : 0));
         Save("outcome", (int)optionController.scoreValue);
         Save("cfoutcome", (int)optionController.counterscoreValue);
-        Save("fireTime", (int)playerController.fireTime.ElapsedMilliseconds);
-        Save("moveTime", (int)playerController.moveTime.ElapsedMilliseconds);
+        Save("fireTime", (int)playerController.fireTime);
+        Save("moveTime", (int)playerController.moveTime);
         Save("leftCount", (int)playerController.leftCount);
         Save("rightCount", (int)playerController.rightCount);
         // TODO: add the other counts
@@ -623,7 +637,7 @@ public class GameController : MonoBehaviour
         Save("p2", (float)optionController.option2PDestroy);
         Save("prolificID", subID);
         // gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
-        Save("missedTrial", (int)missedTrial);
+        Save("missedTrial", (int) missedTrial);
         Save("score", (int)score);
         // gameController.Save("optFile1",
         //  (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");
@@ -638,16 +652,16 @@ public class GameController : MonoBehaviour
 
         // gameController.Save("p1", (float)p1);
         // gameController.Save("p2", (float)p2);
-        AfterSavingData();
+        // AfterSavingData();
     }
 
-    public void AfterSavingData()
-    {
+    // public void AfterSavingData()
+    // {
         // TODO: doesnt' work with missed trial
         // choseLeft does not work
-        playerController.ResetCount();
+        // playerController.ResetCount();
 
-    }
+    // }
 
 
 }
@@ -758,6 +772,9 @@ public class TrainingTestPerception : MonoBehaviour, IState
 
         int[] condTrial = new int[TaskParameters.nConds];
 
+        Stopwatch timer = new Stopwatch();
+        timer.Start();
+
         for (int t = 0; t < TaskParameters.nTrialsPerceptualTraining; t++)
         {
 
@@ -777,9 +794,8 @@ public class TrainingTestPerception : MonoBehaviour, IState
             // int cond = (int)TaskParameters.conditionIdx[t];
 
             // gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
-
-            gameController.SpawnOptions(0, 0, "perception");
-            gameController.SetForceFields(true);
+            //
+            
             gameController.DisplayFeedback(true);
             
             gameController.feedbackInfo = 1;///(int)TaskParameters.conditions[cond][2];
@@ -788,22 +804,38 @@ public class TrainingTestPerception : MonoBehaviour, IState
             gameController.AllowWave(false);
             gameController.AllowSendData(false);
 
+            gameController.SpawnOptions(0, 0, "perception");
+            gameController.SetForceFields(true, TaskParameters.ffPairIdx[t]);
+
+            // Debug.Log("prob pair idx: " + TaskParameters.probPairIdx[t]);
+            if (gameController.autoPlay) {
+                yield return new WaitForSeconds(2f);
+                PlayerController playerController = gameController.GetPlayerController(); 
+                playerController.StartCoroutine(playerController.Move(-.1f, -4f));
+                yield return new WaitForSeconds(.5f);
+                playerController.Shoot();
+                playerController.AllowMove(false);
+			    playerController.StartCoroutine(playerController.MoveCenter());
+            }
+
             while (!gameController.sendData)
             {
                 yield return new WaitForSeconds(.5f);
 
             }
 
-            if (TaskParameters.online)
-            {
-                gameController.SaveData(t: t, session: 1, cond: -1);
-                yield return gameController.SendToDB();
-            }
+            gameController.SaveData(t: t, session: 1, cond: -1);
+
+            yield return gameController.SendToDB();
 
             gameController.AllowWave(true);
 
         }
 
+        timer.Stop();
+        Debug.Log("Total time: " + timer.ElapsedMilliseconds + " ms");
+        // same in seconds
+        Debug.Log("Total time: " + timer.ElapsedMilliseconds / 1000 + " s");
         isDone = true;
     }
     public void Exit()
@@ -894,7 +926,7 @@ public class TrainingTestRL : MonoBehaviour, IState
 
             gameController.AllowWave(false);
             gameController.AllowSendData(false);
-
+            
             while (!gameController.sendData)
             {
                 yield return new WaitForSeconds(.5f);
@@ -965,6 +997,12 @@ public class TrainingTestFull : MonoBehaviour, IState
         gameController.ChangeBackground();
 
         int[] condTrial = new int[TaskParameters.nConds];
+        
+        // import stopwatch
+        // start timer (elapsed time)
+        Stopwatch timer = new Stopwatch();
+        timer.Start();
+
 
         for (int t = 0; t < TaskParameters.nTrialsFull; t++)
         {
@@ -1022,6 +1060,13 @@ public class TrainingTestFull : MonoBehaviour, IState
 
             gameController.AllowWave(true);
         }
+        
+        timer.Stop();
+        Debug.Log("Total time: " + timer.ElapsedMilliseconds + " ms");
+        // same in seconds
+        Debug.Log("Total time: " + timer.ElapsedMilliseconds / 1000 + " s");
+        // Debug.Log("Total time: " + timer.ElapsedMilliseconds / 60000 + " min);
+
 
         isDone = true;
     }
