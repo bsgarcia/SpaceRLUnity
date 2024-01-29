@@ -824,7 +824,7 @@ public class TrainingTestPerception : MonoBehaviour, IState
 
             }
 
-            gameController.SaveData(t: t, session: 1, cond: -1);
+            gameController.SaveData(t: t, session: TaskParameters.sessionIdx, cond: TaskParameters.ffPairIdx[t]);
 
             yield return gameController.SendToDB();
 

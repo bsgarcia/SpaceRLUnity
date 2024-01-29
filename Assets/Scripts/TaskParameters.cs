@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Security.Cryptography;
+using Random = UnityEngine.Random;
 
 
 // Custom exception class for indicating common elements
@@ -21,6 +22,10 @@ public class TaskParameters : MonoBehaviour
     public int nPerceptualPairs = 16;
     public int nTrialsPerConditionFull;
     public int nTrialsPerConditionTrainingRL;
+    
+    public int session;
+
+    public static int sessionIdx;
 
     public float fbTime;
     public bool interleaved;
@@ -110,6 +115,12 @@ public class TaskParameters : MonoBehaviour
 
     void Start()
     {
+        #if UNITY_WEBGL
+            // get from window.session
+            session = 
+        #endif
+        Random.seed = (int) System.DateTime.Now.Ticks;
+
         GameController gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 
         for (int i = 0; i < gameController.RLHazard.Count/2; i++)
@@ -186,8 +197,13 @@ public class TaskParameters : MonoBehaviour
         nTrialsTrainingRL = nTrialsPerConditionTrainingRL*conditionsTraining.Count;
         probabilities = proba;
 
+        sessionIdx = session;
+
+        Debug.Log("Start computing probabilities");
         MakeProbPairs();
+        Debug.Log("Start computing conditions");
         MakeConditionsIdx();
+        Debug.Log("Start computing rewards");
         MakeDistributionRewards();
     }
 
@@ -196,18 +212,18 @@ public class TaskParameters : MonoBehaviour
             // 2 options
             rewards.Add(new List<List<int>>()); // Initialize the innermost list
             rewardsTraining.Add(new List<List<int>>());
-
             for (int i = 0; i < 2; i++) {
-                rewards[c].Add(
-                    RandomGaussian(conditions[c][i], std, minReward, maxReward, nTrialsPerConditionFull));
-                rewardsTraining[c].Add(
-                    RandomGaussian(conditionsTraining[c][i], std, minReward, maxReward, nTrialsPerConditionTrainingRL));
+                // rewards[c].Add(
+                    // RandomGaussian(conditions[c][i], std, minReward, maxReward, nTrialsPerConditionFull));
+                // rewardsTraining[c].Add(
+                    // RandomGaussian(conditionsTraining[c][i], std, minReward, maxReward, nTrialsPerConditionTrainingRL));
+                rewards[c].Add(new List<int>() {5});
+                rewardsTraining[c].Add(new List<int>() {5});
             }
         }
     }
     
     private void MakeProbPairs() {
-
         // Create the array using Enumerable.Repeat and SelectMany
         int repeatCount = nTrialsPerceptionPerPair;
         int[] probPairIdx = Enumerable.Repeat(Enumerable.Range(0, nPerceptualPairs).ToArray(), repeatCount)

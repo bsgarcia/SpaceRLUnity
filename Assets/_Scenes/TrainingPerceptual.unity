@@ -153,10 +153,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed268102e3d691141b7ceaa38de9402e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nTrialsPerceptionPerPair: 24
+  nTrialsPerceptionPerPair: 4
   nPerceptualPairs: 16
   nTrialsPerConditionFull: 0
   nTrialsPerConditionTrainingRL: 0
+  session: 0
   fbTime: 1.5
   interleaved: 1
   minReward: 0

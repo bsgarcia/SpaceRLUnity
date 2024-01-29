@@ -7,6 +7,10 @@ mergeInto(LibraryManager.library, {
             stringToUTF8(returnStr, buffer, bufferSize);
             return buffer;
         },
+    
+    GetSession: function () {
+            return window.session;
+    },
 
     SetScore: function (score) {
             window.score = score ;
@@ -14,6 +18,7 @@ mergeInto(LibraryManager.library, {
     Alert: function (str) {
             window.alert(str);
         },
+
     SetEnd: function() {
         window.endGame();
     },
