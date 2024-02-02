@@ -278,7 +278,7 @@ public class OptionController : MonoBehaviour
         {
             case "Opt1":
 
-                choseLeft = transform.position.x < 0 ? 1 : 0;
+                choseLeft = option.transform.position.x < 0 ? 1 : 0;
                 otherOption = GameObject.FindWithTag("Opt2");
                 scoreValue = outcomeOpt1;
                 counterscoreValue = outcomeOpt2;
@@ -289,7 +289,7 @@ public class OptionController : MonoBehaviour
 
             case "Opt2":
 
-                choseLeft = transform.position.x < 0 ? 1 : 0;
+                choseLeft = option.transform.position.x < 0 ? 1 : 0;
                 otherOption = GameObject.FindWithTag("Opt1");
                 scoreValue = outcomeOpt2;
                 counterscoreValue = outcomeOpt1;

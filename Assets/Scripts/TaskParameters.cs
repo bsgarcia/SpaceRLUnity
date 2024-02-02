@@ -132,10 +132,10 @@ public class TaskParameters : MonoBehaviour
             }
 
         #endif
-         #if UNITY_EDITOR
-            Debug.logger.logEnabled = true;
+        #if UNITY_EDITOR
+            Debug.unityLogger.logEnabled = true;
         #else
-            Debug.logger.logEnabled = false;
+            Debug.unityLogger.logEnabled = false;
         #endif
 
         // Random.seed = (int) System.DateTime.Now.Ticks;
