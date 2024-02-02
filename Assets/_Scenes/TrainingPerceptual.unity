@@ -153,12 +153,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed268102e3d691141b7ceaa38de9402e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nTrialsPerceptionPerPair: 4
+  nTrialsPerceptionPerPair: 1
   nPerceptualPairs: 16
   nTrialsPerConditionFull: 0
   nTrialsPerConditionTrainingRL: 0
   session: 0
-  fbTime: 1.5
+  fbTime: 1
+  fallSpeed: -4
   interleaved: 1
   minReward: 0
   maxReward: 100
@@ -5773,9 +5774,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverURL: https://brainandlearning.org/basile/insert.php
-  online: 0
+  online: 1
   skipTuto: 1
-  autoPlay: 1
+  autoPlay: 0
   perceptionHazard: {fileID: 5173755259565289548, guid: d5ed23ef93d27fc4d90eee58c0965907,
     type: 3}
   RLHazard:
@@ -5791,8 +5792,8 @@ MonoBehaviour:
   - {fileID: 747326714603306446, guid: 3039654beb7ccd4429c5760a9e6ca6ab, type: 3}
   - {fileID: 747326714603306446, guid: 1e9ce834f11627644ae7da698c371f60, type: 3}
   spawnValues: {x: 4, y: 0, z: 21}
-  startWait: 1
-  waveWait: 1
+  startWait: 0.5
+  waveWait: 0.1
   scoreText: {fileID: 1149538940}
   restartText: {fileID: 1503291518}
   gameOverText: {fileID: 718822852}
@@ -11692,7 +11693,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!223 &997952891
 Canvas:
   m_ObjectHideFlags: 0
@@ -12360,7 +12361,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
-  m_EffectDistance: {x: 6, y: 1}
+  m_EffectDistance: {x: 8, y: 1}
   m_UseGraphicAlpha: 1
 --- !u!1001 &1210680632
 PrefabInstance:
@@ -22836,6 +22837,9 @@ MonoBehaviour:
   addToScore: 1
   option1: {fileID: 0}
   option2: {fileID: 0}
+  exploded: 0
+  forcefieldPrefab: {fileID: 4470398338148826709, guid: 5d2f27afd7e6a4944aaae8991d599402,
+    type: 3}
 --- !u!1 &1738203995
 GameObject:
   m_ObjectHideFlags: 0
@@ -23333,7 +23337,7 @@ Transform:
   m_GameObject: {fileID: 1948181871}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 4}
+  m_LocalPosition: {x: 0, y: 0, z: 5.43}
   m_LocalScale: {x: 15, y: 1, z: 20}
   m_ConstrainProportionsScale: 0
   m_Children: []

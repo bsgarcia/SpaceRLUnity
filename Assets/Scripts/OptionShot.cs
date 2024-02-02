@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.Linq;
 // include stopwatch
 using Stopwatch = System.Diagnostics.Stopwatch;
-
+using Random2 = System.Random;
 
 public class OptionShot: MonoBehaviour
 {
@@ -18,6 +18,8 @@ public class OptionShot: MonoBehaviour
     
     public bool isLeaving = false;
 
+    private GameObject bolt;
+
 	void Awake()
 	{
 		GameObject gameControllerObject = GameObject.FindWithTag(
@@ -25,6 +27,7 @@ public class OptionShot: MonoBehaviour
         gameController = gameControllerObject.GetComponent<GameController>();
         playerController = gameController.GetPlayerController();
         optionController = gameController.GetOptionController();
+        GetComponent<Mover>().speed = TaskParameters.fallSpeed_;
 
     }
     
@@ -86,24 +89,67 @@ public class OptionShot: MonoBehaviour
     
     public void DeviateShot(Collider other)
     {
+        bolt = other.gameObject;
+        
         Vector3 collisionNormal = transform.position - other.transform.position;
 
-        float direction;
+        Random2 rnd = new Random2();
         // Determine if the collision is on the left or right side
-        if (collisionNormal.x > 0)
-        {
-            direction = Random.Range(-15, -5);
-        }
-        else
-        {
-            direction = Random.Range(5, 15);
-        } 
+        float direction = (float) rnd.NextDouble() > 0.5 ? 45 : 135;
+        
+        Vector3 originalVector = new Vector3(-1, -1, 0);
+            
+        // Define the angle you want to rotate by in degrees
+        float angleInDegrees = direction + Random.Range(-15f, 15f);
 
-        other.GetComponent<Rigidbody>().velocity = new Vector3(
-            direction, 0, 1) * other.GetComponent<Mover>().speed;
+        // Convert the angle to radians (Unity uses radians for rotation)
+        float angleInRadians = Mathf.Deg2Rad * angleInDegrees;
+
+        // Create a rotation quaternion based on the axis and angle
+        Quaternion rotation = Quaternion.AngleAxis(angleInDegrees, Vector3.down);
+
+        // Rotate the vector using the quaternion
+        Vector3 rotatedVector = rotation * originalVector;
+
+        // Output the result
+        Debug.Log("Original Vector: " + originalVector);
+        Debug.Log("Rotated Vector: " + rotatedVector);
+
+        other.GetComponent<Rigidbody>().velocity =  rotatedVector * other.GetComponent<Mover>().speed*3; 
+        
+        // other.transform.position = Vector3.Reflect(other.transform.position, Vector3.right);
         
         // get that direction and apply to bold rotation (to make it look like it's going in that direction)
         other.transform.rotation = Quaternion.LookRotation(other.GetComponent<Rigidbody>().velocity);
-        // StartCoroutine(gameController.DestroyWithDelay(other.gameObject, 1.5f));
+        // change height of bolt
+        Vector3 scale = other.transform.localScale;
+        other.transform.localScale = new Vector3(scale.x, scale.y, scale.z*3);
+
+        Mover mover = other.GetComponent<Mover>();
+        mover.speed = mover.speed * 20f;
+        StartCoroutine(SlowMotion());
+        // StartCoroutine(SlowMotion());
+        
+    }
+    
+    void DestroyBolt() {
+        Destroy(bolt);
+    }
+
+    IEnumerator SlowMotion()
+    {
+        // slow down time
+        Time.timeScale = .4f;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+
+        // wait
+        yield return new WaitForSecondsRealtime(.4f);
+
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+
+        Debug.Log("Time scale: " + Time.timeScale);
+        
+        DestroyBolt();
     }
 }

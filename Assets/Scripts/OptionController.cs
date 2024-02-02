@@ -39,7 +39,9 @@ public class OptionController : MonoBehaviour
     
     private bool isLeaving = false;
     
+    public bool exploded = false;
     
+    public GameObject forcefieldPrefab;
 
 	void Awake()
 	{
@@ -64,6 +66,7 @@ public class OptionController : MonoBehaviour
         choice = 0;
         scoreValue = outcomeOpt1;
         counterscoreValue = outcomeOpt2;
+        exploded = false;
     }
 
     public static int RandomGaussian(float mean, float std, float min, float max) {
@@ -140,6 +143,32 @@ public class OptionController : MonoBehaviour
 
         return (color1, color2, colorIdx1, colorIdx2);
     }
+    
+    public void AttachForceFields(GameObject option1, GameObject option2)
+    {
+        option1.GetComponent<MeshRenderer>().enabled = false;
+        option2.GetComponent<MeshRenderer>().enabled = false;
+
+        // Instantiate the prefab
+        GameObject ff1 = Instantiate(forcefieldPrefab);
+        GameObject ff2 = Instantiate(forcefieldPrefab);
+        // Set the parent of the instantiated prefab to the specified GameObject
+        ff1.transform.SetParent(option1.transform);
+        ff2.transform.SetParent(option2.transform);
+        // set Correct position and rotation, scale        
+        // ff1.transform.position = new Vector3(0.13f, 0f, 0.2f);
+        // ff2.transform.position = new Vector3(0.13f, 0f, 0.2f);
+        ff1.transform.localPosition = new Vector3(0.13f, 0f, 0.2f);
+        ff2.transform.localPosition = new Vector3(0.13f, 0f, 0.2f);
+
+        // ff1.transform.rotation = new Vector3(4f, 45f, 180f);
+        // ff2.transform.rotation = new Vector3(4f, 45f, 180f);
+        ff1.transform.rotation = Quaternion.Euler(4f, 45f, 180f);
+        ff2.transform.rotation = Quaternion.Euler(4f, 45f, 180f);
+
+        ff1.transform.localScale = new Vector3(.5f, .5f, .5f);
+        ff2.transform.localScale = new Vector3(.5f, .5f, .5f);
+    }
 
     public void SetForceFields(bool value, int idx = 0)
     {
@@ -147,17 +176,18 @@ public class OptionController : MonoBehaviour
 
         option1 = gameController.option1;
         option2 = gameController.option2;
-
+                
         if (!value) {
             // disable mesh rendered of option1 and option2
             getChildGameObject((GameObject) option1, (string) "Torus").GetComponent<MeshRenderer>().enabled = false;
             getChildGameObject((GameObject) option2, (string) "Torus").GetComponent<MeshRenderer>().enabled = false;
             // option1.Find("flat_cut/Torus").GetComponent<MeshRenderer>().enabled = false;
             // option2.Find("flat_cut/Torus").GetComponent<MeshRenderer>().enabled = false;
-            // option1.GetComponent<MeshRenderer>().enabled = false;
-            // option2.GetComponent<MeshRenderer>().enabled = false;
             return;
         }
+
+        // if prefab is not attached to spaceship
+        // AttachForceFields(option1, option2);
 
         // Material[] mat1 = option1.GetComponent<MeshRenderer>().materials;
         // Material[] mat2 = option2.GetComponent<MeshRenderer>().materials;
@@ -192,15 +222,14 @@ public class OptionController : MonoBehaviour
     
     
     public void SetChoice(string tag, Collider other)
+    // CALLED BY OptionShot.cs
     {
-
         // reset the missed variable
         missed = -1;
         // get the option
         GameObject option = GameObject.FindWithTag(tag);
         // get the other option
         GameObject otherOption = tag == "Opt1" ? GameObject.FindWithTag("Opt2") : GameObject.FindWithTag("Opt1");
-        bool exploded = true;
 
         // if the forcefield option is chosen, it is destroyed with probability p1
         // pick a random p between 0 and 1
@@ -227,19 +256,19 @@ public class OptionController : MonoBehaviour
             Debug.Log("Option survived");
             option.GetComponent<OptionShot>().DeviateShot(other);
 
-            Instantiate(explosionFailed, option.transform.localPosition, option.transform.localRotation);
+            Instantiate(explosionFailed, other.transform.localPosition, other.transform.localRotation);
 
             option.GetComponent<OptionShot>().LeaveScreen();
             otherOption.GetComponent<OptionShot>().LeaveScreen();
             exploded = false;
-            missed = 1;
+            gameController.MissedTrial();
             
         } 
         else 
         {
             Debug.Log("Option destroyed");
             exploded = true;
-            missed = 0;
+            // missed = 0;
             Instantiate(explosion, option.transform.localPosition, option.transform.localRotation);
             otherOption.GetComponent<OptionShot>().LeaveScreen();
         }
@@ -303,12 +332,16 @@ public class OptionController : MonoBehaviour
         if (isLeaving) 
             return;
         
+        StartCoroutine(Leave());
+    }
+    
+    IEnumerator Leave() {
         isLeaving = true;
-        
+        yield return new WaitForSeconds(0.3f);
         option1.GetComponent<OptionShot>().LeaveScreen();
         option2.GetComponent<OptionShot>().LeaveScreen();
-
         isLeaving = false;
+        yield return null;
     }
     
     public float GetOptionP(int cond, int idx)

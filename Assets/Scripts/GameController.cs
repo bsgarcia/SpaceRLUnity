@@ -26,8 +26,6 @@ public class GameController : MonoBehaviour
     public Vector3 spawnValues;
     public float startWait;
     public float waveWait;
-
-
     public Text scoreText;
 
     public Text restartText;
@@ -100,7 +98,7 @@ public class GameController : MonoBehaviour
 
     // JS interactions
     [DllImport("__Internal")]
-    private static extern void SetScore(int score);
+    private static extern void SetScore(int score, int session);
 
     [DllImport("__Internal")]
     private static extern void SetEnd();
@@ -116,6 +114,9 @@ public class GameController : MonoBehaviour
 
     [DllImport("__Internal")]
     public static extern void Alert(string text);
+    
+    [DllImport("__Internal")]
+    public static extern int GetSession();
 
     //[DllImport("__Internal")]
     //private static extern void DisplayNextButton();
@@ -472,7 +473,7 @@ public class GameController : MonoBehaviour
 
     public IEnumerator DestroyWithDelay(GameObject toDestroy, float delay)
     {
-        yield return new WaitForSeconds(delay);
+        yield return new WaitForSecondsRealtime(delay);
         Destroy(toDestroy);
     }
 
@@ -517,7 +518,7 @@ public class GameController : MonoBehaviour
     public void MissedTrial()
     {
         missedTrial = 1;
-        missedTrialText.text = "Missed   trial!";
+        missedTrialText.text = "Missed!";
         //AddScore(-1);
         AllowSendData(true);
         StartCoroutine("DeleteFeedback", TaskParameters.feedbackTime);
@@ -615,9 +616,10 @@ public class GameController : MonoBehaviour
         // PlayerController playerController = gameController.GetPlayerController();
 
         // gameController.Save("con", (int)cond + 1);
+        Save("prolificID", subID);
         Save("t", t);
         Save("session", session);
-        Save("block", (int)cond);
+        Save("block", (int) cond);
         Save("choice", (int) optionController.choice);
         Save("choseLeft", (int) (
          (optionController.choice == 1) & (op1IsLeft)
@@ -630,12 +632,13 @@ public class GameController : MonoBehaviour
         Save("leftCount", (int)playerController.leftCount);
         Save("rightCount", (int)playerController.rightCount);
         // TODO: add the other counts
-        Save("ev1", (float)TaskParameters.GetOptionMean(cond, 0));
-        Save("ev2", (float)TaskParameters.GetOptionMean(cond, 1));
+        // Save("ev1", (float)TaskParameters.GetOptionMean(cond, 0));
+        // Save("ev2", (float)TaskParameters.GetOptionMean(cond, 1));
+        Save("ev1", (float) optionController.outcomeOpt1*optionController.option1PDestroy);
+        Save("ev2", (float) optionController.outcomeOpt2*optionController.option2PDestroy);
         //
         Save("p1", (float)optionController.option1PDestroy);
         Save("p2", (float)optionController.option2PDestroy);
-        Save("prolificID", subID);
         // gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
         Save("missedTrial", (int) missedTrial);
         Save("score", (int)score);
@@ -744,7 +747,7 @@ public class TrainingTestPerception : MonoBehaviour, IState
 {
     // JS interactions
     [DllImport("__Internal")]
-    private static extern void SetScore(int score);
+    private static extern void SetScore(int score, int session);
 
     [DllImport("__Internal")]
     private static extern void SetEndTrainingPerceptual();
@@ -774,18 +777,21 @@ public class TrainingTestPerception : MonoBehaviour, IState
 
         Stopwatch timer = new Stopwatch();
         timer.Start();
+        
+        // GameController.Alert("session="+TaskParameters.sessionIdx);
 
         for (int t = 0; t < TaskParameters.nTrialsPerceptualTraining; t++)
         {
 
             while (!gameController.waveAllowed)
             {
-                yield return new WaitForSeconds(.5f);
+                yield return new WaitForSeconds(.05f);
             }
-
-            if (t == 0)
-                gameController.MovePlayerCenter();
+            
             yield return new WaitForSeconds(gameController.waveWait);
+
+
+            gameController.MovePlayerCenter();
 
 
             // replace player at the center of the screen
@@ -820,7 +826,7 @@ public class TrainingTestPerception : MonoBehaviour, IState
 
             while (!gameController.sendData)
             {
-                yield return new WaitForSeconds(.5f);
+                yield return new WaitForSeconds(.05f);
 
             }
 
@@ -847,7 +853,7 @@ public class TrainingTestPerception : MonoBehaviour, IState
         // StartCoroutine(gameController.DisplayGameOver());
         try
         {
-            SetScore(gameController.score);
+            SetScore((int) gameController.score, (int) TaskParameters.sessionIdx);
             SetEndTrainingPerceptual();
         }
         catch (System.Exception e)
@@ -865,7 +871,7 @@ public class TrainingTestRL : MonoBehaviour, IState
 {
     // JS interactions
     [DllImport("__Internal")]
-    private static extern void SetScore(int score);
+    private static extern void SetScore(int score, int session);
 
     [DllImport("__Internal")]
     private static extern void SetEndTrainingRL();
@@ -956,7 +962,7 @@ public class TrainingTestRL : MonoBehaviour, IState
 
         try
         {
-            SetScore(gameController.score);
+            SetScore(gameController.score, TaskParameters.sessionIdx);
             SetEndTrainingRL();
         }
         catch (System.Exception e)
@@ -971,7 +977,7 @@ public class TrainingTestFull : MonoBehaviour, IState
 {
     // JS interactions
     [DllImport("__Internal")]
-    private static extern void SetScore(int score);
+    private static extern void SetScore(int score, int session);
 
     [DllImport("__Internal")]
     private static extern void SetEnd();
@@ -1080,7 +1086,7 @@ public class TrainingTestFull : MonoBehaviour, IState
 
         try
         {
-            SetScore(gameController.score);
+            SetScore(gameController.score, TaskParameters.sessionIdx);
             SetEnd();
         }
         catch (System.Exception e)

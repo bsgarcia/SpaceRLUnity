@@ -64,13 +64,12 @@ public class BoundaryController : MonoBehaviour
 
         if ((tag == "BoundaryMissed") && (other.tag == "Opt1" || other.tag == "Opt2"))
         {   
-            if (gameController.GetOptionController().missed==1)
-            {
+            if (!gameController.GetOptionController().exploded)
                 gameController.MissedTrial();
-            }
+            
+            gameController.GetPlayerController().AllowShot(false);
             gameController.AllowWave(true);
             StartCoroutine(gameController.DestroyWithDelay(other.gameObject, 1f));
-            gameController.GetPlayerController().AllowShot(false);
         }
 
         if ((tag == "BoundaryLeave") && (other.tag == "Opt1" || other.tag == "Opt2") &&

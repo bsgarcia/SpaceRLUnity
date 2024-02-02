@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Security.Cryptography;
 using Random = UnityEngine.Random;
+using Random2 = System.Random;
 
 
 // Custom exception class for indicating common elements
@@ -28,6 +29,8 @@ public class TaskParameters : MonoBehaviour
     public static int sessionIdx;
 
     public float fbTime;
+    public float fallSpeed;
+
     public bool interleaved;
     public static bool online = true;
     // public int n_conditions;
@@ -40,6 +43,7 @@ public class TaskParameters : MonoBehaviour
 
     public static int nConds;
     public static float feedbackTime;
+    public static float fallSpeed_;
 
     public float minReward;
     public float maxReward;
@@ -115,14 +119,28 @@ public class TaskParameters : MonoBehaviour
 
     void Start()
     {
-        #if UNITY_WEBGL
-            // get from window.session
-            session = 
-        #endif
-        Random.seed = (int) System.DateTime.Now.Ticks;
 
         GameController gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
+            // get from window.session
+            session = GameController.GetSession();
+            if (session == 0) {
+                gameController.skipTuto = false;
+            } else {
+                gameController.skipTuto = true;
+            }
+
+        #endif
+         #if UNITY_EDITOR
+            Debug.logger.logEnabled = true;
+        #else
+            Debug.logger.logEnabled = false;
+        #endif
+
+        // Random.seed = (int) System.DateTime.Now.Ticks;
+
+        
         for (int i = 0; i < gameController.RLHazard.Count/2; i++)
         {
             availableOptions.Add(i);
@@ -198,6 +216,8 @@ public class TaskParameters : MonoBehaviour
         probabilities = proba;
 
         sessionIdx = session;
+        
+        fallSpeed_ = fallSpeed;
 
         Debug.Log("Start computing probabilities");
         MakeProbPairs();

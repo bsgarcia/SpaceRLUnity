@@ -94,7 +94,7 @@ public class DataController : MonoBehaviour
         str += "}";
 
         // Convert the dictionary to a JSON string
-        PrintData();
+        // PrintData();
                 // Serialize the object to JSON
         // string json = JsonConvert.SerializeObject(obj);
         

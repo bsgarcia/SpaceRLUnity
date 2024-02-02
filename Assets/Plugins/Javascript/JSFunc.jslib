@@ -12,11 +12,12 @@ mergeInto(LibraryManager.library, {
             return window.session;
     },
 
-    SetScore: function (score) {
-            window.score = score ;
+    SetScore: function (score, session) {
+            window.score[session] = score ;
         },
     Alert: function (str) {
-            window.alert(str);
+    
+            window.alert(UTF8ToString(str));
         },
 
     SetEnd: function() {
