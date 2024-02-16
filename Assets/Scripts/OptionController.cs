@@ -39,7 +39,7 @@ public class OptionController : MonoBehaviour
     
     private bool isLeaving = false;
     
-    public bool exploded = false;
+    public bool destroyed = false;
     
     public GameObject forcefieldPrefab;
 
@@ -66,7 +66,7 @@ public class OptionController : MonoBehaviour
         choice = 0;
         scoreValue = outcomeOpt1;
         counterscoreValue = outcomeOpt2;
-        exploded = false;
+        destroyed = false;
     }
 
     public static int RandomGaussian(float mean, float std, float min, float max) {
@@ -260,14 +260,14 @@ public class OptionController : MonoBehaviour
 
             option.GetComponent<OptionShot>().LeaveScreen();
             otherOption.GetComponent<OptionShot>().LeaveScreen();
-            exploded = false;
+            destroyed = false;
             gameController.MissedTrial();
             
         } 
         else 
         {
             Debug.Log("Option destroyed");
-            exploded = true;
+            destroyed = true;
             // missed = 0;
             Instantiate(explosion, option.transform.localPosition, option.transform.localRotation);
             otherOption.GetComponent<OptionShot>().LeaveScreen();
@@ -305,7 +305,7 @@ public class OptionController : MonoBehaviour
         }
 
 
-        if ((showFeedback) && (exploded)) {
+        if ((showFeedback) && (destroyed)) {
             gameController.PrintFeedback(
                 scoreValue, counterscoreValue, option.transform.position);
             gameController.AddScore(scoreValue);
@@ -317,7 +317,7 @@ public class OptionController : MonoBehaviour
         gameController.AllowSendData(true);
 
         // destroy chosen option + laser shot
-        if (exploded)
+        if (destroyed)
         {
             Debug.Log("Chose left: " + choseLeft);
             Debug.Log("Position: " + transform.position.x);

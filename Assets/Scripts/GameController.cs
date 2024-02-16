@@ -640,7 +640,7 @@ public class GameController : MonoBehaviour
         Save("p1", (float)optionController.option1PDestroy);
         Save("p2", (float)optionController.option2PDestroy);
         // gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
-        Save("missedTrial", (int) missedTrial);
+        Save("destroyed", (int) (optionController.destroyed ? 1 : 0));
         Save("score", (int)score);
         // gameController.Save("optFile1",
         //  (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");

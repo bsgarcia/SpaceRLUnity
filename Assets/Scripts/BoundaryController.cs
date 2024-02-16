@@ -13,10 +13,8 @@ public class BoundaryController : MonoBehaviour
 
     void Start () 
     {
-
         gameController = GameObject.FindWithTag("GameController").
             GetComponent<GameController>();
-    
     }
 
 	void OnTriggerExit(Collider other)
@@ -26,28 +24,7 @@ public class BoundaryController : MonoBehaviour
             Destroy(other.gameObject);
         }
     }
-    //{
-    //    // Debug.Log("BoundaryController: " + tag);
-    //    if (tag == "BoundaryMissed")
-    //    {  
-    //        if (gameController.GetOptionController().missed)
-    //        {
-    //            gameController.MissedTrial();
-    //        }
-    //        gameController.AllowWave(true);
-    //        Destroy(other.gameObject);
 
-    //        gameController.AllowWave(true);
-    //        Destroy(other.gameObject);
-    //    }
-
-    //    if ((tag == "BoundaryShootable") &&  (other.tag == "Bolt"))
-    //    {
-    //        gameController.FadeAndDestroyOption(other.gameObject, 1f);
-
-    //    }   
-    //}
-        
     void OnTriggerEnter(Collider other)
     {
         if ((tag == "BoundaryShootable") &&  (other.tag == "Opt1" || other.tag == "Opt2"))
@@ -64,7 +41,7 @@ public class BoundaryController : MonoBehaviour
 
         if ((tag == "BoundaryMissed") && (other.tag == "Opt1" || other.tag == "Opt2"))
         {   
-            if (!gameController.GetOptionController().exploded)
+            if (!gameController.GetOptionController().destroyed)
                 gameController.MissedTrial();
             
             gameController.GetPlayerController().AllowShot(false);
