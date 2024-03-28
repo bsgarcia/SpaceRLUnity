@@ -144,7 +144,7 @@ public class OptionController : MonoBehaviour
         return (color1, color2, colorIdx1, colorIdx2);
     }
     
-    public void AttachForceFields(GameObject option1, GameObject option2)
+    public void AttachForceFields(GameObject option1, GameObject option2, float space)
     {
         option1.GetComponent<MeshRenderer>().enabled = false;
         option2.GetComponent<MeshRenderer>().enabled = false;
@@ -153,24 +153,44 @@ public class OptionController : MonoBehaviour
         GameObject ff1 = Instantiate(forcefieldPrefab);
         GameObject ff2 = Instantiate(forcefieldPrefab);
         // Set the parent of the instantiated prefab to the specified GameObject
+        // for Resources/ff1
+        // ff1.transform.localScale = new Vector3(.91f, .91f, 5f);
+        // ff2.transform.localScale = new Vector3(.91f, .91f, 5f);
+        // for Resources/ff2
+        // ff1.transform.localScale = new Vector3(.71f, .71f, 5f);
+        // ff2.transform.localScale = new Vector3(.71f, .71f, 5f);
+        // for Resources/ff2
+        ff1.transform.localScale = new Vector3(.26f, .26f, 5f);
+        ff2.transform.localScale = new Vector3(.26f, .26f, 5f);
+// 
         ff1.transform.SetParent(option1.transform);
         ff2.transform.SetParent(option2.transform);
         // set Correct position and rotation, scale        
-        // ff1.transform.position = new Vector3(0.13f, 0f, 0.2f);
-        // ff2.transform.position = new Vector3(0.13f, 0f, 0.2f);
-        ff1.transform.localPosition = new Vector3(0.13f, 0f, 0.2f);
-        ff2.transform.localPosition = new Vector3(0.13f, 0f, 0.2f);
+        // ff1.transform.localPosition = new Vector3(0f, 0f, 0f);
+        // ff2.transform.localPosition = new Vector3(0f, 0f, 0f);
+        
+        // for Resources/ff1
+        // float spacing = -1.6f;
+        // for Resources/ff2
+        float spacing = -space;
 
-        // ff1.transform.rotation = new Vector3(4f, 45f, 180f);
-        // ff2.transform.rotation = new Vector3(4f, 45f, 180f);
-        ff1.transform.rotation = Quaternion.Euler(4f, 45f, 180f);
-        ff2.transform.rotation = Quaternion.Euler(4f, 45f, 180f);
+         // Get the dimensions of the spaceship
+        Bounds bounds1 = option1.GetComponent<Renderer>().bounds;
+        Bounds bounds2 = option2.GetComponent<Renderer>().bounds;
+        
+        // Calculate the position in front of the model
+        Vector3 positionInFront1 = option1.transform.position + option1.transform.forward * (bounds1.size.z / 2 + spacing);
+        Vector3 positionInFront2 = option2.transform.position + option2.transform.forward * (bounds2.size.z / 2 + spacing);
 
-        ff1.transform.localScale = new Vector3(.5f, .5f, .5f);
-        ff2.transform.localScale = new Vector3(.5f, .5f, .5f);
+        // Place the ff at the calculated position
+        ff1.transform.position = positionInFront1;
+        ff2.transform.position = positionInFront2;
+
+        ff1.transform.rotation = Quaternion.Euler(90f, 45f, 0f);
+        ff2.transform.rotation = Quaternion.Euler(90f, 45f, 0f);
     }
 
-    public void SetForceFields(bool value, int idx = 0)
+    public void SetForceFields(bool value, int idx = 0, float space = 1.7f)
     {
         forcefield = value;
 
@@ -179,38 +199,27 @@ public class OptionController : MonoBehaviour
                 
         if (!value) {
             // disable mesh rendered of option1 and option2
-            getChildGameObject((GameObject) option1, (string) "Torus").GetComponent<MeshRenderer>().enabled = false;
-            getChildGameObject((GameObject) option2, (string) "Torus").GetComponent<MeshRenderer>().enabled = false;
-            // option1.Find("flat_cut/Torus").GetComponent<MeshRenderer>().enabled = false;
-            // option2.Find("flat_cut/Torus").GetComponent<MeshRenderer>().enabled = false;
+            // getChildGameObject((GameObject) option1, (string) "ff_prefab(Clone)").GetComponent<SpriteRenderer>().enabled = false;
+            // getChildGameObject((GameObject) option2, (string) "ff_prefab(Clone)").GetComponent<SpriteRenderer>().enabled = false;
+            option1.GetComponent<MeshRenderer>().enabled = false;
+            option2.GetComponent<MeshRenderer>().enabled = false;
             return;
         }
 
         // if prefab is not attached to spaceship
-        // AttachForceFields(option1, option2);
+        AttachForceFields(option1, option2, space);
 
-        // Material[] mat1 = option1.GetComponent<MeshRenderer>().materials;
-        // Material[] mat2 = option2.GetComponent<MeshRenderer>().materials;
-        
-
-        // (Color color1, Color color2, int colorIdx1, int colorIdx2) = GetColor();
-
-        // double[] p = new double[] {0.11920292202211755, 0.16798161486607552,
-        //  0.23147521650098238, 0.35434369377420455, 0.45016600268752216,
-        //  0.549833997312478, 0.6456563062257954, 0.7685247834990175,
-        //  0.8320183851339245, 0.8807970779778823};
         float[] p = new float[2] {TaskParameters.probabilities[idx].x, TaskParameters.probabilities[idx].y};
         
         SetPDestroy(p[0], p[1]);
 
-        // mat1[1] = option1.GetComponent<OptMaterials>().GetForceField(color1, 1);
-        // mat2[1] = option1.GetComponent<OptMaterials>().GetForceField(color2, 2);
-        // 
-        getChildGameObject((GameObject) option1, (string) "Torus").GetComponent<MeshRenderer>().materials[0].SetFloat("_Proportion", (float) p[0]);
-        getChildGameObject((GameObject) option2, (string) "Torus").GetComponent<MeshRenderer>().materials[0].SetFloat("_Proportion", (float) p[1]);
+        SpriteRenderer spriteRenderer1 = getChildGameObject(
+            (GameObject) option1, (string) "ff_prefab(Clone)").GetComponent<SpriteRenderer>();
+        SpriteRenderer spriteRenderer2 = getChildGameObject(
+            (GameObject) option2, (string) "ff_prefab(Clone)").GetComponent<SpriteRenderer>();
 
-        // option2.GetComponent<MeshRenderer>().materials = mat2;
-        // option1.GetComponent<MeshRenderer>().materials = mat1;
+        spriteRenderer1.sprite = Resources.Load<Sprite>("bw/" + p[0].ToString().Replace(",", "."));
+        spriteRenderer2.sprite = Resources.Load<Sprite>("bw/" + p[1].ToString().Replace(",", "."));
 
     }
     static public GameObject getChildGameObject(GameObject fromGameObject, string withName) {
@@ -253,10 +262,10 @@ public class OptionController : MonoBehaviour
         {
             other.GetComponent<Collider>().enabled = false;
 
+            Instantiate(explosionFailed, other.transform.localPosition, other.transform.localRotation);
+
             Debug.Log("Option survived");
             option.GetComponent<OptionShot>().DeviateShot(other);
-
-            Instantiate(explosionFailed, other.transform.localPosition, other.transform.localRotation);
 
             option.GetComponent<OptionShot>().LeaveScreen();
             otherOption.GetComponent<OptionShot>().LeaveScreen();
@@ -315,6 +324,7 @@ public class OptionController : MonoBehaviour
         //}
 
         gameController.AllowSendData(true);
+        // gameController.AllowWave(true);
 
         // destroy chosen option + laser shot
         if (destroyed)

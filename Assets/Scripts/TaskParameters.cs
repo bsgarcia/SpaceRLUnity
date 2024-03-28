@@ -21,8 +21,6 @@ public class TaskParameters : MonoBehaviour
 
     public int nTrialsPerceptionPerPair;
     public int nPerceptualPairs = 16;
-    public int nTrialsPerConditionFull;
-    public int nTrialsPerConditionTrainingRL;
     
     public int session;
 
@@ -37,9 +35,15 @@ public class TaskParameters : MonoBehaviour
     // public int feedback_info;
 
     public static int nTrialsFull;
+
     public static int nTrialsTrainingRL;
     
     public static int nTrialsPerceptualTraining;
+    
+    public  bool trainingPerceptual;
+    public  bool trainingRL;
+    public  bool trainingFull;
+    
 
     public static int nConds;
     public static float feedbackTime;
@@ -92,7 +96,7 @@ public class TaskParameters : MonoBehaviour
     private List<int> availableOptions = new List<int>();
     public static List<Vector2> symbols = new List<Vector2>();
     public static List<Vector2> symbolsTransfer = new List<Vector2>();
-    public List<Vector2> proba = new List<Vector2>
+    /* public List<Vector2> proba2 = new List<Vector2>
     {
         new Vector2(0.12f, 0.88f),
         new Vector2(0.12f, 0.71f),
@@ -110,6 +114,104 @@ public class TaskParameters : MonoBehaviour
         new Vector2(0.55f, 0.63f),
         new Vector2(0.63f, 0.78f),
         new Vector2(0.78f, 0.88f)
+    };
+ */
+    // public List<Vector2> proba = new List<Vector2>
+    //     {
+    //         new Vector2(0.16f, 0.29f),
+    //         new Vector2(0.71f, 0.84f),
+    //         new Vector2(0.22f, 0.37f),
+    //         new Vector2(0.63f, 0.78f),
+    //         new Vector2(0.55f, 0.78f),
+    //         new Vector2(0.22f, 0.45f),
+    //         new Vector2(0.37f, 0.63f),
+    //         new Vector2(0.55f, 0.88f),
+    //         new Vector2(0.12f, 0.45f),
+    //         new Vector2(0.29f, 0.71f),
+    //         new Vector2(0.16f, 0.63f),
+    //         new Vector2(0.37f, 0.84f),
+    //         new Vector2(0.12f, 0.71f),
+    //         new Vector2(0.29f, 0.88f),
+    //         new Vector2(0.16f, 0.84f),
+    //         new Vector2(0.12f, 0.88f)
+    //     };
+    //     
+
+    public List<Vector2> proba2 = new List<Vector2>
+    {
+        new Vector2(0.12f, 0.18f),
+        new Vector2(0.12f, 0.27f),
+        new Vector2(0.12f, 0.38f),
+        new Vector2(0.12f, 0.5f),
+        new Vector2(0.12f, 0.62f),
+        new Vector2(0.12f, 0.73f),
+        new Vector2(0.12f, 0.82f),
+        new Vector2(0.12f, 0.88f),
+        new Vector2(0.18f, 0.12f),
+        new Vector2(0.18f, 0.27f),
+        new Vector2(0.18f, 0.38f),
+        new Vector2(0.18f, 0.5f),
+        new Vector2(0.18f, 0.62f),
+        new Vector2(0.18f, 0.73f),
+        new Vector2(0.18f, 0.82f),
+        new Vector2(0.18f, 0.88f),
+        new Vector2(0.27f, 0.12f),
+        new Vector2(0.27f, 0.18f),
+        new Vector2(0.27f, 0.38f),
+        new Vector2(0.27f, 0.5f),
+        new Vector2(0.27f, 0.62f),
+        new Vector2(0.27f, 0.73f),
+        new Vector2(0.27f, 0.82f),
+        new Vector2(0.27f, 0.88f),
+        new Vector2(0.38f, 0.12f),
+        new Vector2(0.38f, 0.18f),
+        new Vector2(0.38f, 0.27f),
+        new Vector2(0.38f, 0.5f),
+        new Vector2(0.38f, 0.62f),
+        new Vector2(0.38f, 0.73f),
+        new Vector2(0.38f, 0.82f),
+        new Vector2(0.38f, 0.88f),
+        new Vector2(0.5f, 0.12f),
+        new Vector2(0.5f, 0.18f),
+        new Vector2(0.5f, 0.27f),
+        new Vector2(0.5f, 0.38f),
+        new Vector2(0.5f, 0.62f),
+        new Vector2(0.5f, 0.73f),
+        new Vector2(0.5f, 0.82f),
+        new Vector2(0.5f, 0.88f),
+        new Vector2(0.62f, 0.12f),
+        new Vector2(0.62f, 0.18f),
+        new Vector2(0.62f, 0.27f),
+        new Vector2(0.62f, 0.38f),
+        new Vector2(0.62f, 0.5f),
+        new Vector2(0.62f, 0.73f),
+        new Vector2(0.62f, 0.82f),
+        new Vector2(0.62f, 0.88f),
+        new Vector2(0.73f, 0.12f),
+        new Vector2(0.73f, 0.18f),
+        new Vector2(0.73f, 0.27f),
+        new Vector2(0.73f, 0.38f),
+        new Vector2(0.73f, 0.5f),
+        new Vector2(0.73f, 0.62f),
+        new Vector2(0.73f, 0.82f),
+        new Vector2(0.73f, 0.88f),
+        new Vector2(0.82f, 0.12f),
+        new Vector2(0.82f, 0.18f),
+        new Vector2(0.82f, 0.27f),
+        new Vector2(0.82f, 0.38f),
+        new Vector2(0.82f, 0.5f),
+        new Vector2(0.82f, 0.62f),
+        new Vector2(0.82f, 0.73f),
+        new Vector2(0.82f, 0.88f),
+        new Vector2(0.88f, 0.12f),
+        new Vector2(0.88f, 0.18f),
+        new Vector2(0.88f, 0.27f),
+        new Vector2(0.88f, 0.38f),
+        new Vector2(0.88f, 0.5f),
+        new Vector2(0.88f, 0.62f),
+        new Vector2(0.88f, 0.73f),
+        new Vector2(0.88f, 0.82f)
+                
     };
 
     public static List<Vector2> probabilities;
@@ -203,17 +305,32 @@ public class TaskParameters : MonoBehaviour
         conditionsTraining.Add(ConditionTraining2);
 
         nConds = conditions.Count;
-        nTrialsFull = nTrialsPerConditionFull*conditions.Count;
+        // nTrialsFull = nTrialsPerConditionFull*conditions.Count;
         feedbackTime = fbTime;
 
-        if (nPerceptualPairs != proba.Count) {
+        if (nPerceptualPairs != proba2.Count) {
             Debug.Log("Warning!: nPerceptualPairs != proba.Count");
         }
-        nTrialsPerceptualTraining = nTrialsPerceptionPerPair*nPerceptualPairs;
+        
+        nTrialsPerceptualTraining = 0;
+        nTrialsTrainingRL = 0;
+        nTrialsFull = 0;
+
+        if (trainingPerceptual) {
+            nTrialsPerceptualTraining = nTrialsPerceptionPerPair*nPerceptualPairs;
+        }
+
+        if (trainingRL) {
+            nTrialsTrainingRL = nTrialsPerceptionPerPair*nPerceptualPairs;
+        }
+        
+        if (trainingFull) {
+            nTrialsFull = nTrialsPerceptionPerPair*nPerceptualPairs;
+        }
+
         probPairIdx = new int[nTrialsPerceptualTraining];
 
-        nTrialsTrainingRL = nTrialsPerConditionTrainingRL*conditionsTraining.Count;
-        probabilities = proba;
+        probabilities = proba2;
 
         sessionIdx = session;
         
@@ -255,6 +372,10 @@ public class TaskParameters : MonoBehaviour
 
     }
     
+    public static void RandomizePairs() {
+        Shuffle2(ffPairIdx);
+    }
+    
     public static  int GetOptionMean(int c, int option) {
         if (c<0) {
             Debug.Log("c: " + 0 + " option: " + option);
@@ -272,9 +393,9 @@ public class TaskParameters : MonoBehaviour
 
         for (int c = 0; c < nConds; c++)//conditions.Count; c++)
         {
-            List<int> x1 = Enumerable.Repeat(c, nTrialsPerConditionFull).ToList();
+            List<int> x1 = Enumerable.Repeat(c, nTrialsFull/2).ToList();
             conditionIdxTemp.Add(x1);
-            List<int> x2 = Enumerable.Repeat(c, nTrialsPerConditionTrainingRL).ToList();
+            List<int> x2 = Enumerable.Repeat(c, nTrialsTrainingRL/2).ToList();
             conditionTrainingIdxTemp.Add(x2);
         }
 
@@ -292,7 +413,7 @@ public class TaskParameters : MonoBehaviour
 
     }
 
-    private void Shuffle2<T>(IList<T> list)
+    private static void Shuffle2<T>(IList<T> list)
     {
         RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider();
         int n = list.Count;

@@ -192,14 +192,12 @@ public class GameController : MonoBehaviour
     public IEnumerator SendToDB()
     {
         //PrintData();
-        if (online)
-        {
-            yield return dataController.SendToDB();
-        }
+        yield return dataController.SendToDB();
 
-        AfterSendToDB();
+        PrintData();
 
         Debug.Log("******************************************************");
+        yield return null;
 
     }
 
@@ -208,13 +206,11 @@ public class GameController : MonoBehaviour
         dataController.PrintData();
     }
 
-    public void AfterSendToDB()
+    public void ResetBeforeNewTrial()
     {
-        PrintData();
         playerController.ResetCount();
         optionController.Reset();
         missedTrial = 0;
-
     }
 
 
@@ -545,9 +541,9 @@ public class GameController : MonoBehaviour
         (Texture)Resources.Load("backgrounds/space");
     }
 
-    public void SetForceFields(bool value = true, int idx = 0)
+    public void SetForceFields(bool value = true, int idx = 0, float space = 2.7f)
     {
-        optionController.SetForceFields(value, idx);
+        optionController.SetForceFields(value, idx, space);
     }
 
 
@@ -790,6 +786,8 @@ public class TrainingTestPerception : MonoBehaviour, IState
             
             yield return new WaitForSeconds(gameController.waveWait);
 
+            // reset
+            gameController.ResetBeforeNewTrial();
 
             gameController.MovePlayerCenter();
 
@@ -811,7 +809,7 @@ public class TrainingTestPerception : MonoBehaviour, IState
             gameController.AllowSendData(false);
 
             gameController.SpawnOptions(0, 0, "perception");
-            gameController.SetForceFields(true, TaskParameters.ffPairIdx[t]);
+            gameController.SetForceFields(true, TaskParameters.ffPairIdx[t], 4.7f);
 
             // Debug.Log("prob pair idx: " + TaskParameters.probPairIdx[t]);
             if (gameController.autoPlay) {
@@ -830,11 +828,17 @@ public class TrainingTestPerception : MonoBehaviour, IState
 
             }
 
-            gameController.SaveData(t: t, session: TaskParameters.sessionIdx, cond: TaskParameters.ffPairIdx[t]);
+            gameController.SaveData(
+                t: t,
+                session: TaskParameters.sessionIdx,
+                cond: TaskParameters.ffPairIdx[t]
+            );
+            
+            // yield return gameController.AfterSendToDB();
 
             yield return gameController.SendToDB();
 
-            gameController.AllowWave(true);
+            // gameController.AllowWave(false);
 
         }
 
@@ -1008,6 +1012,8 @@ public class TrainingTestFull : MonoBehaviour, IState
         // start timer (elapsed time)
         Stopwatch timer = new Stopwatch();
         timer.Start();
+        
+        TaskParameters.RandomizePairs();
 
 
         for (int t = 0; t < TaskParameters.nTrialsFull; t++)
@@ -1026,24 +1032,20 @@ public class TrainingTestFull : MonoBehaviour, IState
 
             gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
 
-            // List<int[]> idxs = new List<int[]>
-            // {
-            //     new int[] {0, 1},
-            //     new int[] {2, 3},
-            // };
-
-            // int idx1 = idxs[cond][0];
-            // int idx2 = idxs[cond][1];
             List<int> options = TaskParameters.pairs[cond];
 
             gameController.SpawnOptions(options[0], options[1], phase: "full");
 
             gameController.DisplayFeedback(true);
-            gameController.SetForceFields(true);
+            gameController.SetForceFields(true, idx: TaskParameters.ffPairIdx[t], space: 2.9f);
 
+            // gameController.SetOutcomes(
+                // TaskParameters.rewards[cond][0][condTrial[cond]],
+                // TaskParameters.rewards[cond][1][condTrial[cond]]);
+                // 
             gameController.SetOutcomes(
-                TaskParameters.rewards[cond][0][condTrial[cond]],
-                TaskParameters.rewards[cond][1][condTrial[cond]]);
+                5, 5
+            );
 
             condTrial[cond]++;
 

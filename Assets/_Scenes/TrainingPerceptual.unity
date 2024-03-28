@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44950032, g: 0.49649626, b: 0.55914444, a: 1}
+  m_IndirectSpecularColor: {r: 0.44949985, g: 0.4964956, b: 0.559144, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -153,14 +153,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed268102e3d691141b7ceaa38de9402e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nTrialsPerceptionPerPair: 4
-  nPerceptualPairs: 16
-  nTrialsPerConditionFull: 0
-  nTrialsPerConditionTrainingRL: 0
+  nTrialsPerceptionPerPair: 3
+  nPerceptualPairs: 72
   session: 0
   fbTime: 1
   fallSpeed: -4
   interleaved: 1
+  trainingPerceptual: 1
+  trainingRL: 0
+  trainingFull: 0
   minReward: 0
   maxReward: 100
   Option1: {x: 1, y: 0.75, z: 1}
@@ -172,23 +173,79 @@ MonoBehaviour:
   Condition2: {x: 72, y: 28, z: 1}
   ConditionTraining1: {x: 50, y: 50, z: 0}
   ConditionTraining2: {x: 50, y: 50, z: 0}
-  proba:
+  proba2:
+  - {x: 0.12, y: 0.18}
+  - {x: 0.12, y: 0.27}
+  - {x: 0.12, y: 0.38}
+  - {x: 0.12, y: 0.5}
+  - {x: 0.12, y: 0.62}
+  - {x: 0.12, y: 0.73}
+  - {x: 0.12, y: 0.82}
   - {x: 0.12, y: 0.88}
-  - {x: 0.12, y: 0.71}
-  - {x: 0.12, y: 0.45}
-  - {x: 0.12, y: 0.22}
-  - {x: 0.16, y: 0.84}
-  - {x: 0.16, y: 0.63}
-  - {x: 0.22, y: 0.37}
-  - {x: 0.29, y: 0.88}
-  - {x: 0.29, y: 0.71}
-  - {x: 0.37, y: 0.84}
-  - {x: 0.37, y: 0.63}
-  - {x: 0.37, y: 0.45}
-  - {x: 0.55, y: 0.88}
-  - {x: 0.55, y: 0.63}
-  - {x: 0.63, y: 0.78}
-  - {x: 0.78, y: 0.88}
+  - {x: 0.18, y: 0.12}
+  - {x: 0.18, y: 0.27}
+  - {x: 0.18, y: 0.38}
+  - {x: 0.18, y: 0.5}
+  - {x: 0.18, y: 0.62}
+  - {x: 0.18, y: 0.73}
+  - {x: 0.18, y: 0.82}
+  - {x: 0.18, y: 0.88}
+  - {x: 0.27, y: 0.12}
+  - {x: 0.27, y: 0.18}
+  - {x: 0.27, y: 0.38}
+  - {x: 0.27, y: 0.5}
+  - {x: 0.27, y: 0.62}
+  - {x: 0.27, y: 0.73}
+  - {x: 0.27, y: 0.82}
+  - {x: 0.27, y: 0.88}
+  - {x: 0.38, y: 0.12}
+  - {x: 0.38, y: 0.18}
+  - {x: 0.38, y: 0.27}
+  - {x: 0.38, y: 0.5}
+  - {x: 0.38, y: 0.62}
+  - {x: 0.38, y: 0.73}
+  - {x: 0.38, y: 0.82}
+  - {x: 0.38, y: 0.88}
+  - {x: 0.5, y: 0.12}
+  - {x: 0.5, y: 0.18}
+  - {x: 0.5, y: 0.27}
+  - {x: 0.5, y: 0.38}
+  - {x: 0.5, y: 0.62}
+  - {x: 0.5, y: 0.73}
+  - {x: 0.5, y: 0.82}
+  - {x: 0.5, y: 0.88}
+  - {x: 0.62, y: 0.12}
+  - {x: 0.62, y: 0.18}
+  - {x: 0.62, y: 0.27}
+  - {x: 0.62, y: 0.38}
+  - {x: 0.62, y: 0.5}
+  - {x: 0.62, y: 0.73}
+  - {x: 0.62, y: 0.82}
+  - {x: 0.62, y: 0.88}
+  - {x: 0.73, y: 0.12}
+  - {x: 0.73, y: 0.18}
+  - {x: 0.73, y: 0.27}
+  - {x: 0.73, y: 0.38}
+  - {x: 0.73, y: 0.5}
+  - {x: 0.73, y: 0.62}
+  - {x: 0.73, y: 0.82}
+  - {x: 0.73, y: 0.88}
+  - {x: 0.82, y: 0.12}
+  - {x: 0.82, y: 0.18}
+  - {x: 0.82, y: 0.27}
+  - {x: 0.82, y: 0.38}
+  - {x: 0.82, y: 0.5}
+  - {x: 0.82, y: 0.62}
+  - {x: 0.82, y: 0.73}
+  - {x: 0.82, y: 0.88}
+  - {x: 0.88, y: 0.12}
+  - {x: 0.88, y: 0.18}
+  - {x: 0.88, y: 0.27}
+  - {x: 0.88, y: 0.38}
+  - {x: 0.88, y: 0.5}
+  - {x: 0.88, y: 0.62}
+  - {x: 0.88, y: 0.73}
+  - {x: 0.88, y: 0.82}
   probPairIdx: 
 --- !u!4 &109284361
 Transform:
@@ -5793,7 +5850,7 @@ MonoBehaviour:
   - {fileID: 747326714603306446, guid: 1e9ce834f11627644ae7da698c371f60, type: 3}
   spawnValues: {x: 4, y: 0, z: 21}
   startWait: 0.5
-  waveWait: 0.1
+  waveWait: 0.3
   scoreText: {fileID: 1149538940}
   restartText: {fileID: 1503291518}
   gameOverText: {fileID: 718822852}
@@ -12435,6 +12492,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: 42ac73572e96c2849a68756cb07a368c, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: 42ac73572e96c2849a68756cb07a368c, type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: acd8f714506fd6540a36a074eb7f1491, type: 2}
+    - target: {fileID: 2300002, guid: 42ac73572e96c2849a68756cb07a368c, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2300002, guid: 42ac73572e96c2849a68756cb07a368c, type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: acd8f714506fd6540a36a074eb7f1491, type: 2}
+    - target: {fileID: 2300006, guid: 42ac73572e96c2849a68756cb07a368c, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2300006, guid: 42ac73572e96c2849a68756cb07a368c, type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: acd8f714506fd6540a36a074eb7f1491, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -22837,8 +22918,8 @@ MonoBehaviour:
   addToScore: 1
   option1: {fileID: 0}
   option2: {fileID: 0}
-  exploded: 0
-  forcefieldPrefab: {fileID: 4470398338148826709, guid: 5d2f27afd7e6a4944aaae8991d599402,
+  destroyed: 0
+  forcefieldPrefab: {fileID: 6054270853750656241, guid: a05f9aedd69c64a4e8a1f9019df2ec76,
     type: 3}
 --- !u!1 &1738203995
 GameObject:

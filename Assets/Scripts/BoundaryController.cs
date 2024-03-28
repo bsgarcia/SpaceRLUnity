@@ -41,11 +41,16 @@ public class BoundaryController : MonoBehaviour
 
         if ((tag == "BoundaryMissed") && (other.tag == "Opt1" || other.tag == "Opt2"))
         {   
-            if (!gameController.GetOptionController().destroyed)
+            // catch no shot fired
+            if (!gameController.GetOptionController().destroyed) {
                 gameController.MissedTrial();
+            }
             
-            gameController.GetPlayerController().AllowShot(false);
+            // only allow next trial when unshot option has left
             gameController.AllowWave(true);
+            gameController.AllowSendData(true);
+
+            gameController.GetPlayerController().AllowShot(false);
             StartCoroutine(gameController.DestroyWithDelay(other.gameObject, 1f));
         }
 
@@ -55,7 +60,7 @@ public class BoundaryController : MonoBehaviour
             Debug.Log("BoundaryController.cs: BoundaryLeave - " + other.tag + "is leaving");
             gameController.GetPlayerController().AllowShot(false);
             gameController.GetOptionController().MakeOptionsLeave();
-            gameController.GetOptionController().missed = 1;
+            // gameController.GetOptionController().missed = 1;
         }
 
     }
