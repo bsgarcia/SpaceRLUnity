@@ -22,6 +22,9 @@ public class TaskParameters : MonoBehaviour
     public int nTrialsPerceptionPerPair;
     public int nPerceptualPairs = 16;
     
+    public int perceptualReward_ = 50;
+    public static int perceptualReward;
+    
     public int session;
 
     public static int sessionIdx;
@@ -52,7 +55,7 @@ public class TaskParameters : MonoBehaviour
     public float minReward;
     public float maxReward;
 
-    [VectorLabels("mag", "proba", "val")]
+    /* [VectorLabels("mag", "proba", "val")]
     public Vector3 Option1;
 
     [VectorLabels("mag", "proba", "val")]
@@ -63,7 +66,7 @@ public class TaskParameters : MonoBehaviour
 
     [VectorLabels("mag", "proba", "val")]
     public Vector3 Option4;
-
+ */
     public int std;
 
     [VectorLabels("Opt1", "Opt2", "info")]
@@ -213,11 +216,24 @@ public class TaskParameters : MonoBehaviour
         new Vector2(0.88f, 0.82f)
                 
     };
+    
+    // create an array of pairs of game objects to set in the unity editor
+    public List<GameObject> pairRLTraining = new List<GameObject>(new GameObject[2]);
+    public List<GameObject> pairFull1 = new List<GameObject>(new GameObject[2]);
+    public List<GameObject> pairFull2 = new List<GameObject>(new GameObject[2]);
+    public List<GameObject> pairFull3 = new List<GameObject>(new GameObject[2]);
+    public List<GameObject> pairFull4 = new List<GameObject>(new GameObject[2]);
+
 
     public static List<Vector2> probabilities;
 
     public static int[] ffPairIdx;
     public int[] probPairIdx;
+    
+    public int nTrialPerCondition;
+    
+    public static List<List<GameObject>> pairsFullGameObject = new List<List<GameObject>>(); 
+    public static List<GameObject> pairsRLGameObject = new List<GameObject>();
 
     void Start()
     {
@@ -293,10 +309,10 @@ public class TaskParameters : MonoBehaviour
             throw new CommonElementsFoundException("Common elements found between availableOptions and availableOptions2.");
         }
 
-        options.Add(Option1);
-        options.Add(Option2);
-        options.Add(Option3);
-        options.Add(Option4);
+        // options.Add(Option1);
+        // options.Add(Option2);
+        // options.Add(Option3);
+        // options.Add(Option4);
 
         conditions.Add(Condition1);
         conditions.Add(Condition2);
@@ -325,7 +341,7 @@ public class TaskParameters : MonoBehaviour
         }
         
         if (trainingFull) {
-            nTrialsFull = nTrialsPerceptionPerPair*nPerceptualPairs;
+            nTrialsFull = nTrialsPerceptionPerPair*nPerceptualPairs*4;
         }
 
         probPairIdx = new int[nTrialsPerceptualTraining];
@@ -342,6 +358,25 @@ public class TaskParameters : MonoBehaviour
         MakeConditionsIdx();
         Debug.Log("Start computing rewards");
         MakeDistributionRewards();
+        
+        nTrialPerCondition = nTrialsPerceptionPerPair;
+
+        Shuffle2(pairFull1);
+        Shuffle2(pairFull2);        
+        Shuffle2(pairFull3);        
+        Shuffle2(pairFull4);        
+
+        pairsFullGameObject.Add(pairFull1);
+        pairsFullGameObject.Add(pairFull2);
+        pairsFullGameObject.Add(pairFull3);
+        pairsFullGameObject.Add(pairFull4);
+        
+        Shuffle2(pairRLTraining);
+        
+        pairsRLGameObject = pairRLTraining;
+        
+        perceptualReward = perceptualReward_;
+
     }
 
     private void MakeDistributionRewards() {
@@ -350,14 +385,39 @@ public class TaskParameters : MonoBehaviour
             rewards.Add(new List<List<int>>()); // Initialize the innermost list
             rewardsTraining.Add(new List<List<int>>());
             for (int i = 0; i < 2; i++) {
-                // rewards[c].Add(
-                    // RandomGaussian(conditions[c][i], std, minReward, maxReward, nTrialsPerConditionFull));
-                // rewardsTraining[c].Add(
-                    // RandomGaussian(conditionsTraining[c][i], std, minReward, maxReward, nTrialsPerConditionTrainingRL));
-                rewards[c].Add(new List<int>() {5});
-                rewardsTraining[c].Add(new List<int>() {5});
+                rewards[c].Add(
+                    RandomGaussian(conditions[c][i], std, minReward, maxReward, nPerceptualPairs));
+                rewardsTraining[c].Add(
+                    RandomGaussian(conditionsTraining[c][i], std, minReward, maxReward, nPerceptualPairs));
+                
+                // deterministic version
+                // rewards[c].Add(Enumerable.Repeat((int) conditions[c][i], nPerceptualPairs).ToList());
+                // rewardsTraining[c].Add(Enumerable.Repeat((int) conditionsTraining[c][i], nPerceptualPairs).ToList());
+                // rewardsTraining[c][i] = Enumerable.Repeat((int) conditionsTraining[c][i], nPerceptualPairs).ToList();
+
+                // rewards[c].Add(new List<int>() {5});
+                // rewardsTraining[c].Add(new List<int>() {5});
             }
+            // display and compute mean and std for each condition
+            Debug.Log("Condition: " + c);
+            
+            for (int i = 0; i < 2; i++) {
+                List<int> values = rewards[c][i];
+                // Compute the average.     
+                double avg = values.Average();
+
+                // Perform the Sum of (value-avg)_2_2.      
+                double sum = values.Sum(d => Math.Pow(d - avg, 2));
+
+                // Put it all together.      
+                double standardDeviation = Math.Sqrt((sum) / (values.Count()-1));   
+                Debug.Log("Option " + i + ": "  + avg + ", " + standardDeviation);
+                Debug.Log("Option " + i + " REAL :" + conditions[c][i] + "," + std);
+
+            }
+            
         }
+        
     }
     
     private void MakeProbPairs() {
@@ -372,15 +432,20 @@ public class TaskParameters : MonoBehaviour
 
     }
     
-    public static void RandomizePairs() {
+    public static void RandomizeFFPairs() {
         Shuffle2(ffPairIdx);
     }
     
     public static  int GetOptionMean(int c, int option) {
-        if (c<0) {
+        if (c==-2) {
             Debug.Log("c: " + 0 + " option: " + option);
             return (int) conditionsTraining[0][option];
         }
+        
+        if (c==-1) {
+            return (int) perceptualReward;
+        }
+
         Debug.Log("c: " + c + " option: " + option);
         return (int) conditions[c][option];
     }

@@ -547,7 +547,7 @@ public class GameController : MonoBehaviour
     }
 
 
-    public void SpawnOptions(int idx1 = 0, int idx2 = 1, string phase = "perception")
+    public void SpawnOptions(int idx, string phase = "perception")
     {
         Quaternion spawnRotation = Quaternion.identity; //* Quaternion.Euler(45, 0, 0);
 
@@ -579,10 +579,14 @@ public class GameController : MonoBehaviour
                 hazard1 = perceptionHazard;
                 hazard2 = perceptionHazard;
                 break;
-            case "RL":
             case "full":
-                hazard1 = RLHazard[idx1];
-                hazard2 = RLHazard[idx2];
+                hazard1 = TaskParameters.pairsFullGameObject[idx][0];
+                hazard2 = TaskParameters.pairsFullGameObject[idx][1];
+                break;
+ 
+            case "RL":
+                hazard1 = TaskParameters.pairsRLGameObject[0];
+                hazard2 = TaskParameters.pairsRLGameObject[1];
                 break;
 
             default:
@@ -615,23 +619,23 @@ public class GameController : MonoBehaviour
         Save("prolificID", subID);
         Save("t", t);
         Save("session", session);
-        Save("block", (int) cond);
+        Save("pair", (int) cond);
         Save("choice", (int) optionController.choice);
         Save("choseLeft", (int) (
          (optionController.choice == 1) & (op1IsLeft)
           | (optionController.choice == 2) & (!op1IsLeft) ? 1 : 0));
         Save("op1IsLeft", (int) (op1IsLeft ? 1 : 0));
-        Save("outcome", (int)optionController.scoreValue);
-        Save("cfoutcome", (int)optionController.counterscoreValue);
+        Save("outcome1", (int)optionController.outcomeOpt1);
+        Save("outcome2", (int)optionController.outcomeOpt2);
         Save("fireTime", (int)playerController.fireTime);
         Save("moveTime", (int)playerController.moveTime);
         Save("leftCount", (int)playerController.leftCount);
         Save("rightCount", (int)playerController.rightCount);
         // TODO: add the other counts
-        // Save("ev1", (float)TaskParameters.GetOptionMean(cond, 0));
-        // Save("ev2", (float)TaskParameters.GetOptionMean(cond, 1));
-        Save("ev1", (float) optionController.outcomeOpt1*optionController.option1PDestroy);
-        Save("ev2", (float) optionController.outcomeOpt2*optionController.option2PDestroy);
+        Save("ev1", (float) TaskParameters.GetOptionMean(cond, 0) * optionController.option1PDestroy);
+        Save("ev2", (float) TaskParameters.GetOptionMean(cond, 1) * optionController.option2PDestroy);
+        // Save("ev1", (float) optionController.outcomeOpt1*optionController.option1PDestroy);
+        // Save("ev2", (float) optionController.outcomeOpt2*optionController.option2PDestroy);
         //
         Save("p1", (float)optionController.option1PDestroy);
         Save("p2", (float)optionController.option2PDestroy);
@@ -775,6 +779,7 @@ public class TrainingTestPerception : MonoBehaviour, IState
         timer.Start();
         
         // GameController.Alert("session="+TaskParameters.sessionIdx);
+        TaskParameters.RandomizeFFPairs();
 
         for (int t = 0; t < TaskParameters.nTrialsPerceptualTraining; t++)
         {
@@ -803,12 +808,12 @@ public class TrainingTestPerception : MonoBehaviour, IState
             gameController.DisplayFeedback(true);
             
             gameController.feedbackInfo = 1;///(int)TaskParameters.conditions[cond][2];
-            gameController.SetOutcomes(5, 5);
+            gameController.SetOutcomes(TaskParameters.perceptualReward, TaskParameters.perceptualReward);
 
             gameController.AllowWave(false);
             gameController.AllowSendData(false);
 
-            gameController.SpawnOptions(0, 0, "perception");
+            gameController.SpawnOptions(0, "perception");
             gameController.SetForceFields(true, TaskParameters.ffPairIdx[t], 4.7f);
 
             // Debug.Log("prob pair idx: " + TaskParameters.probPairIdx[t]);
@@ -831,7 +836,7 @@ public class TrainingTestPerception : MonoBehaviour, IState
             gameController.SaveData(
                 t: t,
                 session: TaskParameters.sessionIdx,
-                cond: TaskParameters.ffPairIdx[t]
+                cond: -1
             );
             
             // yield return gameController.AfterSendToDB();
@@ -902,6 +907,7 @@ public class TrainingTestRL : MonoBehaviour, IState
         gameController.ChangeBackground();
 
         int[] condTrial = new int[TaskParameters.nConds];
+        TaskParameters.RandomizeFFPairs();
 
         for (int t = 0; t < TaskParameters.nTrialsTrainingRL; t++)
         {
@@ -915,20 +921,33 @@ public class TrainingTestRL : MonoBehaviour, IState
 
             // replace player at the center of the screen
             // gameController.MovePlayerCenter();
+            // reset
+            gameController.ResetBeforeNewTrial();
+
+            gameController.MovePlayerCenter();
+
+
 
             int cond = (int)TaskParameters.conditionTrainingIdx[t];
 
             gameController.feedbackInfo = 1;///(int)TaskParameters.conditions[cond][2];
 
-            List<int> options = TaskParameters.trainingPairs[cond];
+            // List<int> options = TaskParameters.trainingPairs[cond];
 
-            gameController.SpawnOptions(options[0], options[1], phase: "RL");
+            gameController.SpawnOptions(0, phase: "RL");
 
             gameController.DisplayFeedback(true);
             gameController.SetForceFields(false);
 
+            // display rewardsTraining length
+            Debug.Log("rewardsTraining length: " + TaskParameters.rewardsTraining[cond][0].Count);
+            // display condTrial
+            Debug.Log("condTrial: " + condTrial[cond]);
+
             gameController.SetOutcomes(
+                // 0 because option 1
                 TaskParameters.rewardsTraining[cond][0][condTrial[cond]],
+                // 1 because option 2
                 TaskParameters.rewardsTraining[cond][1][condTrial[cond]]
             );
 
@@ -945,7 +964,7 @@ public class TrainingTestRL : MonoBehaviour, IState
 
             if (TaskParameters.online)
             {
-                gameController.SaveData(t, 2, cond);
+                gameController.SaveData(t, 2, -2);
                 yield return gameController.SendToDB();
             }
 
@@ -1013,7 +1032,7 @@ public class TrainingTestFull : MonoBehaviour, IState
         Stopwatch timer = new Stopwatch();
         timer.Start();
         
-        TaskParameters.RandomizePairs();
+        TaskParameters.RandomizeFFPairs();
 
 
         for (int t = 0; t < TaskParameters.nTrialsFull; t++)
@@ -1027,14 +1046,20 @@ public class TrainingTestFull : MonoBehaviour, IState
             yield return new WaitForSeconds(gameController.waveWait);
 
             // gameController.MovePlayerCenter();
+            // reset
+            gameController.ResetBeforeNewTrial();
+
+            gameController.MovePlayerCenter();
+
+
 
             int cond = (int)TaskParameters.conditionIdx[t];
 
             gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
 
-            List<int> options = TaskParameters.pairs[cond];
+            // List<int> options = TaskParameters.pairs[cond];
 
-            gameController.SpawnOptions(options[0], options[1], phase: "full");
+            gameController.SpawnOptions(cond, phase: "full");
 
             gameController.DisplayFeedback(true);
             gameController.SetForceFields(true, idx: TaskParameters.ffPairIdx[t], space: 2.9f);

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44949985, g: 0.4964956, b: 0.559144, a: 1}
+  m_IndirectSpecularColor: {r: 0.44950032, g: 0.49649626, b: 0.55914444, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -153,21 +153,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed268102e3d691141b7ceaa38de9402e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nTrialsPerceptionPerPair: 3
+  nTrialsPerceptionPerPair: 1
   nPerceptualPairs: 72
+  perceptualReward_: 50
   session: 0
   fbTime: 1
   fallSpeed: -4
   interleaved: 1
-  trainingPerceptual: 1
+  trainingPerceptual: 0
   trainingRL: 0
-  trainingFull: 0
+  trainingFull: 1
   minReward: 0
   maxReward: 100
-  Option1: {x: 1, y: 0.75, z: 1}
-  Option2: {x: 1, y: 0.25, z: 1}
-  Option3: {x: 1, y: 0.25, z: -1}
-  Option4: {x: 1, y: 0.75, z: -1}
   std: 20
   Condition1: {x: 62, y: 38, z: 1}
   Condition2: {x: 72, y: 28, z: 1}
@@ -246,7 +243,23 @@ MonoBehaviour:
   - {x: 0.88, y: 0.62}
   - {x: 0.88, y: 0.73}
   - {x: 0.88, y: 0.82}
+  pairRLTraining:
+  - {fileID: 747326714603306446, guid: b4fbbbd67672c9341946fc9bb35ddfe1, type: 3}
+  - {fileID: 747326714603306446, guid: fe2d01cda5bae954689c4299436da9ae, type: 3}
+  pairFull1:
+  - {fileID: 747326714603306446, guid: 3039654beb7ccd4429c5760a9e6ca6ab, type: 3}
+  - {fileID: 747326714603306446, guid: d51e19b89163222458196364d87e36fb, type: 3}
+  pairFull2:
+  - {fileID: 5173755259565289548, guid: a818c583af71b6f4ba1291c188f43539, type: 3}
+  - {fileID: 747326714603306446, guid: 03fa2f0eb5cefba4b99512ae7c0d1efe, type: 3}
+  pairFull3:
+  - {fileID: 747326714603306446, guid: a9948360a697131489f1fc46a05d4f13, type: 3}
+  - {fileID: 5173755259565289548, guid: f1467ca79834b8448a180e4b95be5a6d, type: 3}
+  pairFull4:
+  - {fileID: 747326714603306446, guid: f07969ed674f8cf4fa6097376f427e30, type: 3}
+  - {fileID: 5173755259565289548, guid: 0fd3f861486668546a4d5c94601b0649, type: 3}
   probPairIdx: 
+  nTrialPerCondition: 0
 --- !u!4 &109284361
 Transform:
   m_ObjectHideFlags: 0
