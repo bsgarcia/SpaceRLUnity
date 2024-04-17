@@ -639,9 +639,20 @@ public class GameController : MonoBehaviour
         //
         Save("p1", (float)optionController.option1PDestroy);
         Save("p2", (float)optionController.option2PDestroy);
+        
+        Save("m1", (int) TaskParameters.GetOptionMean(cond, 0));
+        Save("m2", (int) TaskParameters.GetOptionMean(cond, 1));
+        
+        // save option filename 
+        Save("name1", (string) optionController.option1Name);
+        Save("name2", (string) optionController.option2Name);
+        
+
         // gameController.Save("feedbackInfo", (int)gameController.feedbackInfo);
         Save("destroyed", (int) (optionController.destroyed ? 1 : 0));
         Save("score", (int)score);
+        
+        Save("expName", (string) TaskParameters.expName);
         // gameController.Save("optFile1",
         //  (string)TaskParameters.symbols[cond][0].ToString() + ".tiff");
         // gameController.Save("optFile2",
@@ -818,13 +829,8 @@ public class TrainingTestPerception : MonoBehaviour, IState
 
             // Debug.Log("prob pair idx: " + TaskParameters.probPairIdx[t]);
             if (gameController.autoPlay) {
-                yield return new WaitForSeconds(2f);
                 PlayerController playerController = gameController.GetPlayerController(); 
-                playerController.StartCoroutine(playerController.Move(-.1f, -4f));
-                yield return new WaitForSeconds(.5f);
-                playerController.Shoot();
-                playerController.AllowMove(false);
-			    playerController.StartCoroutine(playerController.MoveCenter());
+                playerController.StartCoroutine(playerController.AutoPlay());
             }
 
             while (!gameController.sendData)
@@ -835,7 +841,7 @@ public class TrainingTestPerception : MonoBehaviour, IState
 
             gameController.SaveData(
                 t: t,
-                session: TaskParameters.sessionIdx,
+                session: 0,
                 cond: -1
             );
             
@@ -955,7 +961,12 @@ public class TrainingTestRL : MonoBehaviour, IState
 
             gameController.AllowWave(false);
             gameController.AllowSendData(false);
-            
+
+            if (gameController.autoPlay) {
+                PlayerController playerController = gameController.GetPlayerController(); 
+                playerController.StartCoroutine(playerController.AutoPlay());
+            }
+
             while (!gameController.sendData)
             {
                 yield return new WaitForSeconds(.5f);
@@ -964,7 +975,7 @@ public class TrainingTestRL : MonoBehaviour, IState
 
             if (TaskParameters.online)
             {
-                gameController.SaveData(t, 2, -2);
+                gameController.SaveData(t, 1, -2);
                 yield return gameController.SendToDB();
             }
 
@@ -1064,19 +1075,24 @@ public class TrainingTestFull : MonoBehaviour, IState
             gameController.DisplayFeedback(true);
             gameController.SetForceFields(true, idx: TaskParameters.ffPairIdx[t], space: 2.9f);
 
-            // gameController.SetOutcomes(
-                // TaskParameters.rewards[cond][0][condTrial[cond]],
-                // TaskParameters.rewards[cond][1][condTrial[cond]]);
-                // 
             gameController.SetOutcomes(
-                5, 5
-            );
+                TaskParameters.rewards[cond][0][condTrial[cond]],
+                TaskParameters.rewards[cond][1][condTrial[cond]]);
+                
+            // gameController.SetOutcomes(
+                // 5, 5
+            // );
 
             condTrial[cond]++;
 
 
             gameController.AllowWave(false);
             gameController.AllowSendData(false);
+
+            if (gameController.autoPlay) {
+                PlayerController playerController = gameController.GetPlayerController(); 
+                playerController.StartCoroutine(playerController.AutoPlay());
+            }
 
             while (!gameController.sendData)
             {
@@ -1087,7 +1103,7 @@ public class TrainingTestFull : MonoBehaviour, IState
             if (TaskParameters.online)
             {
                 // once the option is shot we can get the option controller and gather the data 
-                gameController.SaveData(t, 3, cond);
+                gameController.SaveData(t, 2, cond);
                 yield return gameController.SendToDB();
             }
 

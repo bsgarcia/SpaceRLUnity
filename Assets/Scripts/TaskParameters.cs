@@ -26,7 +26,7 @@ public class TaskParameters : MonoBehaviour
     public static int perceptualReward;
     
     public int session;
-
+// 
     public static int sessionIdx;
 
     public float fbTime;
@@ -92,6 +92,9 @@ public class TaskParameters : MonoBehaviour
     public static List<Vector3> conditionsTraining = new List<Vector3>();
     public static List<int> conditionIdx;
     public static List<int> conditionTrainingIdx;
+
+    public string expName_ = "default";
+    public static string expName = "default";
 
     public static List<List<List<int>>> rewards = new List<List<List<int>>>();
     public static List<List<List<int>>> rewardsTraining = new List<List<List<int>>>();
@@ -237,6 +240,7 @@ public class TaskParameters : MonoBehaviour
 
     void Start()
     {
+        expName = expName_;
 
         GameController gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 
@@ -318,7 +322,7 @@ public class TaskParameters : MonoBehaviour
         conditions.Add(Condition2);
 
         conditionsTraining.Add(ConditionTraining1);
-        conditionsTraining.Add(ConditionTraining2);
+        // conditionsTraining.Add(ConditionTraining2);
 
         nConds = conditions.Count;
         // nTrialsFull = nTrialsPerConditionFull*conditions.Count;
@@ -341,7 +345,7 @@ public class TaskParameters : MonoBehaviour
         }
         
         if (trainingFull) {
-            nTrialsFull = nTrialsPerceptionPerPair*nPerceptualPairs*4;
+            nTrialsFull = nTrialsPerceptionPerPair*nPerceptualPairs*nConds;
         }
 
         probPairIdx = new int[nTrialsPerceptualTraining];
@@ -387,8 +391,9 @@ public class TaskParameters : MonoBehaviour
             for (int i = 0; i < 2; i++) {
                 rewards[c].Add(
                     RandomGaussian(conditions[c][i], std, minReward, maxReward, nPerceptualPairs));
-                rewardsTraining[c].Add(
-                    RandomGaussian(conditionsTraining[c][i], std, minReward, maxReward, nPerceptualPairs));
+                if (c==0)
+                    rewardsTraining[c].Add(
+                        RandomGaussian(conditionsTraining[c][i], std, minReward, maxReward, nPerceptualPairs));
                 
                 // deterministic version
                 // rewards[c].Add(Enumerable.Repeat((int) conditions[c][i], nPerceptualPairs).ToList());
@@ -460,20 +465,22 @@ public class TaskParameters : MonoBehaviour
         {
             List<int> x1 = Enumerable.Repeat(c, nTrialsFull/2).ToList();
             conditionIdxTemp.Add(x1);
-            List<int> x2 = Enumerable.Repeat(c, nTrialsTrainingRL/2).ToList();
-            conditionTrainingIdxTemp.Add(x2);
+            if (c==0) {
+                List<int> x2 = Enumerable.Repeat(c, nTrialsTrainingRL/2).ToList();
+                conditionTrainingIdxTemp.Add(x2);
+            }
         }
 
-        Shuffle2(conditionIdxTemp);
-        Shuffle2(conditionTrainingIdxTemp);
+        conditionIdxTemp = Shuffle(conditionIdxTemp);
+        conditionTrainingIdxTemp = Shuffle(conditionTrainingIdxTemp);
 
         conditionIdx = conditionIdxTemp.SelectMany(i => i).ToList<int>();
         conditionTrainingIdx = conditionTrainingIdxTemp.SelectMany(i => i).ToList<int>();
 
         if (interleaved)
         {
-            Shuffle2(conditionIdx);
-            Shuffle2(conditionTrainingIdx);
+            conditionIdx = Shuffle(conditionIdx);
+            conditionTrainingIdx = Shuffle(conditionTrainingIdx);
         }
 
     }
@@ -493,6 +500,27 @@ public class TaskParameters : MonoBehaviour
             list[k] = list[n];
             list[n] = value;
         }
+    }
+    
+    public static List<T> Shuffle<T>(IList<T> sequence)
+    {
+        Random2 random = new Random2();
+
+        // T[] retArray = sequence.copy();
+        List<T> retArray = new List<T>(sequence);
+
+
+        for (int i = 0; i < retArray.Count - 1; i += 1)
+        {
+            int swapIndex = random.Next(i, retArray.Count);
+            if (swapIndex != i) {
+                T temp = retArray[i];
+                retArray[i] = retArray[swapIndex];
+                retArray[swapIndex] = temp;
+            }
+        }
+
+        return new List<T>(retArray);
     }
 
     public static List<int> RandomGaussian(float mean, float std, float min, float max, float size) {

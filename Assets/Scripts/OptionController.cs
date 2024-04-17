@@ -42,6 +42,9 @@ public class OptionController : MonoBehaviour
     public bool destroyed = false;
     
     public GameObject forcefieldPrefab;
+    
+    public string option1Name;
+    public string option2Name;
 
 	void Awake()
 	{
@@ -56,6 +59,11 @@ public class OptionController : MonoBehaviour
     void Update() 
     {
         List<GameObject> options = gameController.GetOptions();
+
+        if (option1 != null & option2 != null) {
+            option1Name = options[0].ToString().Replace("(Clone) (UnityEngine.GameObject)", "");
+            option2Name = options[1].ToString().Replace("(Clone) (UnityEngine.GameObject)", "");
+        }
         option1 = options[0];
         option2 = options[1];
     }

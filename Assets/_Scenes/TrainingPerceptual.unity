@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44950032, g: 0.49649626, b: 0.55914444, a: 1}
+  m_IndirectSpecularColor: {r: 0.44949985, g: 0.4964956, b: 0.559144, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -160,16 +160,17 @@ MonoBehaviour:
   fbTime: 1
   fallSpeed: -4
   interleaved: 1
-  trainingPerceptual: 0
+  trainingPerceptual: 1
   trainingRL: 0
-  trainingFull: 1
+  trainingFull: 0
   minReward: 0
   maxReward: 100
   std: 20
   Condition1: {x: 62, y: 38, z: 1}
   Condition2: {x: 72, y: 28, z: 1}
-  ConditionTraining1: {x: 50, y: 50, z: 0}
-  ConditionTraining2: {x: 50, y: 50, z: 0}
+  ConditionTraining1: {x: 67, y: 33, z: 0}
+  ConditionTraining2: {x: 67, y: 33, z: 0}
+  expName_: FullPilot
   proba2:
   - {x: 0.12, y: 0.18}
   - {x: 0.12, y: 0.27}
@@ -5846,7 +5847,7 @@ MonoBehaviour:
   serverURL: https://brainandlearning.org/basile/insert.php
   online: 1
   skipTuto: 1
-  autoPlay: 0
+  autoPlay: 1
   perceptionHazard: {fileID: 5173755259565289548, guid: d5ed23ef93d27fc4d90eee58c0965907,
     type: 3}
   RLHazard:
@@ -22934,6 +22935,8 @@ MonoBehaviour:
   destroyed: 0
   forcefieldPrefab: {fileID: 6054270853750656241, guid: a05f9aedd69c64a4e8a1f9019df2ec76,
     type: 3}
+  option1Name: 
+  option2Name: 
 --- !u!1 &1738203995
 GameObject:
   m_ObjectHideFlags: 0

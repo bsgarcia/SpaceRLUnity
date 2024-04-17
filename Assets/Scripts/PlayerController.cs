@@ -77,6 +77,16 @@ public class PlayerController : MonoBehaviour
 		gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
     }
 
+	public IEnumerator AutoPlay()
+	{
+		yield return new WaitForSeconds(1.2f);
+		StartCoroutine(Move(-.1f, -4f));
+		yield return new WaitForSeconds(.5f);
+		Shoot();
+		AllowMove(false);
+		StartCoroutine(MoveCenter());
+	}
+	
 	public void ResetCount()
     {
 		Debug.Log("Reset pavlovian count...");
