@@ -20,8 +20,8 @@ mergeInto(LibraryManager.library, {
             window.alert(UTF8ToString(str));
         },
 
-    SetEnd: function() {
-        window.endGame();
+    SetEnd: function(session) {
+        window.endFull(session);
     },
 
     SetEndTrainingRL: function() {
@@ -30,6 +30,10 @@ mergeInto(LibraryManager.library, {
 
     SetEndTrainingPerceptual: function() {
         window.endTrainingPerceptual();
+    },
+    
+    SetEndTutorial: function() {
+        window.endTutorial();
     },
     
     

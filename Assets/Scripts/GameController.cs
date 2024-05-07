@@ -101,13 +101,16 @@ public class GameController : MonoBehaviour
     private static extern void SetScore(int score, int session);
 
     [DllImport("__Internal")]
-    private static extern void SetEnd();
+    private static extern void SetEnd(int session);
 
     [DllImport("__Internal")]
     private static extern void SetEndTrainingPerceptual();
 
     [DllImport("__Internal")]
     private static extern void SetEndTrainingRL();
+
+    [DllImport("__Internal")]
+    private static extern void SetEndTutorial();
 
     [DllImport("__Internal")]
     private static extern string GetSubID();
@@ -324,8 +327,10 @@ public class GameController : MonoBehaviour
 
         }
 
-        playerController.AllowShot(false);
+        playerController.AllowShot(KeyPhaseShootDone);
         playerController.AllowMove(true);
+        if (Input.GetKeyDown(KeyCode.Space) && KeyPhaseShootDone)
+            playerController.Shoot();
         // Debug.Log(KeyPhaseMoveDone);
         if (!KeyPhaseMoveDone)
         {
@@ -344,11 +349,13 @@ public class GameController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.LeftControl))
             {
                 playerController.Shoot();
+                
+                playerController.AllowShot(true);
 
                 KeyPhaseShootDone = true;
                 StartCoroutine(HideWithDelay(spaceImage.gameObject, 3f));
-                StartCoroutine(DisplayMsg("Perfect!\n Now  get  ready,\n  ennemies  are\n  coming!", 4f, 3f));
-                StartCoroutine(SetBoolWithDelay(value => tutorialDone = value, true, 7f));
+                // StartCoroutine(DisplayMsg("Perfect!\n Now  get  ready,\n  ennemies  are\n  coming!", 4f, 3f));
+                StartCoroutine(SetBoolWithDelay(value => tutorialDone = value, true, 5f));
                 StartCoroutine(playerController.MoveCenter());
                 playerController.AllowMove(false);
                 playerController.ResetCount();
@@ -706,9 +713,18 @@ public class StateMachine
         this.owner = owner;
         states = new List<IState>();
 
-        states.Add(new TrainingTestPerception());
-        states.Add(new TrainingTestRL());
-        states.Add(new TrainingTestFull());
+        bool noTrials = (TaskParameters.nTrialsPerceptualTraining == 0) &&
+            (TaskParameters.nTrialsTrainingRL == 0) &&
+            (TaskParameters.nTrialsFull == 0);
+
+        if (!owner.skipTuto && noTrials) {
+            states.Add(new Tutorial(this));
+        }
+        states.Add(new TrainingTestPerception(this));
+        states.Add(new TrainingTestRL(this));
+        states.Add(new TrainingTestFull(this));
+        // states.Add(new TrainingTestFull(this));
+        Debug.Log("States: " + states.Count);
 
         stateNumber = -1;
     }
@@ -747,12 +763,71 @@ public class StateMachine
             this.owner.SetGameOver();
         }
     }
+    
+    public int GetStateNumber()
+    {
+        // Debug.Log("State number: " + stateNumber);
+        return stateNumber;
+    }
 
     public bool CurrentStateIsDone()
     {
         return currentState.IsDone();
     }
 }
+public class Tutorial : MonoBehaviour, IState
+{
+    [DllImport("__Internal")]
+    private static extern void SetEndTutorial();
+
+
+    GameController gameController;
+    public bool isDone;
+    public StateMachine owner;
+
+    public Tutorial(StateMachine owner)
+    {
+        this.owner = owner;
+    }
+
+    public void Enter()
+    {
+        gameController = GameObject.FindWithTag("GameController").
+            GetComponent<GameController>();
+        Debug.Log("entering tutorial");
+
+    }
+
+    public bool IsDone()
+    {
+        return isDone;
+    }
+
+    public IEnumerator Execute()
+    {
+        yield return new WaitForSeconds(.1f);
+        isDone = true;
+    }
+    public void Exit()
+    {
+        Debug.Log("Exiting tutorial");
+
+        try
+        {
+            SetEndTutorial();
+        }
+        catch (System.Exception e)
+        {
+            Debug.Log("Not running in browser: " + e);
+        }
+        // StartCoroutine(gameController.QuitGame());
+        gameController.SetGameOver();
+
+    }
+
+}
+
+
 
 public class TrainingTestPerception : MonoBehaviour, IState
 {
@@ -766,6 +841,12 @@ public class TrainingTestPerception : MonoBehaviour, IState
 
     GameController gameController;
     public bool isDone;
+    public StateMachine owner;
+
+    public TrainingTestPerception(StateMachine owner)
+    {
+        this.owner = owner;
+    }
 
     public void Enter()
     {
@@ -791,6 +872,7 @@ public class TrainingTestPerception : MonoBehaviour, IState
         
         // GameController.Alert("session="+TaskParameters.sessionIdx);
         TaskParameters.RandomizeFFPairs();
+        TaskParameters.RandomizeConditions();
 
         for (int t = 0; t < TaskParameters.nTrialsPerceptualTraining; t++)
         {
@@ -868,7 +950,7 @@ public class TrainingTestPerception : MonoBehaviour, IState
         // StartCoroutine(gameController.DisplayGameOver());
         try
         {
-            SetScore((int) gameController.score, (int) TaskParameters.sessionIdx);
+            SetScore((int) gameController.score, 0);
             SetEndTrainingPerceptual();
         }
         catch (System.Exception e)
@@ -894,6 +976,12 @@ public class TrainingTestRL : MonoBehaviour, IState
 
     GameController gameController;
     public bool isDone;
+    public StateMachine owner;
+
+    public TrainingTestRL(StateMachine owner)
+    {
+        this.owner = owner;
+    }
 
     public void Enter()
     {
@@ -914,7 +1002,8 @@ public class TrainingTestRL : MonoBehaviour, IState
 
         int[] condTrial = new int[TaskParameters.nConds];
         TaskParameters.RandomizeFFPairs();
-
+        TaskParameters.RandomizeConditions();
+        
         for (int t = 0; t < TaskParameters.nTrialsTrainingRL; t++)
         {
 
@@ -996,7 +1085,7 @@ public class TrainingTestRL : MonoBehaviour, IState
 
         try
         {
-            SetScore(gameController.score, TaskParameters.sessionIdx);
+            SetScore(gameController.score, 1);
             SetEndTrainingRL();
         }
         catch (System.Exception e)
@@ -1014,10 +1103,17 @@ public class TrainingTestFull : MonoBehaviour, IState
     private static extern void SetScore(int score, int session);
 
     [DllImport("__Internal")]
-    private static extern void SetEnd();
+    private static extern void SetEnd(int session);
 
     GameController gameController;
     public bool isDone;
+    
+    public StateMachine owner;
+
+    public TrainingTestFull(StateMachine owner)
+    {
+        this.owner = owner;
+    }
 
     public void Enter()
     {
@@ -1044,10 +1140,24 @@ public class TrainingTestFull : MonoBehaviour, IState
         timer.Start();
         
         TaskParameters.RandomizeFFPairs();
+        TaskParameters.RandomizeConditions();
 
+        // if previous state was TrainingTestFull we display a message
+        // bool lastSession = (this.owner.GetStateNumber() == 3);
+        bool lastSession = (TaskParameters.sessionIdx == 3);
+        // if (lastSession && TaskParameters.nTrialsFull > 0) {
+            // TODO: maybe regenerate the distribution of rewards
+            // TaskParameters.MakeDistributionRewards();
+            // gameController.StartCoroutine(
+                // gameController.DisplayMsg("Watch  out!\n  New  ennemies\n are  coming!", 4f, 2f));
 
+            // yield return new WaitForSeconds(5f);
+        // }
+        
         for (int t = 0; t < TaskParameters.nTrialsFull; t++)
         {
+            
+            // Debug.Log("STATE NUMBER: " + this.owner.GetStateNumber());
 
             while (!gameController.waveAllowed)
             {
@@ -1063,17 +1173,22 @@ public class TrainingTestFull : MonoBehaviour, IState
             gameController.MovePlayerCenter();
 
 
-
-            int cond = (int)TaskParameters.conditionIdx[t];
+            int cond = (int) TaskParameters.conditionIdx[t];
 
             gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
 
+            int newCond;
             // List<int> options = TaskParameters.pairs[cond];
+            if (lastSession) {
+                newCond = cond +2;
+            } else {
+                newCond = cond;
+            }
 
-            gameController.SpawnOptions(cond, phase: "full");
+            gameController.SpawnOptions(newCond, phase: "full");
 
             gameController.DisplayFeedback(true);
-            gameController.SetForceFields(true, idx: TaskParameters.ffPairIdx[t], space: 2.9f);
+            gameController.SetForceFields(true, idx: TaskParameters.fullFFPairsIdx[t], space: 2.9f);
 
             gameController.SetOutcomes(
                 TaskParameters.rewards[cond][0][condTrial[cond]],
@@ -1103,7 +1218,8 @@ public class TrainingTestFull : MonoBehaviour, IState
             if (TaskParameters.online)
             {
                 // once the option is shot we can get the option controller and gather the data 
-                gameController.SaveData(t, 2, cond);
+                
+                gameController.SaveData(t, TaskParameters.sessionIdx, cond);
                 yield return gameController.SendToDB();
             }
 
@@ -1125,12 +1241,17 @@ public class TrainingTestFull : MonoBehaviour, IState
         if (TaskParameters.nTrialsFull == 0)
             return;
         // StartCoroutine(gameController.DisplayGameOver());
+        // if  ((this.owner.GetStateNumber() == 3) && (this.owner.states[3].IsDone())) {
         gameController.SetGameOver();
+        Debug.Log("Game over!!!!!");
+        // }
 
         try
         {
             SetScore(gameController.score, TaskParameters.sessionIdx);
-            SetEnd();
+            // if  ((this.owner.GetStateNumber() == 3) && (this.owner.states[3].IsDone())) {
+            SetEnd(TaskParameters.sessionIdx);
+            // }
         }
         catch (System.Exception e)
         {

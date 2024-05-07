@@ -237,6 +237,8 @@ public class TaskParameters : MonoBehaviour
     
     public static List<List<GameObject>> pairsFullGameObject = new List<List<GameObject>>(); 
     public static List<GameObject> pairsRLGameObject = new List<GameObject>();
+    
+    public static int[] fullFFPairsIdx;
 
     void Start()
     {
@@ -246,9 +248,9 @@ public class TaskParameters : MonoBehaviour
 
         #if UNITY_WEBGL && !UNITY_EDITOR
             // get from window.session
-            session = GameController.GetSession();
+            // session = GameController.GetSession();
             if (session == 0) {
-                gameController.skipTuto = false;
+                gameController.skipTuto = true;
             } else {
                 gameController.skipTuto = true;
             }
@@ -348,6 +350,7 @@ public class TaskParameters : MonoBehaviour
             nTrialsFull = nTrialsPerceptionPerPair*nPerceptualPairs*nConds;
         }
 
+
         probPairIdx = new int[nTrialsPerceptualTraining];
 
         probabilities = proba2;
@@ -431,15 +434,29 @@ public class TaskParameters : MonoBehaviour
         int[] probPairIdx = Enumerable.Repeat(Enumerable.Range(0, nPerceptualPairs).ToArray(), repeatCount)
                                    .SelectMany(x => x)
                                    .ToArray();
-        Shuffle2(probPairIdx);
+        probPairIdx = Shuffle(probPairIdx).ToArray();
          
         ffPairIdx = probPairIdx;
+        
+        repeatCount = nConds;
+        probPairIdx = Enumerable.Repeat(Enumerable.Range(0, nPerceptualPairs).ToArray(), repeatCount)
+                                   .SelectMany(x => x)
+                                   .ToArray();
+        probPairIdx = Shuffle(probPairIdx).ToArray();
+        fullFFPairsIdx = probPairIdx;
 
     }
     
     public static void RandomizeFFPairs() {
-        Shuffle2(ffPairIdx);
+        ffPairIdx = Shuffle(ffPairIdx).ToArray();
+        fullFFPairsIdx = Shuffle(fullFFPairsIdx).ToArray();
     }
+    
+    public static void RandomizeConditions() {
+        conditionIdx = Shuffle(conditionIdx);
+        conditionTrainingIdx = Shuffle(conditionTrainingIdx);
+    }
+    
     
     public static  int GetOptionMean(int c, int option) {
         if (c==-2) {
@@ -463,10 +480,10 @@ public class TaskParameters : MonoBehaviour
 
         for (int c = 0; c < nConds; c++)//conditions.Count; c++)
         {
-            List<int> x1 = Enumerable.Repeat(c, nTrialsFull/2).ToList();
+            List<int> x1 = Enumerable.Repeat(c, nTrialsFull/nConds).ToList();
             conditionIdxTemp.Add(x1);
             if (c==0) {
-                List<int> x2 = Enumerable.Repeat(c, nTrialsTrainingRL/2).ToList();
+                List<int> x2 = Enumerable.Repeat(c, nTrialsTrainingRL).ToList();
                 conditionTrainingIdxTemp.Add(x2);
             }
         }

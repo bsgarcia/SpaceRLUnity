@@ -191,6 +191,16 @@ public class OptionController : MonoBehaviour
         Vector3 positionInFront2 = option2.transform.position + option2.transform.forward * (bounds2.size.z / 2 + spacing);
 
         // Place the ff at the calculated position
+        // take the position the most forward (- z-axis) and put for both
+        if (positionInFront1.z < positionInFront2.z)
+        {
+            positionInFront2.z = positionInFront1.z;
+        }
+        else
+        {
+            positionInFront1.z = positionInFront2.z;
+        }
+
         ff1.transform.position = positionInFront1;
         ff2.transform.position = positionInFront2;
 
