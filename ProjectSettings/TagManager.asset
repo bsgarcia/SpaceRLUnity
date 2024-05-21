@@ -22,6 +22,7 @@ TagManager:
   - LeaveScreenTargetRight
   - OptionController
   - BoundaryLeave
+  - rewardText
   layers:
   - Default
   - TransparentFX
@@ -29,7 +30,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Reward (above all)
   - 
   - 
   - 

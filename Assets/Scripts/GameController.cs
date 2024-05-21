@@ -463,10 +463,41 @@ public class GameController : MonoBehaviour
 
     }
 
+    
+    public void PrintMissedFeedback(int newScoreValue, int counterScoreValue, Vector3 ScorePosition)
+    {
+
+        if (feedbackInfo == 0)
+            return;
+        ScorePosition.z = ScorePosition.z - 1;
+        rewardText.transform.position = ScorePosition;
+        rewardText.text = "" + newScoreValue;
+
+        if (feedbackInfo == 2)
+        {
+            counterText.transform.position = new Vector3(
+                         -ScorePosition.x, ScorePosition.y, ScorePosition.z);
+            counterText.text = "" + counterScoreValue;
+        }
+        // get script from rewardText parent object
+        rewardText.GetComponent<TextAnimation>().DecreaseScore(
+            factor: 0.5f, reward: newScoreValue, decreaseRate: 1f);   
+        
+        StartCoroutine("DeleteFeedback", TaskParameters.feedbackTime);
+
+    }
+
     IEnumerator DeleteFeedback(float feedbacktime)
     {
+        while(!rewardText.GetComponent<TextAnimation>().IsDone())
+        {
+            yield return new WaitForSeconds(.05f);
+        }
+
         yield return new WaitForSeconds(feedbacktime);
         rewardText.text = "";
+        // reset color to white
+        rewardText.color = Color.white;
         counterText.text = "";
         missedTrialText.text = "";
         // Destroy(option1);
@@ -521,10 +552,10 @@ public class GameController : MonoBehaviour
     public void MissedTrial()
     {
         missedTrial = 1;
-        missedTrialText.text = "Missed!";
+        // missedTrialText.text = "Missed!";
         //AddScore(-1);
         AllowSendData(true);
-        StartCoroutine("DeleteFeedback", TaskParameters.feedbackTime);
+        // StartCoroutine("DeleteFeedback", TaskParameters.feedbackTime);
     }
 
 

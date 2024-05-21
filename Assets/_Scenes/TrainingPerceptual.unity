@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44950032, g: 0.49649626, b: 0.55914444, a: 1}
+  m_IndirectSpecularColor: {r: 0.44949985, g: 0.4964956, b: 0.559144, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -156,21 +156,21 @@ MonoBehaviour:
   nTrialsPerceptionPerPair: 1
   nPerceptualPairs: 72
   perceptualReward_: 50
-  session: 2
+  session: 0
   fbTime: 1
-  fallSpeed: -4
-  interleaved: 0
-  trainingPerceptual: 0
+  fallSpeed: -2.7
+  interleaved: 1
+  trainingPerceptual: 1
   trainingRL: 0
-  trainingFull: 1
+  trainingFull: 0
   minReward: 0
   maxReward: 100
-  std: 5
+  std: 10
   Condition1: {x: 62, y: 38, z: 1}
   Condition2: {x: 72, y: 28, z: 1}
   ConditionTraining1: {x: 67, y: 33, z: 0}
   ConditionTraining2: {x: 67, y: 33, z: 0}
-  expName_: FullPilot
+  expName_: FullPilot5
   proba2:
   - {x: 0.12, y: 0.18}
   - {x: 0.12, y: 0.27}
@@ -249,15 +249,15 @@ MonoBehaviour:
   - {fileID: 747326714603306446, guid: fe2d01cda5bae954689c4299436da9ae, type: 3}
   pairFull1:
   - {fileID: 747326714603306446, guid: 3039654beb7ccd4429c5760a9e6ca6ab, type: 3}
-  - {fileID: 747326714603306446, guid: d51e19b89163222458196364d87e36fb, type: 3}
-  pairFull2:
   - {fileID: 5173755259565289548, guid: a818c583af71b6f4ba1291c188f43539, type: 3}
+  pairFull2:
+  - {fileID: 747326714603306446, guid: d51e19b89163222458196364d87e36fb, type: 3}
   - {fileID: 747326714603306446, guid: 03fa2f0eb5cefba4b99512ae7c0d1efe, type: 3}
   pairFull3:
   - {fileID: 747326714603306446, guid: a9948360a697131489f1fc46a05d4f13, type: 3}
-  - {fileID: 5173755259565289548, guid: f1467ca79834b8448a180e4b95be5a6d, type: 3}
-  pairFull4:
   - {fileID: 747326714603306446, guid: f07969ed674f8cf4fa6097376f427e30, type: 3}
+  pairFull4:
+  - {fileID: 5173755259565289548, guid: f1467ca79834b8448a180e4b95be5a6d, type: 3}
   - {fileID: 5173755259565289548, guid: 0fd3f861486668546a4d5c94601b0649, type: 3}
   probPairIdx: 
   nTrialPerCondition: 0
@@ -5845,7 +5845,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverURL: https://brainandlearning.org/basile/insert.php
-  online: 0
+  online: 1
   skipTuto: 1
   autoPlay: 0
   perceptionHazard: {fileID: 5173755259565289548, guid: d5ed23ef93d27fc4d90eee58c0965907,
@@ -5955,9 +5955,10 @@ GameObject:
   - component: {fileID: 682853692}
   - component: {fileID: 682853691}
   - component: {fileID: 682853693}
+  - component: {fileID: 682853694}
   m_Layer: 5
   m_Name: Reward Text
-  m_TagString: Untagged
+  m_TagString: rewardText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5978,7 +5979,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -150, y: 50}
+  m_AnchoredPosition: {x: -150, y: 500}
   m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &682853691
@@ -6038,6 +6039,21 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 10, y: -1}
   m_UseGraphicAlpha: 1
+--- !u!114 &682853694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 682853689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c90ebe12760f5d499bd087773f51e23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rewardText: {fileID: 0}
+  initialScore: 100
+  decreaseRate: 0.1
 --- !u!1 &693033935
 GameObject:
   m_ObjectHideFlags: 0
@@ -12603,7 +12619,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1272793037}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: DisplayText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23164,7 +23180,7 @@ Transform:
   m_GameObject: {fileID: 1762054818}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -5.91}
+  m_LocalPosition: {x: 0, y: 0, z: -6.85}
   m_LocalScale: {x: 15, y: 1, z: 20}
   m_ConstrainProportionsScale: 0
   m_Children: []

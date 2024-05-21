@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using System.Linq;
 using Stopwatch = System.Diagnostics.Stopwatch;
 using static System.Random;
+// using math.round
+using Math = System.Math;
 
 
 public class OptionController : MonoBehaviour
@@ -336,6 +338,10 @@ public class OptionController : MonoBehaviour
             gameController.PrintFeedback(
                 scoreValue, counterscoreValue, option.transform.position);
             gameController.AddScore(scoreValue);
+        } else if ((showFeedback) && (!destroyed)) {
+            gameController.PrintMissedFeedback(
+                scoreValue, counterscoreValue, option.transform.position);
+            gameController.AddScore((int) Math.Round((double) scoreValue/2));
         }
 
         //if (addToScore) {

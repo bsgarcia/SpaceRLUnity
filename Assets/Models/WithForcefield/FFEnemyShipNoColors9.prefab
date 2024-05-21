@@ -32,15 +32,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5173755259565289548}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.2588191, y: 0, z: 0, w: 0.9659258}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.20756778, y: -0.0016539358, z: 0.0025528849, w: 0.97821593}
+  m_LocalPosition: {x: 0.01, y: 0.16, z: 2.68}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9134687981281920974}
   - {fileID: 5189683403154699942}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 30, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -23.959, y: -0.269, z: 0.356}
 --- !u!33 &1981029109868422281
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -221,13 +221,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6860364283752364657}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.2588191, y: -0, z: -0, w: -0.9659258}
-  m_LocalPosition: {x: 0.003, y: 0.667, z: 0.3}
+  m_LocalRotation: {x: 0.25881884, y: 0.0014494249, z: -0.00038837214, w: -0.96592474}
+  m_LocalPosition: {x: 0.007, y: 0.655, z: 0.802}
   m_LocalScale: {x: 1.08, y: 1.08, z: 1.08}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1582792331132935663}
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: -30, y: 359.801, z: 0.099}
 --- !u!198 &4241806063039106235
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -5009,17 +5009,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: cbe4829640a84bf43b73ec868bd81ad9,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.001
+      value: 0.003
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cbe4829640a84bf43b73ec868bd81ad9,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.142
+      value: 0.004
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cbe4829640a84bf43b73ec868bd81ad9,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.363
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cbe4829640a84bf43b73ec868bd81ad9,
         type: 3}
