@@ -170,7 +170,7 @@ MonoBehaviour:
   Condition2: {x: 72, y: 28, z: 1}
   ConditionTraining1: {x: 67, y: 33, z: 0}
   ConditionTraining2: {x: 67, y: 33, z: 0}
-  expName_: FullPilot5
+  expName_: FullPilot7
   proba2:
   - {x: 0.12, y: 0.18}
   - {x: 0.12, y: 0.27}

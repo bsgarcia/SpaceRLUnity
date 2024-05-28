@@ -481,7 +481,7 @@ public class GameController : MonoBehaviour
         }
         // get script from rewardText parent object
         rewardText.GetComponent<TextAnimation>().DecreaseScore(
-            factor: 0.5f, reward: newScoreValue, decreaseRate: 1f);   
+            factor: 0f, reward: newScoreValue, decreaseRate: 1f);   
         
         StartCoroutine("DeleteFeedback", TaskParameters.feedbackTime);
 
@@ -623,8 +623,10 @@ public class GameController : MonoBehaviour
                 break;
  
             case "RL":
-                hazard1 = TaskParameters.pairsRLGameObject[0];
-                hazard2 = TaskParameters.pairsRLGameObject[1];
+                // hazard1 = TaskParameters.pairsRLGameObject[0];
+                // hazard2 = TaskParameters.pairsRLGameObject[1];
+                hazard1 = TaskParameters.pairsRLGameObject[idx][0];
+                hazard2 = TaskParameters.pairsRLGameObject[idx][1];
                 break;
 
             default:
@@ -1032,12 +1034,14 @@ public class TrainingTestRL : MonoBehaviour, IState
         gameController.ChangeBackground();
 
         int[] condTrial = new int[TaskParameters.nConds];
+
         TaskParameters.RandomizeFFPairs();
         TaskParameters.RandomizeConditions();
         
         for (int t = 0; t < TaskParameters.nTrialsTrainingRL; t++)
         {
 
+            Debug.Log("N trials training RL: " + TaskParameters.nTrialsTrainingRL);
             while (!gameController.waveAllowed)
             {
                 yield return new WaitForSeconds(.5f);
@@ -1053,14 +1057,16 @@ public class TrainingTestRL : MonoBehaviour, IState
             gameController.MovePlayerCenter();
 
 
-
-            int cond = (int)TaskParameters.conditionTrainingIdx[t];
+            int cond = (int) TaskParameters.conditionTrainingIdx[t];
+            
+            // print all the conditions in one line
+            
 
             gameController.feedbackInfo = 1;///(int)TaskParameters.conditions[cond][2];
 
             // List<int> options = TaskParameters.trainingPairs[cond];
 
-            gameController.SpawnOptions(0, phase: "RL");
+            gameController.SpawnOptions(cond, phase: "RL");
 
             gameController.DisplayFeedback(true);
             gameController.SetForceFields(false);
@@ -1095,7 +1101,7 @@ public class TrainingTestRL : MonoBehaviour, IState
 
             if (TaskParameters.online)
             {
-                gameController.SaveData(t, 1, -2);
+                gameController.SaveData(t, 1, cond);
                 yield return gameController.SendToDB();
             }
 

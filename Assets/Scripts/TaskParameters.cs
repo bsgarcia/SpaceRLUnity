@@ -236,7 +236,9 @@ public class TaskParameters : MonoBehaviour
     public int nTrialPerCondition;
     
     public static List<List<GameObject>> pairsFullGameObject = new List<List<GameObject>>(); 
-    public static List<GameObject> pairsRLGameObject = new List<GameObject>();
+    public static List<List<GameObject>> pairsRLGameObject = new List<List<GameObject>>();
+
+    // public static int[] conditionIdx;
     
     public static int[] fullFFPairsIdx;
 
@@ -323,8 +325,10 @@ public class TaskParameters : MonoBehaviour
         conditions.Add(Condition1);
         conditions.Add(Condition2);
 
-        conditionsTraining.Add(ConditionTraining1);
+        // conditionsTraining.Add(ConditionTraining1);
         // conditionsTraining.Add(ConditionTraining2);
+        conditionsTraining.Add(Condition1);
+        conditionsTraining.Add(Condition2);
 
         nConds = conditions.Count;
         // nTrialsFull = nTrialsPerConditionFull*conditions.Count;
@@ -339,10 +343,14 @@ public class TaskParameters : MonoBehaviour
         nTrialsFull = 0;
 
         if (trainingPerceptual) {
+            sessionIdx = 0;
+            session = 0;
             nTrialsPerceptualTraining = nTrialsPerceptionPerPair*nPerceptualPairs;
         }
 
         if (trainingRL) {
+            sessionIdx = 1;
+            session = 1;
             nTrialsTrainingRL = nTrialsPerceptionPerPair*nPerceptualPairs;
         }
         
@@ -368,19 +376,23 @@ public class TaskParameters : MonoBehaviour
         
         nTrialPerCondition = nTrialsPerceptionPerPair;
 
-        Shuffle2(pairFull1);
-        Shuffle2(pairFull2);        
-        Shuffle2(pairFull3);        
-        Shuffle2(pairFull4);        
+        // Shuffle2(pairFull1);
+        // Shuffle2(pairFull2);        
+        // Shuffle2(pairFull3);        
+        // Shuffle2(pairFull4);        
 
         pairsFullGameObject.Add(pairFull1);
         pairsFullGameObject.Add(pairFull2);
+
+        pairsRLGameObject.Add(pairFull1);
+        pairsRLGameObject.Add(pairFull2);
+        
+        Debug.Log("pairsRLGameObject: " + pairsRLGameObject.Count);
+
         pairsFullGameObject.Add(pairFull3);
         pairsFullGameObject.Add(pairFull4);
         
-        Shuffle2(pairRLTraining);
-        
-        pairsRLGameObject = pairRLTraining;
+        // Shuffle2(pairRLTraining);
         
         perceptualReward = perceptualReward_;
 
@@ -394,8 +406,8 @@ public class TaskParameters : MonoBehaviour
             for (int i = 0; i < 2; i++) {
                 rewards[c].Add(
                     RandomGaussian(conditions[c][i], std, minReward, maxReward, nPerceptualPairs));
-                if (c==0)
-                    rewardsTraining[c].Add(
+                // if (c==0)
+                rewardsTraining[c].Add(
                         RandomGaussian(conditionsTraining[c][i], std, minReward, maxReward, nPerceptualPairs));
                 
                 // deterministic version
@@ -482,10 +494,8 @@ public class TaskParameters : MonoBehaviour
         {
             List<int> x1 = Enumerable.Repeat(c, nTrialsFull/nConds).ToList();
             conditionIdxTemp.Add(x1);
-            if (c==0) {
-                List<int> x2 = Enumerable.Repeat(c, nTrialsTrainingRL).ToList();
-                conditionTrainingIdxTemp.Add(x2);
-            }
+            List<int> x2 = Enumerable.Repeat(c, nTrialsTrainingRL/nConds).ToList();
+            conditionTrainingIdxTemp.Add(x2);
         }
 
         conditionIdxTemp = Shuffle(conditionIdxTemp);
@@ -499,6 +509,12 @@ public class TaskParameters : MonoBehaviour
             conditionIdx = Shuffle(conditionIdx);
             conditionTrainingIdx = Shuffle(conditionTrainingIdx);
         }
+        
+        // print all conditionTrainingIdx elements
+        /* for (int i = 0; i < conditionTrainingIdx.Count; i++)
+        {
+            Debug.Log("conditionTrainingIdx: " + conditionTrainingIdx[i]);
+        } */
 
     }
 
