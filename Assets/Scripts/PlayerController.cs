@@ -29,6 +29,8 @@ public class PlayerController : MonoBehaviour
 
 	// allow the ship to fire
 	public GameObject shot;
+	
+	public GameObject currentShot;
 	public Transform shotSpawn;
 	public float fireRate;
 	private float nextFire;
@@ -141,9 +143,18 @@ public class PlayerController : MonoBehaviour
 		}
 		shotAllowed = false;
         nextFire = Time.time + fireRate;
-        Instantiate(shot, shotSpawn.position, shotSpawn.rotation); 
+        currentShot = Instantiate(shot, shotSpawn.position, shotSpawn.rotation); 
         GetComponent<AudioSource>().Play(); // fire sound
+		StartCoroutine(ParticleOnBolt(.2f));
 		fireCount++;
+	}
+
+	public IEnumerator ParticleOnBolt(float time) {
+		currentShot.transform.Find("resistance").gameObject.SetActive(true);
+        currentShot.transform.Find("resistance").gameObject.GetComponent<ParticleSystem>().Play();	
+		yield return new WaitForSeconds(time);
+		currentShot.transform.Find("resistance").gameObject.SetActive(false);
+		currentShot.transform.Find("resistance").gameObject.GetComponent<ParticleSystem>().Stop();
 	}
 
 	void Update()

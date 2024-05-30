@@ -46,12 +46,12 @@ public class BoundaryController : MonoBehaviour
                 gameController.MissedTrial();
             }
             
-            // only allow next trial when unshot option has left
+            StartCoroutine(gameController.DestroyWithDelay(other.gameObject, 1f));
+            // Destroy(other.gameObject);
+
             gameController.AllowWave(true);
             gameController.AllowSendData(true);
-
             gameController.GetPlayerController().AllowShot(false);
-            StartCoroutine(gameController.DestroyWithDelay(other.gameObject, 1f));
         }
 
         if ((tag == "BoundaryLeave") && (other.tag == "Opt1" || other.tag == "Opt2") &&

@@ -17,6 +17,8 @@ public class OptionShot: MonoBehaviour
     public bool shootable = false;
     
     public bool isLeaving = false;
+    
+    public bool isDeviating = false;
 
     private GameObject bolt;
 
@@ -53,6 +55,10 @@ public class OptionShot: MonoBehaviour
 
     IEnumerator MoveInArc(Transform transform_, Vector3 startPos, Vector3 endPos, float speed, float height) 
     {
+        while (isDeviating) 
+        {
+            yield return new WaitForSeconds(0.1f);
+        }
         isLeaving = true;
         float i = 0.0f;
         float rate = 1.0f/speed;
@@ -87,7 +93,10 @@ public class OptionShot: MonoBehaviour
         
     }
     
-    public void DeviateShot(Collider other)
+  
+
+    
+    public void DeviateShot(Collider other, double pDestroy)
     {
         bolt = other.gameObject;
         
@@ -95,12 +104,16 @@ public class OptionShot: MonoBehaviour
 
         Random2 rnd = new Random2();
         // Determine if the collision is on the left or right side
-        float direction = (float) rnd.NextDouble() > 0.5 ? 45 : 135;
+        // /5/ /5/ float direction = (float) rnd.NextDouble() > 0.5 ? 45 : 135;
+        
+        // if option is left of the screen, then we want to deviate it to the right
+        // if option is right of the screen, then we want to deviate it to the left
+        float direction = transform.position.x > 0 ? 45 : 135;
         
         Vector3 originalVector = new Vector3(-1, -1, 0);
             
         // Define the angle you want to rotate by in degrees
-        float angleInDegrees = direction + Random.Range(-15f, 15f);
+        float angleInDegrees = direction + Random.Range(-10f, 10f);
 
         // Convert the angle to radians (Unity uses radians for rotation)
         float angleInRadians = Mathf.Deg2Rad * angleInDegrees;
@@ -112,10 +125,55 @@ public class OptionShot: MonoBehaviour
         Vector3 rotatedVector = rotation * originalVector;
 
         // Output the result
-        Debug.Log("Original Vector: " + originalVector);
-        Debug.Log("Rotated Vector: " + rotatedVector);
+        // Debug.Log("Original Vector: " + originalVector);
+        // Debug.Log("Rotated Vector: " + rotatedVector);
+        
+        // depending of the value of pDestroy, we wanna have more or less resistance from the forcefield
+        // if pDestroy is high, then it's a good shot, so we want to have less resistance (i.e. less reflection speed)
+        // if pDestroy is high, we want the bolt stay longer on the forcefield, with particple effects
+        // whereas if pDestroy is low, we want the bolt to be reflected quickly and without any particple effects
+        // so we want to have more resistance (i.e. more reflection speed)
 
-        other.GetComponent<Rigidbody>().velocity =  rotatedVector * other.GetComponent<Mover>().speed*3; 
+        // this is a fn of pDestroy (logistic)
+        float timeToStay = (float) pDestroy;
+        
+        // wait for the bolt to stay on the forcefield
+        StartCoroutine(Deviate(other, timeToStay, rotatedVector));
+        
+    }
+    
+    IEnumerator Deviate(Collider other, float timeToStay, Vector3 rotatedVector)
+    {
+        
+        // other has  child named resistance that has a particle system component
+        // activate the particle system
+        other.transform.Find("resistance").gameObject.SetActive(true);
+        other.transform.Find("resistance").gameObject.GetComponent<ParticleSystem>().Play();
+        
+        // stop the bolt
+        other.GetComponent<Rigidbody>().velocity = Vector3.zero;
+
+        //save velocity of the spaceship
+        Vector3 velocity = GetComponent<Rigidbody>().velocity;
+        // stop the spaceship
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        
+        isDeviating = true;
+
+        yield return new WaitForSeconds(timeToStay);
+        // deactivate the particle system
+        other.transform.Find("resistance").gameObject.SetActive(false);
+        other.transform.Find("resistance").gameObject.GetComponent<ParticleSystem>().Stop();
+
+        GameObject explosionFailed = gameController.GetOptionController().explosionFailed;
+        Instantiate(explosionFailed, other.transform.localPosition, other.transform.localRotation);
+        
+        isDeviating = false;
+
+        // set velocity of the spaceship back
+        GetComponent<Rigidbody>().velocity = velocity;
+
+        other.GetComponent<Rigidbody>().velocity =  rotatedVector * other.GetComponent<Mover>().speed;
         
         // other.transform.position = Vector3.Reflect(other.transform.position, Vector3.right);
         
@@ -127,11 +185,10 @@ public class OptionShot: MonoBehaviour
 
         Mover mover = other.GetComponent<Mover>();
         mover.speed = mover.speed * 20f;
-        StartCoroutine(SlowMotion());
         // StartCoroutine(SlowMotion());
-        
+     
     }
-    
+
     void DestroyBolt() {
         Destroy(bolt);
     }

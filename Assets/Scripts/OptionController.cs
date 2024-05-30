@@ -249,6 +249,45 @@ public class OptionController : MonoBehaviour
         return null;
     }
     
+    public void Explosion(GameObject option)
+    {
+        Debug.Log("Explosion!!!!!");
+        Instantiate(explosion, option.transform.localPosition, option.transform.localRotation);
+        Destroy(option);
+    }
+
+    IEnumerator WaitForExplosion(GameObject option, Collider other, float pDestroy) {
+        // other has  child named resistance that has a particle system component
+        // activate the particle system
+        other.transform.Find("resistance").gameObject.SetActive(true);
+        other.transform.Find("resistance").gameObject.GetComponent<ParticleSystem>().Play();
+
+        //save velocity of the spaceship
+        Vector3 velocity = option.GetComponent<Rigidbody>().velocity;
+        // save velocity of the bolt
+        Vector3 boltVelocity = other.GetComponent<Rigidbody>().velocity;
+
+        // stop the spaceship
+        option.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        // stop the bolt
+        other.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        
+        float timeToStay = 1 - (float) pDestroy;
+        
+        if (pDestroy < .5)
+            yield return new WaitForSeconds(timeToStay);
+
+        other.transform.Find("resistance").gameObject.SetActive(false);
+        other.transform.Find("resistance").gameObject.GetComponent<ParticleSystem>().Stop();
+        
+        // set velocity of the spaceship back
+        option.GetComponent<Rigidbody>().velocity = velocity;
+        // set velocity of the bolt back
+        other.GetComponent<Rigidbody>().velocity = boltVelocity;
+        
+        Explosion(option);
+        AfterExplosion(option, other);
+    }
     
     public void SetChoice(string tag, Collider other)
     // CALLED BY OptionShot.cs
@@ -278,14 +317,13 @@ public class OptionController : MonoBehaviour
         Debug.Log("randomP: " + randomP);
         Debug.Log("pDestroy: " + pDestroy);
         
-        if ((randomP > pDestroy) && (forcefield))
+      if ((randomP > pDestroy) && (forcefield))
         {
             other.GetComponent<Collider>().enabled = false;
 
-            Instantiate(explosionFailed, other.transform.localPosition, other.transform.localRotation);
 
             Debug.Log("Option survived");
-            option.GetComponent<OptionShot>().DeviateShot(other);
+            option.GetComponent<OptionShot>().DeviateShot(other, pDestroy);
 
             option.GetComponent<OptionShot>().LeaveScreen();
             otherOption.GetComponent<OptionShot>().LeaveScreen();
@@ -293,17 +331,23 @@ public class OptionController : MonoBehaviour
             gameController.MissedTrial();
             
         } 
-        else 
-        {
-            Debug.Log("Option destroyed");
+        else  {
+        
+             Debug.Log("Option destroyed");
             destroyed = true;
             // missed = 0;
-            Instantiate(explosion, option.transform.localPosition, option.transform.localRotation);
+            // Instantiate(explosion, other.transform.localPosition, other.transform.localRotation);
+            StartCoroutine(WaitForExplosion(option, other, (float) pDestroy)); 
+            // Destroy(other.gameObject);
             otherOption.GetComponent<OptionShot>().LeaveScreen();
+            
         }
+    }
 
+    void AfterExplosion(GameObject option, Collider other) {
 
-        switch (tag)
+        GameObject otherOption;
+        switch (option.tag)
         {
             case "Opt1":
 
@@ -339,8 +383,9 @@ public class OptionController : MonoBehaviour
                 scoreValue, counterscoreValue, option.transform.position);
             gameController.AddScore(scoreValue);
         } else if ((showFeedback) && (!destroyed)) {
-            gameController.PrintMissedFeedback(
-                scoreValue, counterscoreValue, option.transform.position);
+            ;
+            // gameController.PrintMissedFeedback(
+                // scoreValue, counterscoreValue, option.transform.position);
             // gameController.AddScore((int) Math.Round((double) scoreValue/2));
             // ;
         }
@@ -356,7 +401,7 @@ public class OptionController : MonoBehaviour
         {
             Debug.Log("Chose left: " + choseLeft);
             Debug.Log("Position: " + transform.position.x);
-            Destroy(option);
+            // Destroy(option);
             Destroy(other.gameObject);
         }
 

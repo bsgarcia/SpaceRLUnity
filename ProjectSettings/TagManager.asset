@@ -23,6 +23,7 @@ TagManager:
   - OptionController
   - BoundaryLeave
   - rewardText
+  - Resistance
   layers:
   - Default
   - TransparentFX

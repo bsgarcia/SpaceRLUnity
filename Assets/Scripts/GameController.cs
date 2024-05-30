@@ -181,6 +181,14 @@ public class GameController : MonoBehaviour
     {
         waveAllowed = value;
     }
+    
+    public bool WaveAllowed() {
+        // only allow next trial when both options has left and destroyed
+        // and when other components are done 
+        bool noOption = (GameObject.FindWithTag("Opt1") == null) &&
+            (GameObject.FindWithTag("Opt2") == null);
+        return noOption && waveAllowed;
+    }
 
     public void AllowSendData(bool value)
     {
@@ -910,7 +918,7 @@ public class TrainingTestPerception : MonoBehaviour, IState
         for (int t = 0; t < TaskParameters.nTrialsPerceptualTraining; t++)
         {
 
-            while (!gameController.waveAllowed)
+            while (!gameController.WaveAllowed())
             {
                 yield return new WaitForSeconds(.05f);
             }
@@ -1042,7 +1050,7 @@ public class TrainingTestRL : MonoBehaviour, IState
         {
 
             Debug.Log("N trials training RL: " + TaskParameters.nTrialsTrainingRL);
-            while (!gameController.waveAllowed)
+            while (!gameController.WaveAllowed())
             {
                 yield return new WaitForSeconds(.5f);
             }
@@ -1196,7 +1204,7 @@ public class TrainingTestFull : MonoBehaviour, IState
             
             // Debug.Log("STATE NUMBER: " + this.owner.GetStateNumber());
 
-            while (!gameController.waveAllowed)
+            while (!gameController.WaveAllowed())
             {
                 yield return new WaitForSeconds(.5f);
             }
