@@ -156,21 +156,19 @@ MonoBehaviour:
   nTrialsPerceptionPerPair: 1
   nPerceptualPairs: 72
   perceptualReward_: 50
-  session: 0
+  session: 3
   fbTime: 1
   fallSpeed: -2.7
   interleaved: 1
-  trainingPerceptual: 1
-  trainingRL: 0
+  trainingPerceptual: 0
+  trainingRL: 1
   trainingFull: 0
   minReward: 0
   maxReward: 100
   std: 10
   Condition1: {x: 62, y: 38, z: 1}
   Condition2: {x: 72, y: 28, z: 1}
-  ConditionTraining1: {x: 67, y: 33, z: 0}
-  ConditionTraining2: {x: 67, y: 33, z: 0}
-  expName_: SSxFF
+  expName_: FullPilot6.1
   proba2:
   - {x: 0.12, y: 0.18}
   - {x: 0.12, y: 0.27}

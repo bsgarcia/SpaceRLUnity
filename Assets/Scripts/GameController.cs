@@ -481,7 +481,7 @@ public class GameController : MonoBehaviour
         }
         // get script from rewardText parent object
         rewardText.GetComponent<TextAnimation>().DecreaseScore(
-            factor: 0f, reward: newScoreValue, decreaseRate: 1f);   
+            factor: 0.5f, reward: newScoreValue, decreaseRate: 1f);   
         
         StartCoroutine("DeleteFeedback", TaskParameters.feedbackTime);
 
@@ -1033,7 +1033,7 @@ public class TrainingTestRL : MonoBehaviour, IState
     {
         gameController.ChangeBackground();
 
-        int[] condTrial = new int[TaskParameters.nConds];
+        int[] condTrial = new int[TaskParameters.nCondRL];
 
         TaskParameters.RandomizeFFPairs();
         TaskParameters.RandomizeConditions();
@@ -1056,7 +1056,9 @@ public class TrainingTestRL : MonoBehaviour, IState
 
             gameController.MovePlayerCenter();
 
-
+            
+            // Debug conditionTrainingIdx length
+            Debug.Log("conditionTrainingIdx length: " + TaskParameters.conditionTrainingIdx.Count);
             int cond = (int) TaskParameters.conditionTrainingIdx[t];
             
             // print all the conditions in one line

@@ -341,8 +341,7 @@ public class OptionController : MonoBehaviour
         } else if ((showFeedback) && (!destroyed)) {
             gameController.PrintMissedFeedback(
                 scoreValue, counterscoreValue, option.transform.position);
-            // gameController.AddScore((int) Math.Round((double) scoreValue/2));
-            // ;
+            gameController.AddScore((int) Math.Round((double) scoreValue/2));
         }
 
         //if (addToScore) {
