@@ -50,6 +50,10 @@ public class GameController : MonoBehaviour
 
     public int outcomeOpt1;
     public int outcomeOpt2;
+    
+    public int meanOpt1;
+    public int meanOpt2;
+    
 
     public Animation anim1;
     public Animation anim2;
@@ -58,7 +62,7 @@ public class GameController : MonoBehaviour
 
     public int feedbackInfo;
 
-    public string subID = "test";
+    public string subID = "unity";
     public int score = 0;
 
     public int missedTrial = 0;
@@ -104,10 +108,10 @@ public class GameController : MonoBehaviour
     private static extern void SetEnd(int session);
 
     [DllImport("__Internal")]
-    private static extern void SetEndTrainingPerceptual();
+    private static extern void SetEndTrainingPerceptual(int session);
 
     [DllImport("__Internal")]
-    private static extern void SetEndTrainingRL();
+    private static extern void SetEndTrainingRL(int session);
 
     [DllImport("__Internal")]
     private static extern void SetEndTutorial();
@@ -155,6 +159,12 @@ public class GameController : MonoBehaviour
     {
         optionController.outcomeOpt1 = v1;
         optionController.outcomeOpt2 = v2;
+    }
+    
+    public void SetMeans(int v1, int v2)
+    {
+        optionController.meanOpt1 = v1;
+        optionController.meanOpt2 = v2;
     }
 
     public PlayerController GetPlayerController()
@@ -257,7 +267,7 @@ public class GameController : MonoBehaviour
         catch (System.Exception e)
         {
             Debug.Log("Not running in browser: " + e);
-            subID = "test";
+            subID = "unity";
         }
 
         //StartCoroutine(SpawnWaves()); 
@@ -434,20 +444,20 @@ public class GameController : MonoBehaviour
     {
         score += newScoreValue;
         Save("score", (int)score);
-        if (feedbackInfo == 0)
-        {
+        // if (feedbackInfo == 0)
+        // {
 
-            scoreText.gameObject.SetActive(false);
-            return;
-        }
+            // scoreText.gameObject.SetActive(false);
+            // return;
+        // }
         UpdateScore();
     }
 
     public void PrintFeedback(int newScoreValue, int counterScoreValue, Vector3 ScorePosition)
     {
 
-        if (feedbackInfo == 0)
-            return;
+        // if (feedbackInfo == 0)
+            // return;
 
         rewardText.transform.position = ScorePosition;
         rewardText.text = "" + newScoreValue;
@@ -467,8 +477,8 @@ public class GameController : MonoBehaviour
     public void PrintMissedFeedback(int newScoreValue, int counterScoreValue, Vector3 ScorePosition)
     {
 
-        if (feedbackInfo == 0)
-            return;
+        // if (feedbackInfo == 0)
+            // return;
         ScorePosition.z = ScorePosition.z - 1;
         rewardText.transform.position = ScorePosition;
         rewardText.text = "" + newScoreValue;
@@ -552,10 +562,10 @@ public class GameController : MonoBehaviour
     public void MissedTrial()
     {
         missedTrial = 1;
-        // missedTrialText.text = "Missed!";
+        missedTrialText.text = "Missed!";
         //AddScore(-1);
         AllowSendData(true);
-        // StartCoroutine("DeleteFeedback", TaskParameters.feedbackTime);
+        StartCoroutine("DeleteFeedback", TaskParameters.feedbackTime);
     }
 
 
@@ -585,7 +595,7 @@ public class GameController : MonoBehaviour
     }
 
 
-    public void SpawnOptions(int idx, string phase = "perception")
+    public void SpawnOptions(int idx, string phase = "perception", int randomOption = -1)
     {
         Quaternion spawnRotation = Quaternion.identity; //* Quaternion.Euler(45, 0, 0);
 
@@ -618,13 +628,18 @@ public class GameController : MonoBehaviour
                 hazard2 = perceptionHazard;
                 break;
             case "full":
+
                 hazard1 = TaskParameters.pairsFullGameObject[idx][0];
                 hazard2 = TaskParameters.pairsFullGameObject[idx][1];
+                
+                if (randomOption != -1) {
+                    hazard1 = TaskParameters.pairsFullGameObject[idx][randomOption];
+                    hazard2 = TaskParameters.pairsFullGameObject[idx][randomOption];
+                }
+
                 break;
  
             case "RL":
-                // hazard1 = TaskParameters.pairsRLGameObject[0];
-                // hazard2 = TaskParameters.pairsRLGameObject[1];
                 hazard1 = TaskParameters.pairsRLGameObject[idx][0];
                 hazard2 = TaskParameters.pairsRLGameObject[idx][1];
                 break;
@@ -672,16 +687,16 @@ public class GameController : MonoBehaviour
         Save("leftCount", (int)playerController.leftCount);
         Save("rightCount", (int)playerController.rightCount);
         // TODO: add the other counts
-        Save("ev1", (float) TaskParameters.GetOptionMean(cond, 0) * optionController.option1PDestroy);
-        Save("ev2", (float) TaskParameters.GetOptionMean(cond, 1) * optionController.option2PDestroy);
+        Save("ev1", (float) optionController.meanOpt1 * optionController.option1PDestroy);
+        Save("ev2", (float) optionController.meanOpt2 * optionController.option2PDestroy);
         // Save("ev1", (float) optionController.outcomeOpt1*optionController.option1PDestroy);
         // Save("ev2", (float) optionController.outcomeOpt2*optionController.option2PDestroy);
         //
         Save("p1", (float)optionController.option1PDestroy);
         Save("p2", (float)optionController.option2PDestroy);
         
-        Save("m1", (int) TaskParameters.GetOptionMean(cond, 0));
-        Save("m2", (int) TaskParameters.GetOptionMean(cond, 1));
+        Save("m1", (int) optionController.meanOpt1);
+        Save("m2", (int) optionController.meanOpt2);
         
         // save option filename 
         Save("name1", (string) optionController.option1Name);
@@ -869,7 +884,7 @@ public class TrainingTestPerception : MonoBehaviour, IState
     private static extern void SetScore(int score, int session);
 
     [DllImport("__Internal")]
-    private static extern void SetEndTrainingPerceptual();
+    private static extern void SetEndTrainingPerceptual(int session);
 
 
     GameController gameController;
@@ -935,6 +950,7 @@ public class TrainingTestPerception : MonoBehaviour, IState
             
             gameController.feedbackInfo = 1;///(int)TaskParameters.conditions[cond][2];
             gameController.SetOutcomes(TaskParameters.perceptualReward, TaskParameters.perceptualReward);
+            gameController.SetMeans(TaskParameters.perceptualReward, TaskParameters.perceptualReward);
 
             gameController.AllowWave(false);
             gameController.AllowSendData(false);
@@ -956,7 +972,7 @@ public class TrainingTestPerception : MonoBehaviour, IState
 
             gameController.SaveData(
                 t: t,
-                session: 0,
+                session: TaskParameters.sessionIdx,
                 cond: -1
             );
             
@@ -983,8 +999,8 @@ public class TrainingTestPerception : MonoBehaviour, IState
         // StartCoroutine(gameController.DisplayGameOver());
         try
         {
-            SetScore((int) gameController.score, 0);
-            SetEndTrainingPerceptual();
+            SetScore((int) gameController.score, TaskParameters.sessionIdx);
+            SetEndTrainingPerceptual(TaskParameters.sessionIdx);
         }
         catch (System.Exception e)
         {
@@ -1004,7 +1020,7 @@ public class TrainingTestRL : MonoBehaviour, IState
     private static extern void SetScore(int score, int session);
 
     [DllImport("__Internal")]
-    private static extern void SetEndTrainingRL();
+    private static extern void SetEndTrainingRL(int session);
 
 
     GameController gameController;
@@ -1084,6 +1100,11 @@ public class TrainingTestRL : MonoBehaviour, IState
                 // 1 because option 2
                 TaskParameters.rewardsTraining[cond][1][condTrial[cond]]
             );
+            
+            gameController.SetMeans(
+                TaskParameters.conditionsTraining[cond][0],
+                TaskParameters.conditionsTraining[cond][1]
+            );
 
             condTrial[cond]++;
 
@@ -1103,7 +1124,7 @@ public class TrainingTestRL : MonoBehaviour, IState
 
             if (TaskParameters.online)
             {
-                gameController.SaveData(t, 1, cond);
+                gameController.SaveData(t, TaskParameters.sessionIdx, cond);
                 yield return gameController.SendToDB();
             }
 
@@ -1124,8 +1145,8 @@ public class TrainingTestRL : MonoBehaviour, IState
 
         try
         {
-            SetScore(gameController.score, 1);
-            SetEndTrainingRL();
+            SetScore(gameController.score, TaskParameters.sessionIdx);
+            SetEndTrainingRL(TaskParameters.sessionIdx);
         }
         catch (System.Exception e)
         {
@@ -1183,7 +1204,7 @@ public class TrainingTestFull : MonoBehaviour, IState
 
         // if previous state was TrainingTestFull we display a message
         // bool lastSession = (this.owner.GetStateNumber() == 3);
-        bool lastSession = (TaskParameters.sessionIdx == 3);
+        bool lastSession = (TaskParameters.sessionIdx == 4);
         // if (lastSession && TaskParameters.nTrialsFull > 0) {
             // TODO: maybe regenerate the distribution of rewards
             // TaskParameters.MakeDistributionRewards();
@@ -1192,7 +1213,8 @@ public class TrainingTestFull : MonoBehaviour, IState
 
             // yield return new WaitForSeconds(5f);
         // }
-        
+        // Debug.Log("Last session: " + lastSession);
+        Debug.Log("N trials full: " + TaskParameters.nTrialsFull); 
         for (int t = 0; t < TaskParameters.nTrialsFull; t++)
         {
             
@@ -1214,31 +1236,100 @@ public class TrainingTestFull : MonoBehaviour, IState
 
             int cond = (int) TaskParameters.conditionIdx[t];
 
-            gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
+            // // size of conditionIDX
+            // Debug.Log("conditionIdx length: " + TaskParameters.conditionIdx.Count);
+            // // show unique conditionIdx in it and their count
+            // List<int> unique = new List<int>();
+            // for (int i = 0; i < TaskParameters.conditionIdx.Count; i++) {
+            //     if (!unique.Contains(TaskParameters.conditionIdx[i]))
+            //         unique.Add(TaskParameters.conditionIdx[i]);
+            // }
+
+            // Debug.Log("unique conditionIdx: " + string.Join(", ", unique));
+
+            // // create a dictionary (no array or list) to store the counts
+            // Dictionary<int, int> counts = new Dictionary<int, int>();
+
+            // // Debug their count (i.e. how many times they appear)
+            // for (int i = 0; i < unique.Count; i++) {
+            //     // now take unique[i] and count how many times it appears in conditionIdx using a map
+            //     for (int j = 0; j < TaskParameters.conditionIdx.Count; j++) {
+            //         if (TaskParameters.conditionIdx[j] == unique[i]) {
+            //             // increment the count
+                        
+            //             // if the key is not in the dictionary, add it
+            //             if (!counts.ContainsKey(unique[i]))
+            //                 counts[unique[i]] = 1;
+            //             else
+            //                 counts[unique[i]]++;
+            //         }
+            //     }
+            // }
+            
+            // Debug the counts
+            // Debug.Log("counts: " + string.Join(", ", counts));
+
+            // Debug.Log("conditionIdx: " + TaskParameters.conditionIdx[t]);
+            // gameController.feedbackInfo = (int)TaskParameters.conditions[cond][2];
+            
+            // cond == -1  means ff learning control
+            // cond == -2 means ss learning control
 
             int newCond;
-            // List<int> options = TaskParameters.pairs[cond];
             if (lastSession) {
-                newCond = cond +2;
+                newCond = cond + 2;
             } else {
                 newCond = cond;
             }
+            
+            switch (cond) {
+                // control ss learning
+                case -2:
+                    // select a random condition
+                    int cond2 = Random.Range(0, TaskParameters.nConds);
+                    gameController.SetMeans(
+                        (int) TaskParameters.conditions[cond2][0],
+                        (int) TaskParameters.conditions[cond2][1]
+                    );
+                    gameController.SpawnOptions(cond2 + ((lastSession? 1 : 0) * 2), phase: "full");
+                    gameController.SetForceFields(false);
+                    break;
 
-            gameController.SpawnOptions(newCond, phase: "full");
+                // control ff learning
+                case -1:
+                    int rndCond = Random.Range(0, TaskParameters.nConds);
+                    int rndOption = Random.Range(0, 2);
+
+                    gameController.SpawnOptions(rndCond + ((lastSession? 1 : 0) * 2), phase: "full", randomOption: rndOption);
+                    
+                    gameController.SetForceFields(true, TaskParameters.fullFFPairsIdx[t], 2.9f);
+                    gameController.SetOutcomes(
+                        TaskParameters.rewards[rndCond][rndOption][condTrial[rndCond]],
+                        TaskParameters.rewards[rndCond][rndOption][condTrial[rndCond]]
+                    );
+                    gameController.SetMeans(
+                        (int) TaskParameters.conditions[rndCond][rndOption],
+                        (int) TaskParameters.conditions[rndCond][rndOption]
+                    );
+                    break;
+
+                // regular trial
+                default:
+                    gameController.SpawnOptions(newCond, phase: "full");
+                    gameController.SetForceFields(true, TaskParameters.fullFFPairsIdx[t], 2.9f);
+                    gameController.SetOutcomes(
+                        TaskParameters.rewards[cond][0][condTrial[cond]],
+                        TaskParameters.rewards[cond][1][condTrial[cond]]);
+                    gameController.SetMeans(
+                        (int) TaskParameters.conditions[cond][0],
+                        (int) TaskParameters.conditions[cond][1]
+                    );
+                    condTrial[cond]++;
+                    break;
+     
+            }
 
             gameController.DisplayFeedback(true);
-            gameController.SetForceFields(true, idx: TaskParameters.fullFFPairsIdx[t], space: 2.9f);
-
-            gameController.SetOutcomes(
-                TaskParameters.rewards[cond][0][condTrial[cond]],
-                TaskParameters.rewards[cond][1][condTrial[cond]]);
-                
-            // gameController.SetOutcomes(
-                // 5, 5
-            // );
-
-            condTrial[cond]++;
-
 
             gameController.AllowWave(false);
             gameController.AllowSendData(false);

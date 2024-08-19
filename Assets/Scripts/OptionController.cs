@@ -18,6 +18,10 @@ public class OptionController : MonoBehaviour
 	public int counterscoreValue;
     public int outcomeOpt1;
     public int outcomeOpt2;
+    
+    public int meanOpt1;
+    public int meanOpt2;
+
     public int choice;
     public int choseLeft;
     public int corr;
@@ -339,9 +343,10 @@ public class OptionController : MonoBehaviour
                 scoreValue, counterscoreValue, option.transform.position);
             gameController.AddScore(scoreValue);
         } else if ((showFeedback) && (!destroyed)) {
-            gameController.PrintMissedFeedback(
-                scoreValue, counterscoreValue, option.transform.position);
-            gameController.AddScore((int) Math.Round((double) scoreValue/2));
+            // gameController.PrintMissedFeedback(
+                // scoreValue, counterscoreValue, option.transform.position);
+            // gameController.AddScore((int) Math.Round((double) scoreValue/2));
+            ;
         }
 
         //if (addToScore) {

@@ -24,12 +24,12 @@ mergeInto(LibraryManager.library, {
         window.endFull(session);
     },
 
-    SetEndTrainingRL: function() {
-        window.endTrainingRL();
+    SetEndTrainingRL: function(session) {
+        window.endTrainingRL(session);
     },
 
-    SetEndTrainingPerceptual: function() {
-        window.endTrainingPerceptual();
+    SetEndTrainingPerceptual: function(session) {
+        window.endTrainingPerceptual(session);
     },
     
     SetEndTutorial: function() {

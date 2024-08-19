@@ -247,7 +247,11 @@ public class TaskParameters : MonoBehaviour
     // public static int[] conditionIdx;
     
     public static int[] fullFFPairsIdx;
+
+    public int nControlsFF = 14;
+    public int nControlsSS = 14;
     
+    public int nRepeatTrainingRL;
 
     void Start()
     {
@@ -346,20 +350,7 @@ public class TaskParameters : MonoBehaviour
             Debug.Log("Warning!: nPerceptualPairs != proba.Count");
         }
         
-        nTrialsPerceptualTraining = 0;
-        nTrialsTrainingRL = 0;
-        nTrialsFull = 0;
-
-        if (trainingPerceptual) {
-            sessionIdx = 0;
-            session = 0;
-            nTrialsPerceptualTraining = nTrialsPerceptionPerPair*nPerceptualPairs;
-        }
-
-        
-        if (trainingFull) {
-            nTrialsFull = nTrialsPerceptionPerPair*nPerceptualPairs*nConds;
-        }
+   
 
 
         probPairIdx = new int[nTrialsPerceptualTraining];
@@ -428,11 +419,24 @@ public class TaskParameters : MonoBehaviour
         // in the end pairsRLGameObject will have all the pairs of game objects
         pairsRLGameObject = game2Pairings;
         
-        int nRepeatTrainingRL = 8; 
+        nRepeatTrainingRL = 12; 
+        nTrialsTrainingRL = 0;
         if (trainingRL) {
             sessionIdx = 1;
             session = 1;
             nTrialsTrainingRL = game2Pairings.Count*nRepeatTrainingRL;
+        }
+
+        nTrialsPerceptualTraining = 0;
+        if (trainingPerceptual) {
+            sessionIdx = 0;
+            session = 0;
+            nTrialsPerceptualTraining = nTrialsPerceptionPerPair*nPerceptualPairs;
+        }
+        
+        nTrialsFull = 0;
+        if (trainingFull) {
+            nTrialsFull = nTrialsPerceptionPerPair*nPerceptualPairs*nConds + nControlsFF + nControlsSS;
         }
         Debug.Log("Start computing probabilities");
         MakeProbPairs();
@@ -443,6 +447,8 @@ public class TaskParameters : MonoBehaviour
         
         nCondRL = game2Pairings.Count;
         conditionsTraining = game2PairingsRewards;
+        
+        AddControls();
 
     }
 
@@ -454,7 +460,7 @@ public class TaskParameters : MonoBehaviour
             // rewardsTraining.Add(new List<List<int>>());
             for (int i = 0; i < 2; i++) {
                 rewards[c].Add(
-                    RandomGaussian(conditions[c][i], std, minReward, maxReward, nPerceptualPairs));
+                    RandomGaussian(conditions[c][i], std, minReward, maxReward, nPerceptualPairs+nControlsSS));
                 
                 // unpitted version
                 // rewardsTraining[c].Add(
@@ -468,24 +474,6 @@ public class TaskParameters : MonoBehaviour
                 // rewards[c].Add(new List<int>() {5});
                 // rewardsTraining[c].Add(new List<int>() {5});
             }
-            // display and compute mean and std for each condition
-            Debug.Log("Condition: " + c);
-            
-            for (int i = 0; i < 2; i++) {
-                List<int> values = rewards[c][i];
-                // Compute the average.     
-                double avg = values.Average();
-
-                // Perform the Sum of (value-avg)_2_2.      
-                double sum = values.Sum(d => Math.Pow(d - avg, 2));
-
-                // Put it all together.      
-                double standardDeviation = Math.Sqrt((sum) / (values.Count()-1));   
-                Debug.Log("Option " + i + ": "  + avg + ", " + standardDeviation);
-                Debug.Log("Option " + i + " REAL :" + conditions[c][i] + "," + std);
-
-            }
-            
         }
         
         // game 2 pitted version
@@ -494,7 +482,7 @@ public class TaskParameters : MonoBehaviour
             rewardsTraining.Add(new List<List<int>>());
             for (int i = 0; i < 2; i++) {
                 rewardsTraining[c].Add(
-                    RandomGaussian(game2PairingsRewards[c][i], std, minReward, maxReward, 8));
+                    RandomGaussian(game2PairingsRewards[c][i], std, minReward, maxReward, nRepeatTrainingRL));
 
 
             }
@@ -530,8 +518,10 @@ public class TaskParameters : MonoBehaviour
     }
     
     public static void RandomizeConditions() {
-        conditionIdx = Shuffle(conditionIdx);
-        conditionTrainingIdx = Shuffle(conditionTrainingIdx);
+        // if (conditionIdx.Count > 0) 
+            conditionIdx = Shuffle(conditionIdx);
+        // if (conditionTrainingIdx.Count > 0)
+            conditionTrainingIdx = Shuffle(conditionTrainingIdx);
     }
     
     
@@ -548,7 +538,20 @@ public class TaskParameters : MonoBehaviour
             Debug.Log("c: " + c + " option: " + option);
             return (int) conditionsTraining[c][option];
         }
-        Debug.Log("c: " + c + " option: " + option);
+        if (sessionIdx==2 || sessionIdx==3) {
+            
+            // control ff only
+            if (c==-1) {
+                return (int) perceptualReward;
+            }
+            // control ss only
+            if (c==-2) {
+                return -2;
+            }
+            return (int) conditions[c][option];
+
+        }
+
         return (int) conditions[c][option];
     }
 
@@ -560,7 +563,10 @@ public class TaskParameters : MonoBehaviour
 
         for (int c = 0; c < nConds; c++)//conditions.Count; c++)
         {
-            List<int> x1 = Enumerable.Repeat(c, nTrialsFull/nConds).ToList();
+            if (nTrialsFull == 0) {
+                break;
+            }
+            List<int> x1 = Enumerable.Repeat(c, (nTrialsFull-(nControlsFF+nControlsSS))/nConds).ToList();
             conditionIdxTemp.Add(x1);
             // unpitted version
             // List<int> x2 = Enumerable.Repeat(c, nTrialsTrainingRL/nConds).ToList();
@@ -569,6 +575,9 @@ public class TaskParameters : MonoBehaviour
         
         for (int c = 0; c < game2Pairings.Count; c++)//conditions.Count; c++)
         {
+            if (nTrialsTrainingRL == 0) {
+                break;
+            }
             List<int> x1 = Enumerable.Repeat(c, nTrialsTrainingRL/game2Pairings.Count).ToList();
             conditionTrainingIdxTemp.Add(x1);
         }
@@ -591,6 +600,33 @@ public class TaskParameters : MonoBehaviour
             Debug.Log("conditionTrainingIdx: " + conditionTrainingIdx[i]);
         } */
 
+    }
+    
+    private void AddControls() {
+        int nControls = nControlsFF;
+        // only forcefield
+        List<int> controlsFF = Enumerable.Repeat(-1, nControls).ToList();
+        // only ss
+        List<int> controlsSS = Enumerable.Repeat(-2, nControls).ToList();
+        
+        // merge the two lists
+        controlsFF.AddRange(controlsSS);
+        // merge controlsFF with conditionTrainingIdx
+        controlsFF.AddRange(conditionIdx);
+        
+        conditionIdx = controlsFF;
+        // shuffle the list
+        conditionIdx = Shuffle(conditionIdx);
+        
+        // conditionTrainingIdx = Shuffle(conditionTrainingIdx);
+        
+        // create an array ranging from 0 to nPerceptualPairs
+        int[] ffIdx = Enumerable.Range(0, nPerceptualPairs).ToArray();
+        // select 24 random elements from the array
+        ffIdx = Shuffle(ffIdx).Take(nControls*2).ToArray();
+        
+        // now add ffIdx to fullFFPairsIdx existing array (at the end)
+        fullFFPairsIdx = ffIdx.Concat(fullFFPairsIdx).ToArray();
     }
 
     private static void Shuffle2<T>(IList<T> list)

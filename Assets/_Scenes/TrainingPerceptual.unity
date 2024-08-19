@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44949985, g: 0.4964956, b: 0.559144, a: 1}
+  m_IndirectSpecularColor: {r: 0.44950032, g: 0.49649626, b: 0.55914444, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -161,14 +161,14 @@ MonoBehaviour:
   fallSpeed: -2.7
   interleaved: 1
   trainingPerceptual: 0
-  trainingRL: 1
-  trainingFull: 0
+  trainingRL: 0
+  trainingFull: 1
   minReward: 0
   maxReward: 100
   std: 10
   Condition1: {x: 62, y: 38, z: 1}
   Condition2: {x: 72, y: 28, z: 1}
-  expName_: FullPilot6.1
+  expName_: FullPilot9
   proba2:
   - {x: 0.12, y: 0.18}
   - {x: 0.12, y: 0.27}
@@ -259,6 +259,9 @@ MonoBehaviour:
   - {fileID: 5173755259565289548, guid: 0fd3f861486668546a4d5c94601b0649, type: 3}
   probPairIdx: 
   nTrialPerCondition: 0
+  nControlsFF: 14
+  nControlsSS: 14
+  nRepeatTrainingRL: 0
 --- !u!4 &109284361
 Transform:
   m_ObjectHideFlags: 0
@@ -5878,6 +5881,8 @@ MonoBehaviour:
   optionpath: []
   outcomeOpt1: 0
   outcomeOpt2: 0
+  meanOpt1: 0
+  meanOpt2: 0
   anim1: {fileID: 0}
   anim2: {fileID: 0}
   transfer: 0
@@ -22933,6 +22938,8 @@ MonoBehaviour:
   counterscoreValue: 0
   outcomeOpt1: 0
   outcomeOpt2: 0
+  meanOpt1: 0
+  meanOpt2: 0
   choice: 0
   choseLeft: 0
   corr: 0
@@ -23447,7 +23454,7 @@ Transform:
   m_GameObject: {fileID: 1948181871}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 5.43}
+  m_LocalPosition: {x: 0, y: 0, z: 3.8}
   m_LocalScale: {x: 15, y: 1, z: 20}
   m_ConstrainProportionsScale: 0
   m_Children: []
