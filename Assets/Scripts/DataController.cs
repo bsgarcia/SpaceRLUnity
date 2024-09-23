@@ -68,73 +68,136 @@ public class DataController : MonoBehaviour
         if (!gameController.online)
         {
             Debug.Log("Online: off");
-            yield break;
-
+            yield return null;
         }
 
-
-        List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
+        int maxRetries = 3;
         int error = 0;
         bool success = false;
-        string str = "{";
+        string jsonData = "{";
 
-        // object obj = CreateObjectFromDictionary(data);
         foreach (KeyValuePair<string, object> entry in data)
         {
-            // formData.Add(new MultipartFormDataSection(entry.Key, entry.Value.ToString().Replace(",", ".")));
-            //string += entry.Key + ": " + entry.Value.ToString().Replace(",", ".") + "\n";
-            // format as json string
-            str += "\"" + entry.Key + "\": " + "\"" + entry.Value.ToString().Replace(",", ".") + "\" ,";
+            jsonData += "\"" + entry.Key + "\": \"" + entry.Value.ToString().Replace(",", ".") + "\",";
         }
-        // add slash before each quote
-        //str = str.Replace("\"", "\\\"");
-        
-        // remove last comma
-        str = str.Substring(0, str.Length - 2);
-        str += "}";
 
-        // Convert the dictionary to a JSON string
-        // PrintData();
-                // Serialize the object to JSON
-        // string json = JsonConvert.SerializeObject(obj);
-        
-        //Debug.Log("Sending to server: " + str);
+        jsonData = jsonData.TrimEnd(',') + "}";
 
-        while ((error < 4) && !success)
-
+        while (error < maxRetries && !success)
         {
-            UnityWebRequest www = UnityWebRequest.Post(url, str, "application/json");
-            www.SetRequestHeader("Access-Control-Allow-Credentials", "true");
-            www.SetRequestHeader("Access-Control-Allow-Headers", "Accept, Content-Type, X-Access-Token, X-Application-Name, X-Request-Sent-Time");
-            //www.SetRequestHeader("Content-Type", "application/json");
-            www.SetRequestHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
-            www.SetRequestHeader("Access-Control-Allow-Origin", "*");
-            yield return www.SendWebRequest();
+            // Create a UnityWebRequest for POST
+            using (UnityWebRequest www = new UnityWebRequest(url, "POST"))
+            {
+                byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+                www.uploadHandler = new UploadHandlerRaw(bodyRaw);
+                www.downloadHandler = new DownloadHandlerBuffer();
+                www.SetRequestHeader("Content-Type", "application/json");
 
-            if (www.isNetworkError || www.isHttpError)
-            {
-                error++;
-                if (error == 4)
-                    gameController.DisplayNetworkError();
-            }
-           
-            string response = www.downloadHandler.text;
-            Debug.Log("Server response: " + response);
+                // Send request asynchronously
+                yield return www.SendWebRequest();
 
-            if (response.ToLower().Contains("error"))
-            {
-                error++;
-                if (error == 4)
-                    gameController.DisplayServerError();
-            } 
-            else if (response.ToLower().Contains("success"))
-            {
-                success = true;
+                if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
+                {
+                    Debug.LogError("Network or server error: " + www.error);
+                    error++;
+                    yield return new WaitForSeconds(2f); // Increased wait time before retry
+                }
+                else
+                {
+                    string response = www.downloadHandler.text;
+                    Debug.Log("Server response: " + response);
+
+                    if (response.ToLower().Contains("success"))
+                    {
+                        success = true;
+                    }
+                    else if (response.ToLower().Contains("error"))
+                    {
+                        Debug.LogError("Server returned an error: " + response);
+                        error++;
+                        yield return new WaitForSeconds(2f); // Increased wait time before retry
+                    }
+                }
             }
-            
-            yield return new WaitForSeconds(.1f);
-            
-        } 
-        
+        }
+
+        if (!success && error >= maxRetries)
+        {
+            gameController.DisplayNetworkError();
+        }
     }
+    // public IEnumerator SendToDB()
+    // {
+    //     if (!gameController.online)
+    //     {
+    //         Debug.Log("Online: off");
+    //         yield break;
+
+    //     }
+
+
+    //     List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
+    //     int error = 0;
+    //     bool success = false;
+    //     string str = "{";
+
+    //     // object obj = CreateObjectFromDictionary(data);
+    //     foreach (KeyValuePair<string, object> entry in data)
+    //     {
+    //         // formData.Add(new MultipartFormDataSection(entry.Key, entry.Value.ToString().Replace(",", ".")));
+    //         //string += entry.Key + ": " + entry.Value.ToString().Replace(",", ".") + "\n";
+    //         // format as json string
+    //         str += "\"" + entry.Key + "\": " + "\"" + entry.Value.ToString().Replace(",", ".") + "\" ,";
+    //     }
+    //     // add slash before each quote
+    //     //str = str.Replace("\"", "\\\"");
+        
+    //     // remove last comma
+    //     str = str.Substring(0, str.Length - 2);
+    //     str += "}";
+
+    //     // Convert the dictionary to a JSON string
+    //     // PrintData();
+    //             // Serialize the object to JSON
+    //     // string json = JsonConvert.SerializeObject(obj);
+        
+    //     //Debug.Log("Sending to server: " + str);
+
+    //     while ((error < 4) && !success)
+
+    //     {
+    //         UnityWebRequest www = UnityWebRequest.Post(url, str, "application/json");
+    //         www.SetRequestHeader("Access-Control-Allow-Credentials", "true");
+    //         www.SetRequestHeader("Access-Control-Allow-Headers", "Accept, Content-Type, X-Access-Token, X-Application-Name, X-Request-Sent-Time");
+    //         //www.SetRequestHeader("Content-Type", "application/json");
+    //         www.SetRequestHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
+    //         www.SetRequestHeader("Access-Control-Allow-Origin", "*");
+    //         yield return www.SendWebRequest();
+
+    //         if (www.isNetworkError || www.isHttpError)
+    //         {
+    //             error++;
+    //             if (error == 4)
+    //                 gameController.DisplayNetworkError();
+    //         }
+           
+    //         string response = www.downloadHandler.text;
+    //         Debug.Log("Server response: " + response);
+
+    //         if (response.ToLower().Contains("error"))
+    //         {
+    //             error++;
+    //             if (error == 4)
+    //                 gameController.DisplayServerError();
+    //         } 
+    //         else if (response.ToLower().Contains("success"))
+    //         {
+    //             success = true;
+    //         }
+            
+    //         yield return new WaitForSeconds(.1f);
+            
+    //     } 
+        
+    // }
 }

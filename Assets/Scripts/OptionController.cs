@@ -7,6 +7,7 @@ using Stopwatch = System.Diagnostics.Stopwatch;
 using static System.Random;
 // using math.round
 using Math = System.Math;
+using Project.Scripts.Fractures;
 
 
 public class OptionController : MonoBehaviour
@@ -160,8 +161,8 @@ public class OptionController : MonoBehaviour
     
     public void AttachForceFields(GameObject option1, GameObject option2, float space)
     {
-        option1.GetComponent<MeshRenderer>().enabled = false;
-        option2.GetComponent<MeshRenderer>().enabled = false;
+        // option1.GetComponent<MeshRenderer>().enabled = false;
+        // option2.GetComponent<MeshRenderer>().enabled = false;
 
         // Instantiate the prefab
         GameObject ff1 = Instantiate(forcefieldPrefab);
@@ -189,8 +190,9 @@ public class OptionController : MonoBehaviour
         float spacing = -space;
 
          // Get the dimensions of the spaceship
-        Bounds bounds1 = option1.GetComponent<Renderer>().bounds;
-        Bounds bounds2 = option2.GetComponent<Renderer>().bounds;
+         // find Renderer of the spaceship among children
+        Bounds bounds1 = option1.GetComponentsInChildren<Renderer>()[0].bounds;
+        Bounds bounds2 = option2.GetComponentsInChildren<Renderer>()[0].bounds;
         
         // Calculate the position in front of the model
         Vector3 positionInFront1 = option1.transform.position + option1.transform.forward * (bounds1.size.z / 2 + spacing);
@@ -213,6 +215,7 @@ public class OptionController : MonoBehaviour
         ff1.transform.rotation = Quaternion.Euler(90f, 45f, 0f);
         ff2.transform.rotation = Quaternion.Euler(90f, 45f, 0f);
     }
+    
 
     public void SetForceFields(bool value, int idx = 0, float space = 1.7f)
     {
@@ -225,8 +228,8 @@ public class OptionController : MonoBehaviour
             // disable mesh rendered of option1 and option2
             // getChildGameObject((GameObject) option1, (string) "ff_prefab(Clone)").GetComponent<SpriteRenderer>().enabled = false;
             // getChildGameObject((GameObject) option2, (string) "ff_prefab(Clone)").GetComponent<SpriteRenderer>().enabled = false;
-            option1.GetComponent<MeshRenderer>().enabled = false;
-            option2.GetComponent<MeshRenderer>().enabled = false;
+            // option1.GetComponent<MeshRenderer>().enabled = false;
+            // option2.GetComponent<MeshRenderer>().enabled = false;
             return;
         }
 
@@ -237,22 +240,51 @@ public class OptionController : MonoBehaviour
         
         SetPDestroy(p[0], p[1]);
 
-        SpriteRenderer spriteRenderer1 = getChildGameObject(
+        SpriteRenderer spriteRenderer1 = GetChildGameObject(
             (GameObject) option1, (string) "ff_prefab(Clone)").GetComponent<SpriteRenderer>();
-        SpriteRenderer spriteRenderer2 = getChildGameObject(
+        SpriteRenderer spriteRenderer2 = GetChildGameObject(
             (GameObject) option2, (string) "ff_prefab(Clone)").GetComponent<SpriteRenderer>();
 
-        spriteRenderer1.sprite = Resources.Load<Sprite>("bw/" + p[0].ToString().Replace(",", "."));
-        spriteRenderer2.sprite = Resources.Load<Sprite>("bw/" + p[1].ToString().Replace(",", "."));
+        string ffcolor = TaskParameters.FFColor;
+        spriteRenderer1.sprite = Resources.Load<Sprite>(ffcolor + "/" + p[0].ToString().Replace(",", "."));
+        spriteRenderer2.sprite = Resources.Load<Sprite>(ffcolor + "/" + p[1].ToString().Replace(",", "."));
 
     }
-    static public GameObject getChildGameObject(GameObject fromGameObject, string withName) {
+    
+    void DestroyForceField(GameObject option)
+    {
+        GameObject ff1 = GetChildGameObject((GameObject) option, (string) "ff_prefab(Clone)");
+        // size of the explosion should be smaller
+        // ct explosion2 = Instantiate(explosionFailed, ff1.transform.position, ff1.transform.rotation);
+        // explosion2.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        // copy explosionFailed object
+        GameObject explosion2 = explosionFailed;
+        explosion2.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        Instantiate(explosion2, ff1.transform.position, ff1.transform.rotation);
+        Destroy(ff1);
+    }
+
+    static public GameObject GetChildGameObject(GameObject fromGameObject, string withName) {
 		//Author: Isaac Dart, June-13.
 		Transform[] ts = fromGameObject.transform.GetComponentsInChildren<Transform>();
 		foreach (Transform t in ts) if (t.gameObject.name == withName) return t.gameObject;
         return null;
     }
     
+    public GameObject FindChildWithNameContaining(GameObject parent, string substring)
+    {
+        foreach (Transform child in parent.transform)
+        {
+            if (child.gameObject.name.Contains(substring))
+            {
+                return child.gameObject;
+            }
+        }
+
+        // Return null if no child with the substring is found
+        return null;
+    }
+ 
     
     public void SetChoice(string tag, Collider other)
     // CALLED BY OptionShot.cs
@@ -286,15 +318,43 @@ public class OptionController : MonoBehaviour
         {
             other.GetComponent<Collider>().enabled = false;
 
-            Instantiate(explosionFailed, other.transform.localPosition, other.transform.localRotation);
+            // smaller explosion
+            GameObject explosion2 = explosion;
+            explosion2.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            Instantiate(explosion2, option.transform.localPosition, option.transform.localRotation);
+            
+            // get parent object
+            // var parent = option.transform.parent.gameObject;
+            // parent.GetComponent<FractureThis>().FracturePercentage((int) pDestroy*100);
 
             Debug.Log("Option survived");
-            option.GetComponent<OptionShot>().DeviateShot(other);
+            // option.GetComponent<OptionShot>().DeviateShot(other);
+            // 
+            
+            // there is a children object that is the spaceship, with Fracture in the name, get it
+            GameObject destroyable = FindChildWithNameContaining(option, "Fracture");
+            GameObject real = FindChildWithNameContaining(option, "Real");
+            Debug.Log("Destroyable: " + destroyable);
+            Debug.Log("Real: " + real); 
+            destroyable.SetActive(true);
+            real.SetActive(false);
+            
+            // normalize the percentage between 25 and 75
+            float percentage = (float) pDestroy*100*1.1f;
+            
+            DestroyForceField(option);
+            option.GetComponent<OptionShot>().Explode(destroyable, (float) percentage);
+
 
             option.GetComponent<OptionShot>().LeaveScreen();
             otherOption.GetComponent<OptionShot>().LeaveScreen();
+            
+            // StartCoroutine(option.GetComponent<OptionShot>().LeaveScreenWithDelay(0.5f));
+            // StartCoroutine(otherOption.GetComponent<OptionShot>().LeaveScreenWithDelay(0.5f));
+
             destroyed = false;
             gameController.MissedTrial();
+            Destroy(other.gameObject);
             
         } 
         else 
@@ -350,7 +410,7 @@ public class OptionController : MonoBehaviour
         }
 
         //if (addToScore) {
-        //}
+        ///}
 
         gameController.AllowSendData(true);
         // gameController.AllowWave(true);
@@ -361,6 +421,8 @@ public class OptionController : MonoBehaviour
             Debug.Log("Chose left: " + choseLeft);
             Debug.Log("Position: " + transform.position.x);
             Destroy(option);
+            // destroy the parent as well
+            // Destroy(option.transform.parent.gameObject);
             Destroy(other.gameObject);
         }
 

@@ -95,6 +95,10 @@ public class TaskParameters : MonoBehaviour
 
     public string expName_ = "default";
     public static string expName = "default";
+    
+    public string FFColorYellowBlue = "by";
+
+    public static string FFColor = "bw";
 
     public static List<List<List<int>>> rewards = new List<List<List<int>>>();
     public static List<List<List<int>>> rewardsTraining = new List<List<List<int>>>();
@@ -327,9 +331,6 @@ public class TaskParameters : MonoBehaviour
         {
             throw new CommonElementsFoundException("Common elements found between availableOptions and availableOptions2.");
         }
-
-        // options.Add(Option1);
-        // options.Add(Option2);
         // options.Add(Option3);
         // options.Add(Option4);
 
@@ -341,7 +342,6 @@ public class TaskParameters : MonoBehaviour
         conditionsTraining.Add(new List<int> {Condition1.x, Condition1.y});
         conditionsTraining.Add(new List<int> {Condition2.x, Condition2.y});
         // conditionsTraining.Add(Condition2_);
-
         nConds = conditions.Count;
         // nTrialsFull = nTrialsPerConditionFull*conditions.Count;
         feedbackTime = fbTime;
@@ -351,8 +351,6 @@ public class TaskParameters : MonoBehaviour
         }
         
    
-
-
         probPairIdx = new int[nTrialsPerceptualTraining];
 
         probabilities = proba2;
@@ -419,25 +417,29 @@ public class TaskParameters : MonoBehaviour
         // in the end pairsRLGameObject will have all the pairs of game objects
         pairsRLGameObject = game2Pairings;
         
-        nRepeatTrainingRL = 12; 
+        nRepeatTrainingRL = 8; 
         nTrialsTrainingRL = 0;
         if (trainingRL) {
-            sessionIdx = 1;
-            session = 1;
+            // sessionIdx = 1;
+            // session = 1;
             nTrialsTrainingRL = game2Pairings.Count*nRepeatTrainingRL;
         }
+        Debug.Log("nTrialsTrainingRL: " + nTrialsTrainingRL);
 
         nTrialsPerceptualTraining = 0;
         if (trainingPerceptual) {
-            sessionIdx = 0;
-            session = 0;
-            nTrialsPerceptualTraining = nTrialsPerceptionPerPair*nPerceptualPairs;
+            // sessionIdx = 0;
+            // session = 0;
+            nTrialsPerceptualTraining = 48;
         }
+        Debug.Log("nTrialsPerceptualTraining: " + nTrialsPerceptualTraining);
         
         nTrialsFull = 0;
         if (trainingFull) {
             nTrialsFull = nTrialsPerceptionPerPair*nPerceptualPairs*nConds + nControlsFF + nControlsSS;
         }
+        Debug.Log("nTrialsFull: " + nTrialsFull);
+
         Debug.Log("Start computing probabilities");
         MakeProbPairs();
         Debug.Log("Start computing conditions");
@@ -449,6 +451,10 @@ public class TaskParameters : MonoBehaviour
         conditionsTraining = game2PairingsRewards;
         
         AddControls();
+        
+        if (sessionIdx == 4) {
+            FFColor = FFColorYellowBlue;
+        }
 
     }
 
@@ -499,7 +505,7 @@ public class TaskParameters : MonoBehaviour
         int[] probPairIdx = Enumerable.Repeat(Enumerable.Range(0, nPerceptualPairs).ToArray(), repeatCount)
                                    .SelectMany(x => x)
                                    .ToArray();
-        probPairIdx = Shuffle(probPairIdx).ToArray();
+        probPairIdx = Shuffle(probPairIdx).Take(nTrialsPerceptualTraining).ToArray();
          
         ffPairIdx = probPairIdx;
         
@@ -673,7 +679,7 @@ public class TaskParameters : MonoBehaviour
             float x;
             do {
                 x = mean + NextGaussian() * std;
-            } while (x < min || x > max);
+            } while (x < min || x > max || x < (mean-std) || x > (mean+std));
             y.Add((int) Mathf.Round(x));
         }
         return y;

@@ -41,9 +41,11 @@ public class BoundaryController : MonoBehaviour
 
         if ((tag == "BoundaryMissed") && (other.tag == "Opt1" || other.tag == "Opt2"))
         {   
-            // catch no shot fired
-            if (!gameController.GetOptionController().destroyed) {
-                gameController.MissedTrial();
+            // catch the case when player makes no choice
+            if (gameController.GetOptionController().choice==0) {
+                // gameController.MissedTrial();
+                //
+                gameController.NoShoot();
             }
             
             // only allow next trial when unshot option has left
@@ -51,7 +53,11 @@ public class BoundaryController : MonoBehaviour
             gameController.AllowSendData(true);
 
             gameController.GetPlayerController().AllowShot(false);
-            StartCoroutine(gameController.DestroyWithDelay(other.gameObject, 1f));
+            // StartCoroutine(gameController.DestroyWithDelay(other.gameObject, 1f));
+            Destroy(other.gameObject, 1f);
+            // Destroy parent object
+            // Destroy(other.gameObject.transform.parent.gameObject, 1f);
+
         }
 
         if ((tag == "BoundaryLeave") && (other.tag == "Opt1" || other.tag == "Opt2") &&

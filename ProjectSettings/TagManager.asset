@@ -28,7 +28,7 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - FrozenChunks
   - Water
   - UI
   - Reward (above all)

@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using System.Runtime.InteropServices;
+using Project.Scripts.Fractures;
 
 
 public class GameController : MonoBehaviour
@@ -562,10 +563,19 @@ public class GameController : MonoBehaviour
     public void MissedTrial()
     {
         missedTrial = 1;
-        missedTrialText.text = "Missed!";
+        missedTrialText.text = "fail!";
         //AddScore(-1);
         AllowSendData(true);
         StartCoroutine("DeleteFeedback", TaskParameters.feedbackTime);
+    }
+    
+    public void NoShoot()
+    {
+        // missedTrial = 1;
+        missedTrialText.text = "No  blast  shot!\n";
+        // AddScore(-50);
+        AllowSendData(true);
+        StartCoroutine("DeleteFeedback", TaskParameters.feedbackTime+1f);
     }
 
 
@@ -573,7 +583,8 @@ public class GameController : MonoBehaviour
     {
         option.GetComponent<Animation>().Play();
         option.GetComponent<Collider>().enabled = false;
-        StartCoroutine(DestroyWithDelay(option, delay));
+        // StartCoroutine(DestroyWithDelay(option, delay));
+        Destroy(option, delay);
         //StartCoroutine(SendToDB());
     }
 
@@ -589,9 +600,55 @@ public class GameController : MonoBehaviour
         (Texture)Resources.Load("backgrounds/space");
     }
 
-    public void SetForceFields(bool value = true, int idx = 0, float space = 2.7f)
+    public void SetForceFields(bool value = true, int idx = 0, float space = 3.7f)
     {
         optionController.SetForceFields(value, idx, space);
+    }
+    
+    public void SetFractureThis() {
+        List<GameObject> options = GetOptions();
+        // find the material called defaultMat
+        // Material o = Resources.Load("defaultMat", typeof(Material)) as Material;
+        
+        foreach (GameObject option in options) {
+            // put option in a new parent object
+            GameObject parent = new GameObject();
+            parent.SetActive(true);
+            // set name of parent object using the name of the option
+            parent.name = option.name;
+
+            // set the parent object as the parent of the option
+            option.transform.parent = parent.transform;
+            
+            // get rigidbody of the option
+            // option.GetComponent<Rigidbody>().isKinematic = true;
+            // get rid of rigidbody
+            // Destroy(option.GetComponent<Rigidbody>());
+
+
+            // fracture the parent object
+            parent.AddComponent<FractureThis>();
+            
+            
+            // parent.SetActive(true);
+            // it seems that it's still not active
+            // set Active everything
+            // option.SetActive(true);
+
+            // parent.SetActive(true);
+
+            // set the parameters of the fracture
+            
+            /* parent.GetComponent<FractureThis>().SetParameters(
+                chunks: 500,
+                density: 50,
+                internalStrength: 100,
+                // get defaultMat
+                insideMaterial: o,
+                outsideMaterial: o
+            ) */;
+            
+        }
     }
 
 
@@ -661,6 +718,7 @@ public class GameController : MonoBehaviour
         //option2.transform.localScale = scaleChange;
         option2.tag = "Opt2";
 
+        // SetFractureThis();
     }
 
 
@@ -922,6 +980,8 @@ public class TrainingTestPerception : MonoBehaviour, IState
         TaskParameters.RandomizeFFPairs();
         TaskParameters.RandomizeConditions();
 
+        Debug.Log("N trials Perceptual: " + TaskParameters.nTrialsPerceptualTraining);
+
         for (int t = 0; t < TaskParameters.nTrialsPerceptualTraining; t++)
         {
 
@@ -956,7 +1016,7 @@ public class TrainingTestPerception : MonoBehaviour, IState
             gameController.AllowSendData(false);
 
             gameController.SpawnOptions(0, "perception");
-            gameController.SetForceFields(true, TaskParameters.ffPairIdx[t], 4.7f);
+            gameController.SetForceFields(true, TaskParameters.ffPairIdx[t], 3.44f);
 
             // Debug.Log("prob pair idx: " + TaskParameters.probPairIdx[t]);
             if (gameController.autoPlay) {
@@ -1054,10 +1114,11 @@ public class TrainingTestRL : MonoBehaviour, IState
         TaskParameters.RandomizeFFPairs();
         TaskParameters.RandomizeConditions();
         
+        Debug.Log("N trials training RL: " + TaskParameters.nTrialsTrainingRL);
+
         for (int t = 0; t < TaskParameters.nTrialsTrainingRL; t++)
         {
 
-            Debug.Log("N trials training RL: " + TaskParameters.nTrialsTrainingRL);
             while (!gameController.waveAllowed)
             {
                 yield return new WaitForSeconds(.5f);
@@ -1302,7 +1363,7 @@ public class TrainingTestFull : MonoBehaviour, IState
 
                     gameController.SpawnOptions(rndCond + ((lastSession? 1 : 0) * 2), phase: "full", randomOption: rndOption);
                     
-                    gameController.SetForceFields(true, TaskParameters.fullFFPairsIdx[t], 2.9f);
+                    gameController.SetForceFields(true, TaskParameters.fullFFPairsIdx[t], 3.44f);
                     gameController.SetOutcomes(
                         TaskParameters.rewards[rndCond][rndOption][condTrial[rndCond]],
                         TaskParameters.rewards[rndCond][rndOption][condTrial[rndCond]]
@@ -1316,7 +1377,7 @@ public class TrainingTestFull : MonoBehaviour, IState
                 // regular trial
                 default:
                     gameController.SpawnOptions(newCond, phase: "full");
-                    gameController.SetForceFields(true, TaskParameters.fullFFPairsIdx[t], 2.9f);
+                    gameController.SetForceFields(true, TaskParameters.fullFFPairsIdx[t], 3.44f);
                     gameController.SetOutcomes(
                         TaskParameters.rewards[cond][0][condTrial[cond]],
                         TaskParameters.rewards[cond][1][condTrial[cond]]);
